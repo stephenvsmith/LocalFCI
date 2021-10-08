@@ -8,13 +8,13 @@ using namespace Rcpp;
  * Tested: 12/16/20
  */
 void create_conditioning_sets_efficient_cpp(List &S,NumericVector &neighbors){
-  int l = neighbors.length();
+  int N = neighbors.length();
   String i_char;
   String j_char;
   List sublist;
-  for (int i=0;i<l;++i){
+  for (int i=0;i<N;++i){
     sublist = List(); // Creating the sublist for neighbor i
-    for (int j=0;j<l;++j){
+    for (int j=0;j<N;++j){
       if (j != i){
         j_char = String((char) neighbors(j));
         sublist[j_char] = NA_REAL;
@@ -35,22 +35,8 @@ void create_conditioning_sets_efficient_cpp(List &S,NumericVector &neighbors){
  */
 // [[Rcpp::export]]
 List create_conditioning_sets_efficient_cpp2(NumericVector &neighbors){
-  int l = neighbors.length();
-  String i_char;
-  String j_char;
   List S(0);
-  List sublist;
-  for (int i=0;i<l;++i){
-    sublist = List(); // Creating the sublist for neighbor i
-    for (int j=0;j<l;++j){
-      if (j != i){
-        j_char = String((char) neighbors(j));
-        sublist[j_char] = NA_REAL;
-      }
-    }
-    i_char = String((char) neighbors(i));
-    S[i_char] = sublist;
-  }
+  create_conditioning_sets_efficient_cpp(S,neighbors);
   return S;
 }
 
@@ -67,22 +53,24 @@ List fci_setup(NumericMatrix &true_dag,
   int p;
   p = true_dag.nrow();
   
-  // Find the neighborhood of the target node
-  NumericVector neighbors = get_multiple_neighbors_from_dag(targets,p,true_dag);
-  neighbors = union_(neighbors,targets);
-  std::sort(neighbors.begin(),neighbors.end());
+  // Find the neighborhood of the target nodes
+  NumericVector neighbors = get_multiple_neighbors_from_dag(targets,p,true_dag,verbose); //tested
+  neighbors = union_(neighbors,targets); //tested
+  std::sort(neighbors.begin(),neighbors.end()); //tested
   
   int N = neighbors.size();
   
   if (verbose){
     Rcout << "There are " << p << " nodes in the DAG.\n";
     Rcout << "There are " << N << " nodes in the neighborhood.\n";
+    Rcout << "All nodes being considered: ";
+    print_vector_elements_nonames(neighbors,"","\n");
   }
   
   // Initial graph that will be modified through the process of the algorithm
   NumericMatrix C_tilde(N);
-  std::fill(C_tilde.begin(), C_tilde.end(), 1);
-  C_tilde.fill_diag(0);
+  std::fill(C_tilde.begin(), C_tilde.end(), 1); //tested
+  C_tilde.fill_diag(0); //tested
   
   if (verbose){
     Rcout << "Our starting matrix is " << C_tilde.nrow() << "x" << C_tilde.ncol() << ".\n";
@@ -90,7 +78,7 @@ List fci_setup(NumericMatrix &true_dag,
   
   // Create the list that will store 
   List S(0);
-  create_conditioning_sets_efficient_cpp(S,neighbors);
+  create_conditioning_sets_efficient_cpp(S,neighbors); //tested
   
   std::vector<double> p_vals;
   
@@ -141,19 +129,33 @@ void change_S_0_efficient(List &S,int i,int j){
  * This function returns nodes that may separate node i and node j 
  * i and j are with respect to the neighborhood of interest
  * That is, if i=0 and j=2 and the neighborhood is {4,5,6}, then 
- * i referes to node 4 and j refers to node 6
+ * i refers to node 4 and j refers to node 6
  * Tested: 12/16/20
  */
 // [[Rcpp::export]]
 NumericVector get_potential_sep(const int &i,const int &j,const NumericVector &neighborhood,const int &p,const NumericMatrix &true_dag){
-  //Rcout << "We are finding the neighbors of " << neighborhood(i) << " and " << neighborhood(j) << std::endl;
-  NumericVector potential_seps = union_(get_neighbors_from_dag(neighborhood(i),p,true_dag),
-                                        get_neighbors_from_dag(neighborhood(j),p,true_dag));
+  //Rcout << "We are finding the neighbors of " << neighborhood(i) << "(" << i << ")";
+  //Rcout << " and " << neighborhood(j) << "(" << j << ")" << std::endl;
+  bool verbose = false; // Need this for the function calls to get_neighbors_from_dag. TODO: OPTIMIZE THIS SECTION
+  //Rcout << "Neighborhood " << neighborhood(i) << std::endl;
+  NumericVector nbhd1 = get_neighbors_from_dag(neighborhood(i),p,true_dag,verbose);
+  //print_vector_elements_nonames(nbhd1,""," (True value)\n");
+  //Rcout << "Neighborhood " << neighborhood(j) << std::endl;
+  NumericVector nbhd2 = get_neighbors_from_dag(neighborhood(j),p,true_dag,verbose);
+  //print_vector_elements_nonames(nbhd2,""," (True values)\n");
+  NumericVector potential_seps = union_(nbhd1,nbhd2);
   NumericVector exceptions = NumericVector::create(neighborhood(i),neighborhood(j));
-  //print_vector_elements_nonames(potential_seps);
   potential_seps = setdiff(potential_seps,exceptions);
-  //print_vector_elements_nonames(potential_seps);
+  //Rcout << "Final Set:\n";
+  //print_vector_elements_nonames(potential_seps,""," (True values)\n");
   return potential_seps;
+}
+
+void change_numbering(NumericVector &neighbors,std::map<int,int> &node_numbering){
+  int neighbors_size = neighbors.length();
+  for (int i=0;i<neighbors_size;++i){
+    neighbors(i) = node_numbering.find(neighbors(i))->second;  
+  }    
 }
 
 
@@ -162,6 +164,7 @@ NumericVector get_potential_sep(const int &i,const int &j,const NumericVector &n
  * 
  * This function checks whether or not nodes i and j are separated by any of the 
  * sets in the matrix kvals for a given significance level
+ * Only works for the first
  * Tested: 12/16/20
  */
 // [[Rcpp::export]]
@@ -191,7 +194,96 @@ void check_separation_sample_efficient(const int &l,const int &i,const int &j,
     }
     if (test_result["result"]){ // We have conditional independence established
       if (verbose){
-        Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j)) << std::endl;
+        Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j));
+        Rcout << " (p-value>" << signif_level << ")"<< std::endl;
+        //Rcout << "i = " << i << " | j = " << j << " | N_i = " << neighborhood(i) << " | N_j = " << neighborhood(j) << std::endl;
+      }
+      change_S_0_efficient(S,neighborhood(i),neighborhood(j));
+      change_S_0_efficient(S,neighborhood(j),neighborhood(i));
+      
+      C(i,j) = 0;
+      C(j,i) = 0;
+    }
+  } else {
+    k = 0;
+    keep_checking_k = true;
+    while (keep_checking_k & (k<kp)){
+      sep = neighborhood[kvals( _ , k )];
+      sep_arma = as<arma::uvec>(sep);
+      if (verbose){
+        Rcout << "Efficient Setup: " << i << " -> " << neighborhood(i);
+        Rcout << " | " << j << " -> " << neighborhood(j);
+        Rcout << " | k: ";
+        print_vector_elements_nonames(sep,""," ("," ");
+        print_vector_elements(sep,names,"",")\n");
+      }
+      test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
+      ++num_tests;
+      pval = test_result["pval"];
+      //pval = as<double>(get_pval(i,j,true_dag,names,sep));
+      if (verbose){
+        Rcout << "The p-value is " << pval << std::endl;
+      }
+      if (test_result["result"]){
+        if (verbose){
+          Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j)) << " by node(s): ";
+          print_vector_elements(sep,names,""," ");
+          Rcout << " (p-value>" << signif_level << ")"<< std::endl;
+        }
+        change_S_efficient(S,neighborhood(i),neighborhood(j),sep);
+        change_S_efficient(S,neighborhood(j),neighborhood(i),sep);
+        C(i,j) = 0;
+        C(j,i) = 0;
+        keep_checking_k = false;
+      } else {
+        if (verbose){
+          Rcout << names(neighborhood(i)) << " is NOT separated from " << names(neighborhood(j)) << " by node(s): ";
+          print_vector_elements(sep,names,""," ");
+          Rcout << " (p-value<" << signif_level << ")"<< std::endl;
+        }
+        
+      }
+      ++k; // Increment to obtain the next potential separating set
+    }
+  }
+}
+
+/*
+ * 
+ * This function checks whether or not nodes i and j are separated by any of the 
+ * sets in the matrix kvals for a given significance level
+ * Only works for the first
+ * Tested: 12/16/20
+ */
+// [[Rcpp::export]]
+void check_separation_sample_efficient_target(const int &l,const int &i,const int &j,
+                                              const NumericMatrix &kvals,
+                                              NumericVector &sep,NumericMatrix true_dag,
+                                              const StringVector &names,const NumericVector &neighborhood,
+                                              NumericMatrix C, // Passed by reference automatically
+                                              List S,double &pval,int &num_tests,arma::mat &R,int &n, // R is the correlation matrix
+                                              double &signif_level,bool &verbose){
+  int k;
+  int kp = kvals.cols();
+  bool keep_checking_k;
+  List test_result;
+  
+  arma::uvec sep_arma;
+  
+  if (l == 0){
+    sep = NA_REAL;
+    //Rcout << "Size of arma vector when l=0: " << sep_arma.size() << std::endl;
+    test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
+    ++num_tests;
+    pval = test_result["pval"];
+    //pval = as<double>(get_pval(i,j,true_dag,names));
+    if (verbose){
+      Rcout << "The p-value is " << pval << std::endl;
+    }
+    if (test_result["result"]){ // We have conditional independence established
+      if (verbose){
+        Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j));
+        Rcout << " (p-value>" << signif_level << ")"<< std::endl;
         //Rcout << "i = " << i << " | j = " << j << " | N_i = " << neighborhood(i) << " | N_j = " << neighborhood(j) << std::endl;
       }
       change_S_0_efficient(S,neighborhood(i),neighborhood(j));
@@ -206,6 +298,13 @@ void check_separation_sample_efficient(const int &l,const int &i,const int &j,
     while (keep_checking_k & (k<kp)){
       sep = kvals( _ , k );
       sep_arma = as<arma::uvec>(sep);
+      if (verbose){
+        Rcout << "Efficient Setup: " << i << " -> " << neighborhood(i);
+        Rcout << " | " << j << " -> " << neighborhood(j);
+        Rcout << " | k: ";
+        print_vector_elements_nonames(sep,""," ("," ");
+        print_vector_elements(sep,names,"",")\n");
+      }
       test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
       ++num_tests;
       pval = test_result["pval"];
@@ -215,8 +314,9 @@ void check_separation_sample_efficient(const int &l,const int &i,const int &j,
       }
       if (test_result["result"]){
         if (verbose){
-          Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j)) << " by node(s):\n";
-          print_vector_elements(sep,names);
+          Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j)) << " by node(s): ";
+          print_vector_elements(sep,names,""," ");
+          Rcout << " (p-value>" << signif_level << ")"<< std::endl;
         }
         change_S_efficient(S,neighborhood(i),neighborhood(j),sep);
         change_S_efficient(S,neighborhood(j),neighborhood(i),sep);
@@ -225,8 +325,9 @@ void check_separation_sample_efficient(const int &l,const int &i,const int &j,
         keep_checking_k = false;
       } else {
         if (verbose){
-          Rcout << names(neighborhood(i)) << " is NOT separated from " << names(neighborhood(j)) << " by node(s):\n";
-          print_vector_elements(sep,names);
+          Rcout << names(neighborhood(i)) << " is NOT separated from " << names(neighborhood(j)) << " by node(s): ";
+          print_vector_elements(sep,names,""," ");
+          Rcout << " (p-value<" << signif_level << ")"<< std::endl;
         }
         
       }
@@ -234,6 +335,8 @@ void check_separation_sample_efficient(const int &l,const int &i,const int &j,
     }
   }
 }
+
+
 
 List fci_sample_get_skeleton_efficient_cpp(List var_list,arma::mat df,double signif_level=0.05){
   int l = -1;

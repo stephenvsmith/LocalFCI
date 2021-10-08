@@ -1,6 +1,4 @@
-#include <Rcpp.h>
-#include <vector>
-using namespace Rcpp;
+#include "Rules.h"
 
 /*
  * 
@@ -13,7 +11,7 @@ using namespace Rcpp;
  * 
  * Note that a * represents a wild card that can represent either an open circle or an arrow
  * When we are considering the PC algorithm, for nodes i and j, if we have i -> j,
- * we regard G(i,j) = 1 and G(j,i) = 0. Therefore, in keeping with this convention, for FCI we will consider the arrowhead
+ * we regard G(i,j) = 2 and G(j,i) = 3. Therefore, in keeping with this convention, for FCI we will consider the arrowhead
  * information stored in G to be related to the arrowhead incident on the second node for the edge in consideration.
  * For example, if i o-> j is the edge in consideration, G(i,j)=2, since the arrow is incident on j, the second node
  * Similarly, G(j,i)=1, since the circle is incident on node i, which is the second node for the edge between node
@@ -31,26 +29,30 @@ using namespace Rcpp;
  * If alpha and gamma are not adjacent, then orient the triple: alpha *-> beta -> gamma
  */
 
-void rule1search(NumericMatrix &G, int beta,int alpha){
+void rule1search(NumericMatrix &G, int beta,int alpha,bool &track_changes,bool verbose=false){
   int p = G.nrow();
   // Search for beta o-* gamma (beta (1) (!=0) gamma)
   for (int gamma=0;gamma<p;++gamma){
     if (G(gamma,beta)==1 && G(beta,gamma)!= 0){ 
       if (G(alpha,gamma)==0 & G(gamma,alpha)==0){
         if (G(beta,gamma)==3){
-          Rcout << "Contradiction in Rule 1!\n";
+          Rcout << "Contradiction in Rule 1! " << "G(" << beta << "," << gamma << ")=3 when it must be changed to 2\n";
         }
         G(beta,gamma) = 2; // arrowhead incident on gamma for edge connecting beta and gamma
         G(gamma,beta) = 3; // regular anchor incident on gamma for edge connecting beta and gamma
-        Rcout << "Rule 1:\n";
-        Rcout << "Orient: " << alpha << " *-> " << beta << " o-* " << gamma;
-        Rcout << " as " << beta << " -> " << gamma << "\n";
+        if (verbose){
+          Rcout << "Rule 1:\n";
+          Rcout << "Orient: " << alpha << " *-> " << beta << " o-* " << gamma;
+          Rcout << " as " << beta << " -> " << gamma << "\n";
+        }
+        track_changes=true;
       }
     }
   }
 }
 
-List rule1(NumericMatrix &G) {
+// [[Rcpp::export]]
+bool rule1(NumericMatrix &G,bool &track_changes,bool verbose=false) {
   int p = G.nrow(); // Square matrix
   int gamma;
   // Outer loops: Go through every node to find an asterisk. The node it is incident on is alpha
@@ -58,13 +60,11 @@ List rule1(NumericMatrix &G) {
   for (int alpha = 0;alpha<p;++alpha){
     for (int beta = 0;beta<p;++beta){
       if (G(alpha,beta)==2 && G(beta,alpha)!=0){ // alpha *-> beta
-        rule1search(G,beta,alpha);
+        rule1search(G,beta,alpha,track_changes,verbose);
       }
     }
   }
-  return List::create(
-    _["G"] = G
-  );
+  return track_changes;
 }
 
 /*
@@ -75,7 +75,7 @@ List rule1(NumericMatrix &G) {
  * 
  */
 
-void rule2search(NumericMatrix &G, int beta,int alpha,bool condition1,bool condition2){
+void rule2search(NumericMatrix &G, int beta,int alpha,bool condition1,bool condition2,bool &track_changes,bool verbose=false){
   int p = G.nrow();
   
   // Condition 1 refers to alpha -> beta *-> gamma
@@ -84,9 +84,12 @@ void rule2search(NumericMatrix &G, int beta,int alpha,bool condition1,bool condi
       if (G(gamma,beta)!=0 && G(beta,gamma)==2){ // beta *-> gamma
         if (G(alpha,gamma)==1 && G(gamma,alpha)!=0){ // alpha *-o gamma
           G(alpha,gamma) = 2; // alpha *-> gamma
-          Rcout << "Rule 2:\n";
-          Rcout << "Orient: " << alpha << " -> " << beta << " *-> " << gamma;
-          Rcout << " as: " << alpha << " *-> " << gamma << std::endl;
+          track_changes = true;
+          if (verbose){
+            Rcout << "Rule 2:\n";
+            Rcout << "Orient: " << alpha << " -> " << beta << " *-> " << gamma;
+            Rcout << " as: " << alpha << " *-> " << gamma << std::endl;
+          }
         }
       }
     }
@@ -95,9 +98,12 @@ void rule2search(NumericMatrix &G, int beta,int alpha,bool condition1,bool condi
       if (G(gamma,beta)==3 & G(beta,gamma)==2){ // beta -> gamma
         if (G(alpha,gamma)==1 & G(gamma,alpha)!=0){ // alpha *-o gamma
           G(alpha,gamma) = 2; // alpha *-> gamma
-          Rcout << "Rule 2:\n";
-          Rcout << "Orient: " << alpha << " *-> " << beta << " -> " << gamma;
-          Rcout << " as: " << alpha << " *-> " << gamma << std::endl;
+          if (verbose){
+            Rcout << "Rule 2:\n";
+            Rcout << "Orient: " << alpha << " *-> " << beta << " -> " << gamma;
+            Rcout << " as: " << alpha << " *-> " << gamma << std::endl;
+          }
+          track_changes = true;
         }
       }
     }
@@ -105,10 +111,11 @@ void rule2search(NumericMatrix &G, int beta,int alpha,bool condition1,bool condi
     Rcout << "Both essential conditions for Rule 2 failed. This function was called incorrectly.\n";
   }
   
-
+  
 }
 
-List rule2(NumericMatrix &G) {
+// [[Rcpp::export]]
+bool rule2(NumericMatrix &G,bool &track_changes,bool verbose=false) {
   int p = G.nrow(); // Square matrix
   int gamma;
   bool condition1;
@@ -119,15 +126,12 @@ List rule2(NumericMatrix &G) {
       condition1 = (G(alpha,beta)==2) & (G(beta,alpha)==3); // alpha -> beta
       condition2 = (G(alpha,beta)==2) & (G(beta,alpha)!=0); // alpha *-> beta
       if (condition1 | condition2){
-        rule2search(G,beta,alpha,condition1,condition2);
+        rule2search(G,beta,alpha,condition1,condition2,track_changes,verbose);
       }
     }
   }
-  return List::create(
-    _["G"] = G
-  );
+  return track_changes;
 }
-
 
 /*
  * 
@@ -158,7 +162,7 @@ List rule3asearch(NumericMatrix &G, int beta,int alpha){
   );
 }
 
-void rule3bsearch(NumericMatrix &G,const int &alpha,const int &beta,const int &gamma){
+void rule3bsearch(NumericMatrix &G,const int &alpha,const int &beta,const int &gamma,bool &track_changes,bool verbose=false){
   int p = G.ncol();
   bool condition1;
   bool condition2;
@@ -170,15 +174,19 @@ void rule3bsearch(NumericMatrix &G,const int &alpha,const int &beta,const int &g
       if (G(alpha,gamma)==0 && G(gamma,alpha)==0){ // alpha and gamma are not adjacent
         if (G(theta,beta)==1 && G(beta,theta)!=0){ // theta *-o beta
           G(theta,beta) = 2; // theta *-> beta
-          Rcout << "Rule 3:\n";
-          Rcout << "Orient: " << theta << " *-> " << beta << std::endl;
+          if (verbose){
+            Rcout << "Rule 3:\n";
+            Rcout << "Orient: " << theta << " *-> " << beta << std::endl;
+          }
+          track_changes = true;
         }
       }
     }
   }
 }
 
-List rule3(NumericMatrix &G) {
+// [[Rcpp::export]]
+bool rule3(NumericMatrix &G,bool &track_changes,bool verbose=false) {
   int p = G.nrow(); // Square matrix
   int gamma;
   List searchResults;
@@ -195,150 +203,27 @@ List rule3(NumericMatrix &G) {
           gammaVals = searchResults["gamma"];
           for (NumericVector::iterator it = gammaVals.begin();it != gammaVals.end();++it){
             gamma = *it;
-            rule3bsearch(G,alpha,beta,gamma);
+            rule3bsearch(G,alpha,beta,gamma,track_changes,verbose);
           }
         }
       }
     }
   }
-  return List::create(
-    _["G"] = G
-  );
+  return track_changes;
 }
 
-
-/*
- * Minimum Discriminating Path
- * Purpose: find a minimal discriminating path for a,b,c.
- */
-
-NumericVector get_d_vals(NumericMatrix &pag,int &a,LogicalVector &visited){
-  int p = pag.nrow();
-  NumericVector d_vals;
-  for (int i=0;i<p;++i){
-    // We need d *-> a
-    if (pag(a,i)!=0 && pag(i,a)==2 && !visited(i)){
-      d_vals.push_back(i);
-    }
-  }
-  return d_vals;
-}
-
-NumericVector get_r_vals(NumericMatrix &pag,int d,LogicalVector &visited){
-  int p = pag.nrow();
-  NumericVector r_vals;
-  for (int i=0;i<p;++i){
-    // We need r *-> d
-    if (pag(d,i)!=0 && pag(i,d)==2 && !visited(i)){
-      r_vals.push_back(i);  
-    }
-  }
-  return r_vals;
-}
-
-List createPathList(int a,NumericVector set){
-  int num_paths = set.length();
-  NumericVector path = {0};
-  path[0] = a;
-  List paths_to_try(num_paths);
-  
-  NumericVector new_path;
-  
-  for (int i = 0;i<num_paths;++i){
-    paths_to_try[i] = clone(path);
-    new_path = paths_to_try[i];
-    new_path.push_back(set(i));
-  }
-  
-  return paths_to_try;
-}
-
-List updatePathList(NumericVector mpath,NumericVector &set,List &old_paths){
-  int old_size = old_paths.length();
-  int num_paths = set.length();
-  //mpath.erase(0); // we don't need to go over this point again
-  List new_paths(old_size+num_paths);
-  
-  NumericVector new_path;
-  
-  for (int i=0;i<old_size+num_paths;++i){
-    if (i < old_size){
-      new_paths[i] = old_paths[i];  
-    } else {
-      new_paths[i] = clone(mpath);
-      new_path = new_paths[i];
-      new_path.push_back(set(i-old_size));
-    }
-  }
-  return new_paths;
-}
-
-NumericVector minDiscPath(NumericMatrix pag, int a,int b,int c){
-  int p = pag.nrow();
-  LogicalVector visited(p);
-  visited(a) = true;
-  visited(b) = true;
-  visited(c) = true;
-  
-  NumericVector d_vals = get_d_vals(pag,a,visited);
-  if (d_vals.length()>0){
-    List path_list = createPathList(a,d_vals);
-    int list_length = path_list.length();
-    int counter = 0;
-    NumericVector mpath;
-    int m;
-    int d;
-    int pred;
-    while (counter < list_length){
-      mpath = path_list[counter];
-      m = mpath.length();
-      d = mpath(m-1);
-      if (pag(c,d)==0 && pag(d,c)==0){
-        NumericVector minDiscPath;
-        for (int i=m-1;i>=0;--i){
-          minDiscPath.push_back(mpath(i));
-        }
-        minDiscPath.push_back(b);
-        minDiscPath.push_back(c);
-        return minDiscPath;
-      } // End If
-      pred = mpath(m-2);
-      ++counter;
-      
-      // d is connected to c, so we search iteratively
-      if (pag(d,c)==2 && pag(c,d)==3 && pag(pred,d)==2){
-        visited(d) = true;
-        // Find all neighbors of d not visited yet
-        NumericVector r_vals = get_r_vals(pag,d,visited);
-        if (r_vals.length()>0){
-            path_list = updatePathList(mpath,r_vals,path_list);
-        }
-      }
-    }
-  }
-  return NA_REAL;
-}
-
-bool check_inclusion(int val,NumericVector set){
-  int n_s = set.length();
-  for (int i=0;i<n_s;++i){
-    if (val == set(i)){
-      return true;
-    }
-  }
-  return false;
-}
-
-bool check_sep_r4(int beta,NumericVector md_path,List sepsets){
+bool check_sep_r4(int beta,NumericVector md_path,List sepsets,NumericVector neighborhood,bool verbose=false){
+  if (verbose) Rcout << "Checking separation";
   int n = md_path.length();
-  String theta = String((char) md_path(0));
-  String gamma = String((char) n);
+  String theta = String((char) neighborhood(md_path(0)));
+  String gamma = String((char) neighborhood(md_path(n-1)));
   List tmp1 = sepsets[theta];
   List tmp2 = sepsets[gamma];
   NumericVector set = tmp1[gamma];
   bool cond1 = check_inclusion(beta,set);
   set = tmp2[theta];
   bool cond2 = check_inclusion(beta,set);
+  if (verbose) Rcout << "...finished\n";
   return (cond1 && cond2);
 }
 
@@ -350,7 +235,8 @@ bool check_sep_r4(int beta,NumericVector md_path,List sepsets){
  * alpha <-> beta <-> gamma
  * 
  */
-void rule4(NumericMatrix &G,List sepsets){
+// [[Rcpp::export]]
+bool rule4(NumericMatrix &G,List sepsets,NumericVector neighborhood,bool &track_changes,bool verbose = false){
   int p = G.nrow();
   bool cond1;
   bool cond2;
@@ -359,48 +245,274 @@ void rule4(NumericMatrix &G,List sepsets){
   for (int beta=0;beta<p;++beta){
     for (int gamma=0;gamma<p;++gamma){
       if (G(beta,gamma)!=0 && G(gamma,beta)==1){
+        //Rcout << "Potential beta: " << beta << " | Potential gamma: " << gamma;
         for (int alpha=0;alpha<p;++alpha){
           cond1 = G(beta,alpha)==2 && G(alpha,beta)!=0;
           cond2 = G(gamma,alpha)==3 && G(alpha,gamma)==2; // triangle structure exists but is not oriented
           if (cond1 && cond2){
+            //Rcout << " | Potential alpha: " << alpha;
             done = false;
             while(G(gamma,beta)==1){
-                while(!done && G(alpha,beta)!=0 && G(alpha,gamma)!=0 && G(beta,gamma)!=0){
-                  md_path = minDiscPath(G,alpha,beta,gamma);
-                  if (NumericVector::is_na(md_path(0))){
-                    done = true; // We are done with this triangle  
-                  } else {
-                    if(check_sep_r4(beta,md_path,sepsets)){
-                      Rcout << "\nRule4\nThere is a discriminating path between";
+              while(!done && G(alpha,beta)!=0 && G(alpha,gamma)!=0 && G(beta,gamma)!=0){
+                //Rcout << "# of Nodes: " << G.ncol() << std::endl;
+                md_path = minDiscPath(G,alpha,beta,gamma,verbose);
+                if (NumericVector::is_na(md_path(0))){
+                  done = true; // We are done with this triangle  
+                } else {
+                  if(check_sep_r4(beta,md_path,sepsets,neighborhood,verbose)){
+                    if (verbose){
+                      Rcout << "\nRule 4\nThere is a discriminating path between";
                       Rcout << md_path(0) << " and " << gamma << " for " << beta;
                       Rcout << " and " << beta << " is in the SepSet of " << gamma;
                       Rcout << " and " << md_path(0) << ". Orient: ";
                       Rcout << beta << " -> " << gamma << std::endl;
-                      G(beta,gamma) = 2;
-                      G(gamma,beta) = 3;
-                    } else {
-                      // b is not in sepset
-                      Rcout << "\nRule4\nThere is a discriminating path between";
+                    }
+                    G(beta,gamma) = 2;
+                    G(gamma,beta) = 3;
+                  } else {
+                    // b is not in sepset
+                    if (verbose){
+                      Rcout << "\nRule 4\nThere is a discriminating path between ";
                       Rcout << md_path(0) << " and " << gamma << " for " << beta;
                       Rcout << " and " << beta << " is NOT in the SepSet of ";
                       Rcout << gamma << " and " << md_path(0) << ". Orient: ";
                       Rcout << alpha << " <-> " << beta << " <-> " << gamma << std::endl;
-                      G(beta,gamma)=2;
-                      G(gamma,beta)=2;
-                      if (G(alpha,beta)==3){
-                        Rcout << "\nContradiction in Rule 4b\n";  
-                      }
-                      G(alpha,beta) = 2;
                     }
-                    done = true;
+                    G(beta,gamma)=2;
+                    G(gamma,beta)=2;
+                    if (G(alpha,beta)==3){
+                      Rcout << "\nContradiction in Rule 4b\n";  
+                    }
+                    G(alpha,beta) = 2;
                   }
+                  done = true;
+                  track_changes = true;
                 }
+              }
             } 
           }  
         }
       }
     }  
   }
+  return track_changes;
 }
 
+// [[Rcpp::export]]
+bool rule8(NumericMatrix &G,bool &track_changes,bool verbose=false){
+  int p = G.nrow();
+  bool cond1;
+  bool cond2;
+  bool cond3;
+  for (int alpha=0;alpha<p;++alpha){
+    for (int gamma=0;gamma<p;++gamma){
+      if (G(alpha,gamma)==2 && G(gamma,alpha)==1){ // alpha o-> gamma
+        for (int beta=0;beta<p;++beta){
+          cond1 = G(beta,alpha)==3 && G(alpha,beta)==2; // alpha -> beta
+          cond2 = G(beta,alpha)==3 && G(alpha,beta)==1; // alpha -o beta
+          if (cond1 || cond2){
+            cond3 = G(beta,gamma)==2 && G(gamma,beta)==3; // beta -> gamma
+            if (cond3){
+              G(gamma,alpha) = 3; // alpha -> gamma
+              if (cond1){
+                if (verbose){
+                  Rcout << "\nRule 8\nOrient: " << alpha << " -> " << beta << " -> " << gamma;
+                  Rcout << " with " << alpha << " o-> " << gamma << " as ";
+                  Rcout << alpha << " -> " << gamma << std::endl;
+                }
+              } else {
+                if (verbose){
+                  Rcout << "\nRule 8\nOrient: " << alpha << " o-> " << beta << " -> " << gamma;
+                  Rcout << " with " << alpha << " o-> " << gamma << " as ";
+                  Rcout << alpha << " -> " << gamma << std::endl;  
+                }
+              }
+              track_changes = true;
+            }
+          }
+        }
+      }  
+    }  
+  }
+  return track_changes;
+}
 
+// [[Rcpp::export]]
+bool rule9(NumericMatrix &G,bool &track_changes,bool verbose=false){
+  int p = G.nrow();
+  bool cond1;
+  bool cond2;
+  bool cond3;
+  bool cond4;
+  bool cond_final;
+  std::vector<int> beta_vals;
+  int beta_current;
+  NumericVector upd;
+  
+  for (int alpha=0;alpha<p;++alpha){
+    for (int gamma=0;gamma<p;++gamma){
+      if (G(alpha,gamma)==2 && G(gamma,alpha)==1){ // alpha o-> gamma
+        //Rcout << "Potential alpha: " << alpha << " | Potential gamma: " << gamma << std::endl;
+        beta_vals.clear();
+        // Find all beta such that alpha (o-)-(o>) beta, and beta and gamma are not connected
+        for (int beta=0;beta<p;++beta){
+          cond1 = G(alpha,beta) == 2 || G(alpha,beta) == 1;
+          cond2 = G(beta,alpha) == 1 || G(beta,alpha) == 3;
+          cond3 = G(gamma,beta) == 0 && G(beta,gamma) == 0;
+          cond4 = beta != gamma;
+          cond_final = cond1 && cond2 && cond3 && cond4;
+          if (cond_final){
+            //Rcout << "Potential beta: " << beta << std::endl;
+            beta_vals.push_back(beta);
+          }
+        }
+        while (beta_vals.size() > 0 && G(gamma,alpha)==1){
+          beta_current = beta_vals[beta_vals.size()-1];
+          beta_vals.pop_back();
+          upd = minUncovPdPath(p,G,alpha,beta_current,gamma,verbose);
+          //Rcout << "Length of upd: " << upd.length() << std::endl;
+          if (upd.length()>1){
+            G(gamma,alpha) = 3;
+            if (verbose){
+              Rcout << "Rule 9: There exists an uncovered potentially directed ";
+              Rcout << "path between " << alpha << " and " << gamma << std::endl;
+              Rcout << "Orient: " << alpha << " -> " << gamma << std::endl;
+            }
+            track_changes = true;
+          }
+        }
+      }  
+    }
+  }
+  return track_changes;
+}
+
+// [[Rcpp::export]]
+bool rule10(NumericMatrix &G,bool &track_changes,bool verbose=false){
+  int p = G.nrow();
+  bool cond1;
+  bool cond2;
+  bool cond3;
+  bool cond4;
+  bool cond5;
+  
+  NumericVector beta_vals;
+  int counter_b=0;
+  int beta;
+  
+  int counter_d=0;
+  NumericVector rem;
+  NumericVector d_vals;
+  int d;
+  
+  NumericVector x_vals;
+  NumericVector x2_vals;
+  int counter_x1;
+  int first_pos;
+  
+  int counter_x2;
+  int second_pos;
+  
+  NumericVector t1;
+  NumericVector t2;
+  
+  
+  
+  for (int alpha=0;alpha<p;++alpha){
+    for (int gamma=0;gamma<p;++gamma){ // search for alpha o-> gamma
+      cond1 = G(alpha,gamma)==2 && G(gamma,alpha)==1;
+      if (cond1){
+        //Rcout << "Potential alpha: " << alpha << " | Potential gamma: " << gamma << std::endl;
+        for (int b=0;b<p;++b){ // search for beta -> gamma
+          cond1 = G(gamma,b)==3 && G(b,gamma)==2;
+          if (cond1){
+            //Rcout << "Potential beta: " << b << std::endl;
+            beta_vals.push_back(b);  
+          }
+        }
+        if (beta_vals.length()>=2){
+          counter_b=0;
+          while (counter_b<beta_vals.length() && G(gamma,alpha)==1){
+            beta = beta_vals(counter_b);
+            ++counter_b;
+            counter_d=0;
+            rem = NumericVector::create(beta);
+            //Rcout << "Current beta: " << beta << std::endl;
+            d_vals = setdiff(beta_vals,rem);
+            //print_vector_elements_nonames(d_vals,"d_vals: ","\n");
+            counter_d = 0;
+            while ((counter_d < d_vals.length()) && (G(gamma,alpha)==1)){
+              d = d_vals(counter_d);
+              //Rcout << "Current theta: " << d << std::endl;
+              ++counter_d;
+              // The following is the easiest
+              cond1 = G(alpha,beta)==1 || G(alpha,beta)==2;
+              cond2 = G(beta,alpha)==1 || G(beta,alpha)==3;
+              cond3 = G(alpha,d)==1 || G(alpha,d)==2;
+              cond4 = G(d,alpha)==1 || G(d,alpha)==3;
+              cond5 = G(d,beta)==0 && G(beta,d)==0;
+              if (cond1&cond2&cond3&cond4&cond5){
+                G(gamma,alpha) = 3;
+                if (verbose) Rcout << "\nRule 10 [easy]:\nOrient: " << alpha << " -> " << gamma << std::endl;
+                track_changes = true;
+              } else { // search for two minimal uncovered p.d. paths
+                // Find all x s.t. a (-o)-(o>) x  
+                x_vals = NumericVector(0); // Creates an empty vector
+                for (int x=0;x<p;++x){
+                  cond1 = G(alpha,x)==1 || G(alpha,x)==2;
+                  cond2 = G(x,alpha)==1 || G(x,alpha)==3;
+                  cond3 = x != gamma;
+                  if (cond1 && cond2 && cond3){
+                    x_vals.push_back(x);
+                  }
+                }
+                if (x_vals.length()>=2){
+                  counter_x1 = 0;
+                  while ((counter_x1 < x_vals.length()) && G(gamma,alpha)==1){
+                    first_pos = x_vals(counter_x1);
+                    //Rcout << "Potential first node on uncovered p.d. path p1: " << first_pos << std::endl;
+                    ++counter_x1;
+                    rem = NumericVector::create(first_pos);
+                    x2_vals = setdiff(x_vals,rem);
+                    counter_x2 = 0;
+                    while (counter_x2 < x2_vals.length() && G(gamma,alpha)==1){
+                      second_pos = x2_vals(counter_x2);
+                      //Rcout << "Potential first node on uncovered p.d. path p2: " << second_pos << std::endl;
+                      ++counter_x2;
+                      t1 = minUncovPdPath(p,G,alpha,first_pos,beta,verbose);
+                      if (verbose) print_vector_elements_nonames(t1,"t1: ","\n");
+                      if (t1.length()>1){
+                        t2 = minUncovPdPath(p,G,alpha,second_pos,d,verbose);
+                        if (t2.length()>1 && first_pos!=second_pos && G(first_pos,second_pos)==0){
+                          G(gamma,alpha)=3;
+                          if (verbose) Rcout << "\nRule 10\nOrient: " << alpha << " -> " << gamma << std::endl;
+                          track_changes = true;
+                        } 
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }  
+  }
+  return track_changes;
+}
+
+// [[Rcpp::export]]
+void allRules(NumericMatrix &G,List sepsets,NumericVector neighborhood,bool verbose){
+  bool track_changes = true;
+  while (track_changes){
+    track_changes = false;
+    track_changes = rule1(G,track_changes,verbose);
+    track_changes = rule2(G,track_changes,verbose);
+    track_changes = rule3(G,track_changes,verbose);
+    track_changes = rule4(G,sepsets,neighborhood,track_changes,verbose);
+    track_changes = rule8(G,track_changes,verbose);
+    track_changes = rule9(G,track_changes,verbose);
+    track_changes = rule10(G,track_changes,verbose);
+  }
+}

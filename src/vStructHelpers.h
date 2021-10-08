@@ -4,6 +4,7 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+void makeFinalGraph(NumericMatrix &G,const NumericMatrix &C,NumericVector &neighborhood);
 NumericVector get_adjacent(NumericMatrix M,int i);
 NumericVector get_nonadjacent(NumericMatrix M,int i);
 bool check_membership(NumericVector x,int i);

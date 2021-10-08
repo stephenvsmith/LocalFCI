@@ -1,0 +1,197 @@
+\documentclass[12pt]{article}
+
+\usepackage{mycommands}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{tikz}
+\usetikzlibrary{shadows}
+\usetikzlibrary{bayesnet} 
+\usepackage[margin=1in]{geometry}
+
+\setlength\parindent{0pt}
+\begin{document}
+\begin{center}
+\Large \underline{Testing Rules Implementation}
+\end{center}
+
+\section*{Rule 1}
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[scale=0.33]
+% Define nodes
+% Top nodes
+\node[obs] (a) {$a$};
+\node[obs, below left=1 of a] (b) {$b$};
+\node[obs, below right=1 of b] (beta) {$\beta$};
+\node[obs, below right=1 of a] (alpha) {$\alpha$};
+\node[obs, below=1 of beta] (gamma) {$\gamma$};
+
+% Edges
+\edge[o-o] {a}{b};
+\edge[o-o] {a}{alpha};
+\edge[->] {b}{beta};
+\edge[o->] {alpha}{beta};
+\edge[o-o] {beta}{gamma};
+\end{tikzpicture}
+  \caption{Testing Rule 1}
+  \label{fig:rule1}
+\end{figure}
+
+We should see $\beta (3) \rightarrow \gamma (4)$ in the new graph.
+
+<<>>=
+library(LocalFCI)
+adj.mat1 <- matrix(c(0,1,1,0,0,
+                     1,0,0,2,0,
+                     1,0,0,2,0,
+                     0,3,1,0,1,
+                     0,0,0,1,0),nrow = 5,byrow = TRUE)
+adj.mat1.adj <- rule1(adj.mat1)
+cat(adj.mat1.adj$G[4,5]==2,"\n")
+cat(adj.mat1.adj$G[5,4]==3,"\n")
+@
+
+\newpage
+\section*{Rule 2}
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[scale=0.33]
+% Define nodes
+% Top nodes
+\node[obs] (a) {$a$};
+\node[obs, below right=2 of a] (b) {$b$};
+\node[obs, below=1 of b] (c) {$c$};
+\node[obs, below left=1 of a] (alpha) {$\alpha$};
+\node[obs, below left=2 of alpha] (beta) {$\beta$};
+\node[obs, below=1 of beta] (gamma) {$\gamma$};
+
+% Edges
+\edge[o->] {a}{b};
+\edge[->] {b}{c};
+\edge[o-o] {c}{a};
+\edge[o-o] {a}{alpha};
+\edge[->] {alpha}{beta};
+\edge[o->] {beta}{gamma};
+\edge[o-o] {gamma}{alpha};
+\end{tikzpicture}
+  \caption{Testing Rule 2}
+  \label{fig:rule2}
+\end{figure}
+
+We should see $\alpha (3) \circ \rightarrow \gamma (5)$ and $a (0) \circ \rightarrow c (2)$ in the new graph.
+
+<<>>=
+adj.mat2 <- matrix(c(0,2,1,1,0,0,
+                     1,0,2,0,0,0,
+                     1,3,0,0,0,0,
+                     1,0,0,0,2,1,
+                     0,0,0,3,0,2,
+                     0,0,0,1,1,0),nrow = 6,byrow = TRUE)
+res <- rule2(adj.mat2)
+cat(res$G[1,3]==2,"\n")
+cat(res$G[4,6]==2,"\n")
+@
+
+\newpage
+\section*{Rule 3}
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[scale=0.33]
+% Define nodes
+% Top nodes
+\node[obs] (a) {$a$};
+\node[obs, below right=1 of a] (b) {$b$};
+\node[obs, right=1 of b] (c) {$c$};
+\node[obs, below left=1 of a] (alpha) {$\alpha$};
+\node[obs, below=1 of a] (theta) {$\theta$};
+\node[obs, below=1 of alpha] (beta) {$\beta$};
+\node[obs, below right=1 of theta] (gamma) {$\gamma$};
+
+% Edges
+\edge[o->] {a}{b};
+\edge[<-] {c}{a};
+\edge[o-o] {a}{alpha};
+\edge[o-o] {alpha}{theta};
+\edge[o-o] {alpha}{theta};
+\edge[o->] {alpha}{beta};
+\edge[o-o] {b}{gamma};
+\edge[o-o] {theta}{gamma};
+\edge[o-o] {theta}{a};
+\edge[o->] {theta}{beta};
+\edge[o->] {gamma}{beta};
+\end{tikzpicture}
+  \caption{Testing Rule 3}
+  \label{fig:rule3}
+\end{figure}
+
+We should see $\theta(6) \circ \rightarrow \beta (4)$
+<<>>=
+adj.mat3 <- matrix(c(0,2,2,1,0,0,1,
+                     1,0,0,0,0,1,0,
+                     3,0,0,0,0,0,0,
+                     1,0,0,0,2,0,1,
+                     0,0,0,1,0,1,1,
+                     0,1,0,0,2,0,1,
+                     1,0,0,1,1,1,0),nrow = 7,byrow = TRUE)
+res <- rule3(adj.mat3)
+cat(res$G[7,5]==2,"\n")
+@
+
+\newpage
+\section*{Rule 4}
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[scale=0.33]
+% Define nodes
+\node[obs] (theta) {$\theta$};
+\node[obs, right=1 of theta] (a) {$a$};
+\node[obs, right=1 of a] (b) {$b$};
+\node[obs, below=1 of a] (c) {$c$};
+\node[obs, right=1 of b] (alpha) {$\alpha$};
+\node[obs, right=1 of alpha] (beta) {$\beta$};
+\node[obs, above=1 of beta] (gamma) {$\gamma$};
+
+% Edges
+\edge[->] {theta}{a};
+\edge[o-o] {theta}{c};
+\edge[o-o] {a}{c};
+\edge[<->] {a}{b};
+\edge[<->] {b}{alpha};
+\edge[<->] {alpha}{beta};
+\edge[->] {a}{gamma};
+\edge[->] {b}{gamma};
+\edge[->] {alpha}{gamma};
+\edge[o-o] {beta}{gamma};
+\end{tikzpicture}
+  \caption{Testing Rule 3}
+  \label{fig:rule3}
+\end{figure}
+
+If we let $\beta \in $ SepSet($\theta$,$\gamma$), then we should have $\beta (4) \rightarrow \gamma (5)$.
+<<>>=
+adj.mat4 <- matrix(c(0,2,1,0,0,2,3,
+                     2,0,0,2,0,2,0,
+                     3,0,0,0,3,0,1,
+                     0,2,0,0,2,2,0,
+                     0,0,2,2,0,1,0,
+                     3,3,0,3,1,0,0,
+                     2,0,1,0,0,0,0),nrow = 7,byrow = TRUE)
+S <- create_conditioning_sets_efficient_cpp2(seq(0,6))
+nodes <- c("a","b","c","alpha","beta","gamma","theta")
+S[["6"]][["5"]] <- 4
+S[["5"]][["6"]] <- 4
+
+rule4(adj.mat4,S)
+@
+
+
+\end{document}
+<<>>=
+
+@

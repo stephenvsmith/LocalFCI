@@ -6,6 +6,280 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
+// rule1
+bool rule1(NumericMatrix& G, bool& track_changes, bool verbose);
+RcppExport SEXP _LocalFCI_rule1(SEXP GSEXP, SEXP track_changesSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    Rcpp::traits::input_parameter< bool& >::type track_changes(track_changesSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rule1(G, track_changes, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rule2
+bool rule2(NumericMatrix& G, bool& track_changes, bool verbose);
+RcppExport SEXP _LocalFCI_rule2(SEXP GSEXP, SEXP track_changesSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    Rcpp::traits::input_parameter< bool& >::type track_changes(track_changesSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rule2(G, track_changes, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rule3
+bool rule3(NumericMatrix& G, bool& track_changes, bool verbose);
+RcppExport SEXP _LocalFCI_rule3(SEXP GSEXP, SEXP track_changesSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    Rcpp::traits::input_parameter< bool& >::type track_changes(track_changesSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rule3(G, track_changes, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rule4
+bool rule4(NumericMatrix& G, List sepsets, NumericVector neighborhood, bool& track_changes, bool verbose);
+RcppExport SEXP _LocalFCI_rule4(SEXP GSEXP, SEXP sepsetsSEXP, SEXP neighborhoodSEXP, SEXP track_changesSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    Rcpp::traits::input_parameter< List >::type sepsets(sepsetsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type neighborhood(neighborhoodSEXP);
+    Rcpp::traits::input_parameter< bool& >::type track_changes(track_changesSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rule4(G, sepsets, neighborhood, track_changes, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rule8
+bool rule8(NumericMatrix& G, bool& track_changes, bool verbose);
+RcppExport SEXP _LocalFCI_rule8(SEXP GSEXP, SEXP track_changesSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    Rcpp::traits::input_parameter< bool& >::type track_changes(track_changesSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rule8(G, track_changes, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rule9
+bool rule9(NumericMatrix& G, bool& track_changes, bool verbose);
+RcppExport SEXP _LocalFCI_rule9(SEXP GSEXP, SEXP track_changesSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    Rcpp::traits::input_parameter< bool& >::type track_changes(track_changesSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rule9(G, track_changes, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rule10
+bool rule10(NumericMatrix& G, bool& track_changes, bool verbose);
+RcppExport SEXP _LocalFCI_rule10(SEXP GSEXP, SEXP track_changesSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    Rcpp::traits::input_parameter< bool& >::type track_changes(track_changesSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rule10(G, track_changes, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// allRules
+void allRules(NumericMatrix& G, List sepsets, NumericVector neighborhood, bool verbose);
+RcppExport SEXP _LocalFCI_allRules(SEXP GSEXP, SEXP sepsetsSEXP, SEXP neighborhoodSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    Rcpp::traits::input_parameter< List >::type sepsets(sepsetsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type neighborhood(neighborhoodSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    allRules(G, sepsets, neighborhood, verbose);
+    return R_NilValue;
+END_RCPP
+}
+// minDiscPath
+NumericVector minDiscPath(NumericMatrix pag, int a, int b, int c, bool verbose);
+RcppExport SEXP _LocalFCI_minDiscPath(SEXP pagSEXP, SEXP aSEXP, SEXP bSEXP, SEXP cSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type pag(pagSEXP);
+    Rcpp::traits::input_parameter< int >::type a(aSEXP);
+    Rcpp::traits::input_parameter< int >::type b(bSEXP);
+    Rcpp::traits::input_parameter< int >::type c(cSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(minDiscPath(pag, a, b, c, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// minUncovPdPath
+NumericVector minUncovPdPath(int p, NumericMatrix G, int alpha, int beta, int gamma, bool verbose);
+RcppExport SEXP _LocalFCI_minUncovPdPath(SEXP pSEXP, SEXP GSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type p(pSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type G(GSEXP);
+    Rcpp::traits::input_parameter< int >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< int >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< int >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(minUncovPdPath(p, G, alpha, beta, gamma, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_skeleton_total
+List get_skeleton_total(List var_list, arma::mat df, double signif_level);
+RcppExport SEXP _LocalFCI_get_skeleton_total(SEXP var_listSEXP, SEXP dfSEXP, SEXP signif_levelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type var_list(var_listSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< double >::type signif_level(signif_levelSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_skeleton_total(var_list, df, signif_level));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_skeleton_target
+List get_skeleton_target(List var_list, int target, arma::mat df, double signif_level);
+RcppExport SEXP _LocalFCI_get_skeleton_target(SEXP var_listSEXP, SEXP targetSEXP, SEXP dfSEXP, SEXP signif_levelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type var_list(var_listSEXP);
+    Rcpp::traits::input_parameter< int >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< double >::type signif_level(signif_levelSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_skeleton_target(var_list, target, df, signif_level));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fci
+List fci(NumericMatrix true_dag, arma::mat df, NumericVector targets, StringVector names, int lmax, double signif_level, bool verbose);
+RcppExport SEXP _LocalFCI_fci(SEXP true_dagSEXP, SEXP dfSEXP, SEXP targetsSEXP, SEXP namesSEXP, SEXP lmaxSEXP, SEXP signif_levelSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< int >::type lmax(lmaxSEXP);
+    Rcpp::traits::input_parameter< double >::type signif_level(signif_levelSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(fci(true_dag, df, targets, names, lmax, signif_level, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// compare_skeletons
+List compare_skeletons(NumericMatrix est, NumericMatrix truth, bool verbose);
+RcppExport SEXP _LocalFCI_compare_skeletons(SEXP estSEXP, SEXP truthSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type truth(truthSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(compare_skeletons(est, truth, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// compare_v_structures
+List compare_v_structures(NumericMatrix est, NumericMatrix truth, bool verbose);
+RcppExport SEXP _LocalFCI_compare_v_structures(SEXP estSEXP, SEXP truthSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type truth(truthSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(compare_v_structures(est, truth, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// parent_recovery_accuracy
+List parent_recovery_accuracy(NumericMatrix est, NumericMatrix truth, NumericVector targets, bool verbose);
+RcppExport SEXP _LocalFCI_parent_recovery_accuracy(SEXP estSEXP, SEXP truthSEXP, SEXP targetsSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type truth(truthSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(parent_recovery_accuracy(est, truth, targets, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// convert_true_dag
+NumericMatrix convert_true_dag(NumericMatrix G);
+RcppExport SEXP _LocalFCI_convert_true_dag(SEXP GSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type G(GSEXP);
+    rcpp_result_gen = Rcpp::wrap(convert_true_dag(G));
+    return rcpp_result_gen;
+END_RCPP
+}
+// convert_pc_amat
+NumericMatrix convert_pc_amat(NumericMatrix G);
+RcppExport SEXP _LocalFCI_convert_pc_amat(SEXP GSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type G(GSEXP);
+    rcpp_result_gen = Rcpp::wrap(convert_pc_amat(G));
+    return rcpp_result_gen;
+END_RCPP
+}
+// all_metrics
+DataFrame all_metrics(NumericMatrix est, NumericMatrix true_dag, NumericMatrix cpdag, NumericVector targets, bool verbose);
+RcppExport SEXP _LocalFCI_all_metrics(SEXP estSEXP, SEXP true_dagSEXP, SEXP cpdagSEXP, SEXP targetsSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type cpdag(cpdagSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(all_metrics(est, true_dag, cpdag, targets, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// neighborhood_metrics
+DataFrame neighborhood_metrics(NumericMatrix G);
+RcppExport SEXP _LocalFCI_neighborhood_metrics(SEXP GSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type G(GSEXP);
+    rcpp_result_gen = Rcpp::wrap(neighborhood_metrics(G));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_partial_correlation
 double get_partial_correlation(arma::mat C, int i, int j, arma::uvec k);
 RcppExport SEXP _LocalFCI_get_partial_correlation(SEXP CSEXP, SEXP iSEXP, SEXP jSEXP, SEXP kSEXP) {
@@ -75,15 +349,30 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_neighbors_from_dag
-NumericVector get_neighbors_from_dag(int i, int p, NumericMatrix true_dag);
-RcppExport SEXP _LocalFCI_get_neighbors_from_dag(SEXP iSEXP, SEXP pSEXP, SEXP true_dagSEXP) {
+NumericVector get_neighbors_from_dag(const int& i, const int& p, const NumericMatrix& true_dag, bool& verbose);
+RcppExport SEXP _LocalFCI_get_neighbors_from_dag(SEXP iSEXP, SEXP pSEXP, SEXP true_dagSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_neighbors_from_dag(i, p, true_dag));
+    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type true_dag(true_dagSEXP);
+    Rcpp::traits::input_parameter< bool& >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_neighbors_from_dag(i, p, true_dag, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_multiple_neighbors_from_dag
+NumericVector get_multiple_neighbors_from_dag(const NumericVector& targets, const int& p, const NumericMatrix& true_dag, bool& verbose);
+RcppExport SEXP _LocalFCI_get_multiple_neighbors_from_dag(SEXP targetsSEXP, SEXP pSEXP, SEXP true_dagSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector& >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type true_dag(true_dagSEXP);
+    Rcpp::traits::input_parameter< bool& >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_multiple_neighbors_from_dag(targets, p, true_dag, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -178,34 +467,92 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// check_separation_sample_efficient_target
+void check_separation_sample_efficient_target(const int& l, const int& i, const int& j, const NumericMatrix& kvals, NumericVector& sep, NumericMatrix true_dag, const StringVector& names, const NumericVector& neighborhood, NumericMatrix C, List S, double& pval, int& num_tests, arma::mat& R, int& n, double& signif_level, bool& verbose);
+RcppExport SEXP _LocalFCI_check_separation_sample_efficient_target(SEXP lSEXP, SEXP iSEXP, SEXP jSEXP, SEXP kvalsSEXP, SEXP sepSEXP, SEXP true_dagSEXP, SEXP namesSEXP, SEXP neighborhoodSEXP, SEXP CSEXP, SEXP SSEXP, SEXP pvalSEXP, SEXP num_testsSEXP, SEXP RSEXP, SEXP nSEXP, SEXP signif_levelSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int& >::type l(lSEXP);
+    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
+    Rcpp::traits::input_parameter< const int& >::type j(jSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type kvals(kvalsSEXP);
+    Rcpp::traits::input_parameter< NumericVector& >::type sep(sepSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
+    Rcpp::traits::input_parameter< const StringVector& >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type neighborhood(neighborhoodSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type C(CSEXP);
+    Rcpp::traits::input_parameter< List >::type S(SSEXP);
+    Rcpp::traits::input_parameter< double& >::type pval(pvalSEXP);
+    Rcpp::traits::input_parameter< int& >::type num_tests(num_testsSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type R(RSEXP);
+    Rcpp::traits::input_parameter< int& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< double& >::type signif_level(signif_levelSEXP);
+    Rcpp::traits::input_parameter< bool& >::type verbose(verboseSEXP);
+    check_separation_sample_efficient_target(l, i, j, kvals, sep, true_dag, names, neighborhood, C, S, pval, num_tests, R, n, signif_level, verbose);
+    return R_NilValue;
+END_RCPP
+}
 // makeFinalGraph
-void makeFinalGraph(NumericMatrix& G, NumericMatrix& C, NumericVector& neighborhood, const int& N);
-RcppExport SEXP _LocalFCI_makeFinalGraph(SEXP GSEXP, SEXP CSEXP, SEXP neighborhoodSEXP, SEXP NSEXP) {
+void makeFinalGraph(NumericMatrix& G, const NumericMatrix& C, NumericVector& neighborhood);
+RcppExport SEXP _LocalFCI_makeFinalGraph(SEXP GSEXP, SEXP CSEXP, SEXP neighborhoodSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix& >::type C(CSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type C(CSEXP);
     Rcpp::traits::input_parameter< NumericVector& >::type neighborhood(neighborhoodSEXP);
-    Rcpp::traits::input_parameter< const int& >::type N(NSEXP);
-    makeFinalGraph(G, C, neighborhood, N);
+    makeFinalGraph(G, C, neighborhood);
     return R_NilValue;
+END_RCPP
+}
+// get_v_structures_efficient
+List get_v_structures_efficient(List L);
+RcppExport SEXP _LocalFCI_get_v_structures_efficient(SEXP LSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type L(LSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_v_structures_efficient(L));
+    return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_LocalFCI_rule1", (DL_FUNC) &_LocalFCI_rule1, 3},
+    {"_LocalFCI_rule2", (DL_FUNC) &_LocalFCI_rule2, 3},
+    {"_LocalFCI_rule3", (DL_FUNC) &_LocalFCI_rule3, 3},
+    {"_LocalFCI_rule4", (DL_FUNC) &_LocalFCI_rule4, 5},
+    {"_LocalFCI_rule8", (DL_FUNC) &_LocalFCI_rule8, 3},
+    {"_LocalFCI_rule9", (DL_FUNC) &_LocalFCI_rule9, 3},
+    {"_LocalFCI_rule10", (DL_FUNC) &_LocalFCI_rule10, 3},
+    {"_LocalFCI_allRules", (DL_FUNC) &_LocalFCI_allRules, 4},
+    {"_LocalFCI_minDiscPath", (DL_FUNC) &_LocalFCI_minDiscPath, 5},
+    {"_LocalFCI_minUncovPdPath", (DL_FUNC) &_LocalFCI_minUncovPdPath, 6},
+    {"_LocalFCI_get_skeleton_total", (DL_FUNC) &_LocalFCI_get_skeleton_total, 3},
+    {"_LocalFCI_get_skeleton_target", (DL_FUNC) &_LocalFCI_get_skeleton_target, 4},
+    {"_LocalFCI_fci", (DL_FUNC) &_LocalFCI_fci, 7},
+    {"_LocalFCI_compare_skeletons", (DL_FUNC) &_LocalFCI_compare_skeletons, 3},
+    {"_LocalFCI_compare_v_structures", (DL_FUNC) &_LocalFCI_compare_v_structures, 3},
+    {"_LocalFCI_parent_recovery_accuracy", (DL_FUNC) &_LocalFCI_parent_recovery_accuracy, 4},
+    {"_LocalFCI_convert_true_dag", (DL_FUNC) &_LocalFCI_convert_true_dag, 1},
+    {"_LocalFCI_convert_pc_amat", (DL_FUNC) &_LocalFCI_convert_pc_amat, 1},
+    {"_LocalFCI_all_metrics", (DL_FUNC) &_LocalFCI_all_metrics, 5},
+    {"_LocalFCI_neighborhood_metrics", (DL_FUNC) &_LocalFCI_neighborhood_metrics, 1},
     {"_LocalFCI_get_partial_correlation", (DL_FUNC) &_LocalFCI_get_partial_correlation, 4},
     {"_LocalFCI_fisherZ", (DL_FUNC) &_LocalFCI_fisherZ, 3},
     {"_LocalFCI_condIndTest", (DL_FUNC) &_LocalFCI_condIndTest, 6},
     {"_LocalFCI_get_current_edges", (DL_FUNC) &_LocalFCI_get_current_edges, 3},
     {"_LocalFCI_combn_cpp", (DL_FUNC) &_LocalFCI_combn_cpp, 2},
-    {"_LocalFCI_get_neighbors_from_dag", (DL_FUNC) &_LocalFCI_get_neighbors_from_dag, 3},
+    {"_LocalFCI_get_neighbors_from_dag", (DL_FUNC) &_LocalFCI_get_neighbors_from_dag, 4},
+    {"_LocalFCI_get_multiple_neighbors_from_dag", (DL_FUNC) &_LocalFCI_get_multiple_neighbors_from_dag, 4},
     {"_LocalFCI_create_conditioning_sets_efficient_cpp2", (DL_FUNC) &_LocalFCI_create_conditioning_sets_efficient_cpp2, 1},
     {"_LocalFCI_fci_setup", (DL_FUNC) &_LocalFCI_fci_setup, 5},
     {"_LocalFCI_change_S_efficient", (DL_FUNC) &_LocalFCI_change_S_efficient, 4},
     {"_LocalFCI_change_S_0_efficient", (DL_FUNC) &_LocalFCI_change_S_0_efficient, 3},
     {"_LocalFCI_get_potential_sep", (DL_FUNC) &_LocalFCI_get_potential_sep, 5},
     {"_LocalFCI_check_separation_sample_efficient", (DL_FUNC) &_LocalFCI_check_separation_sample_efficient, 16},
-    {"_LocalFCI_makeFinalGraph", (DL_FUNC) &_LocalFCI_makeFinalGraph, 4},
+    {"_LocalFCI_check_separation_sample_efficient_target", (DL_FUNC) &_LocalFCI_check_separation_sample_efficient_target, 16},
+    {"_LocalFCI_makeFinalGraph", (DL_FUNC) &_LocalFCI_makeFinalGraph, 3},
+    {"_LocalFCI_get_v_structures_efficient", (DL_FUNC) &_LocalFCI_get_v_structures_efficient, 1},
     {NULL, NULL, 0}
 };
 

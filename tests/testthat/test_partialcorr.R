@@ -1,5 +1,3 @@
-context("Testing partial correlation functions")
-
 test_that("Partial Correlation function is accurate",{
   data("asiadf")
   C <- cor(asiadf)

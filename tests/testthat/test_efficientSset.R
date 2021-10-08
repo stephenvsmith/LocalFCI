@@ -1,12 +1,10 @@
-context("Algorithm Setup")
-
 test_that("Get correct neighbors and check separating set update",{
   data("asiaDAG")
   
   nodes <- colnames(asiaDAG)
   p <- ncol(asiaDAG)
   target <- 5 # "either" is the target
-  neighbors <- get_neighbors_from_dag(target,p,asiaDAG)
+  neighbors <- get_neighbors_from_dag(target,p,asiaDAG,verbose = FALSE)
   neighbor_names <- nodes[neighbors+1]
   expect_equal(nodes[target+1],"either")
   expect_equal(setdiff(neighbor_names,c("tub","lung","xray","dysp","bronc")),character(0))
