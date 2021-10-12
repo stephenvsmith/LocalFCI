@@ -259,6 +259,7 @@ List fci(NumericMatrix true_dag,arma::mat df,
   NumericMatrix G = v_struct["C"];
   
   allRules(G,v_struct["S"],v_struct["neighborhood"],verbose);
+  convertMixedGraph(G);
   NumericMatrix Gfinal(p);
   NumericVector neighborhood = v_struct["neighborhood"];
   

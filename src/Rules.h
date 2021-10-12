@@ -5,6 +5,6 @@
 #include <vector>
 
 void allRules(NumericMatrix &G,List sepsets,NumericVector neighborhood,bool verbose);
-
+void convertMixedGraph(NumericMatrix &G);
 
 #endif

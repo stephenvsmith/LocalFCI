@@ -106,13 +106,19 @@ arma::mat test_subset_mat(arma::mat m,NumericVector i){
 // [[Rcpp::export]]
 NumericMatrix test_NumMat_value(NumericMatrix G){
   NumericMatrix Gc = clone(G);
-  Gc[0,0] = 10;
+  Gc(0,0) = 10;
   return Gc;
 }
 
 // [[Rcpp::export]]
 void test_change_bool(bool &b){
   b = !b;
+}
+
+// [[Rcpp::export]]
+void test_decrement_matrix(NumericMatrix &G){
+  --G(0,0);
+  ++G(1,1);
 }
 
 /*** R
@@ -158,4 +164,9 @@ g1
 bl <- FALSE
 test_change_bool(bl)
 bl
+
+g <- matrix(rep(1,4),nrow = 2)
+g
+test_decrement_matrix(g)
+g
 */

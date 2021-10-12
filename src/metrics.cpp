@@ -16,11 +16,11 @@ List compare_skeletons(NumericMatrix est,NumericMatrix truth,bool verbose){
   for (int i=0;i<p;++i){
     for (int j=i+1;j<p;++j){
       if ((est(i,j)!=0 || est(j,i)!=0) && (truth(i,j)==0 && truth(j,i)==0)){
-        ++fp;  
+        ++fp;  // Est: i,j adjacent but truth not adjacent
       } else if ((est(i,j)==0 && est(j,i)==0) && (truth(i,j)!=0 || truth(j,i)!=0)){
-        ++fn;
-      } else if ((est(i,j)!=0 && est(j,i)!=0) && (truth(i,j)!=0 && truth(j,i)!=0)){
-        ++correct;  // TODO: May need to correct this for bidirected edges
+        ++fn; // Est: i,j not adjacent but adjacent in truth
+      } else if ((est(i,j)!=0 || est(j,i)!=0) && (truth(i,j)!=0 || truth(j,i)!=0)){
+        ++correct; // i,j adjacent in both graphs
       }
     }  
   }
@@ -39,25 +39,25 @@ List check_triple(NumericMatrix g,int i,int j,int k,bool verbose){
   if (verbose){
     Rcout << "i: " << i << " | j: " << j << " | k: " << k << " | Conclusion: ";
   }
-  if (g(i,k)==2 && g(j,k)==2 && g(i,j)==0 && g(j,i)==0)
+  if (g(i,k)==1 && g(k,i)==0 && g(j,k)==1 && g(k,j)==0 && g(i,j)==0 && g(j,i)==0)
   {
     if (verbose){
-      Rcout << "i *-> k <-* j"; 
+      Rcout << "i -> k <- j"; 
     }
     return List::create(_["result"]=true,_["order"]=NumericVector::create(i,k,j));  
   }
-  else if (g(k,j)==2 && g(i,j)==2 && g(i,k)==0 && g(k,i)==0)
+  else if (g(k,j)==1 && g(j,k)==0 && g(i,j)==1 && g(j,i)==0 && g(i,k)==0 && g(k,i)==0)
   {
     if (verbose){
-      Rcout << "k *-> j <-* i";
+      Rcout << "k -> j <- i";
     }
     
     return List::create(_["result"]=true,_["order"]=NumericVector::create(k,j,i));
   }
-  else if (g(j,i)==2 && g(k,i)==2 && g(j,k)==0 && g(k,j)==0)
+  else if (g(j,i)==1 && g(i,j)==0 && g(k,i)==1 && g(i,k)==0 && g(j,k)==0 && g(k,j)==0)
   {
     if (verbose){
-      Rcout << "j *-> i <-* k";
+      Rcout << "j -> i <- k";
     }
     return List::create(_["result"]=true,_["order"]=NumericVector::create(j,i,k));
   }
@@ -72,8 +72,8 @@ List check_triple(NumericMatrix g,int i,int j,int k,bool verbose){
 }
 
 bool check_other_triple(NumericMatrix g2,NumericVector v,bool verbose){
-  // check v(0) *-> v(1) <-* v(2) with v(0) and v(2) nonadjacent
-  if (g2(v(0),v(1))==2 && g2(v(2),v(1))==2 && g2(v(0),v(2))==0 && g2(v(2),v(0))==0)
+  // check v(0) -> v(1) <- v(2) with v(0) and v(2) nonadjacent
+  if (g2(v(0),v(1))==1 && g2(v(1),v(0))==0 && g2(v(2),v(1))==1 && g2(v(1),v(2))==0 && g2(v(0),v(2))==0 && g2(v(2),v(0))==0)
   {
     if (verbose){
       Rcout << " | v-structure correctly recovered\n";
@@ -147,9 +147,9 @@ List compare_v_structures(NumericMatrix est,NumericMatrix truth,bool verbose){
 void update_edge_values(NumericMatrix est,NumericMatrix truth,const int &i,const int &j,int &correct,int &missing,int &added,bool verbose){
   bool est_cond;
   bool truth_cond;
-  
-  est_cond = est(i,j)==2 && est(j,i)!=2;
-  truth_cond = truth(i,j)==2 && truth(j,i)!=2;
+  // Estimated: i -> j | Ground: i -> j
+  est_cond = est(i,j)==1 && est(j,i)!=1;
+  truth_cond = truth(i,j)==1 && truth(j,i)!=1;
   if (est_cond && truth_cond){
     if (verbose){
       Rcout << "Correct parent of " << j << ": " << i << std::endl;
@@ -200,11 +200,25 @@ void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,int &correct,int 
     if (verbose){
       Rcout << "t: " << t << " | i: " << i;
     }
-    if (est(i,t)==2 && est(t,i)!=2){
+    /*
+     * We first deal with the case where the estimated graph has i as a parent of t
+     * We can have:
+     * a) False positive: not adjacent in true graph or t -> i
+     * b) Correct
+     * c) Potential: undirected edge for t - i in the true graph
+     * 
+     * We then deal with the case where the estimated graph does not have i as a parent of t
+     * We can have:
+     * a) False negative: i -> t in true graph
+     * b) Correct: Not noted since this is a true negative
+     * c) Potential: undirected edge i - t in estimated graph and i -> t in true graph
+     * d) Potential: undirected edge for both
+     */
+    if (est(i,t)==1 && est(t,i)==0){ // Est: i -> t
       if (verbose){
         Rcout << " | Est. Graph: Parent | True graph: ";
       }
-      if (truth(i,t)!=2)
+      if (truth(i,t)==0) // Truth: Either i <- t or i and t are not adjacent
       {
         ++added;
         if (verbose){
@@ -212,25 +226,35 @@ void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,int &correct,int 
           Rcout << "Added: " << added << std::endl;
         }
       }
-      else {
+      else if (truth(i,t)==1 && truth(t,i)==0) { // Truth: i -> t
         ++correct;
         if (verbose){
           Rcout << "Parent | ";
           Rcout << "Correct: " << correct << std::endl;
         }
+      } else if (truth(i,t)==1 && truth(t,i)==1){ // Truth: i - t
+        ++potential;
+        if (verbose){
+          Rcout << " | Undirected edge in True Graph | Potential: " << potential;  
+        }
       }
-    } else {
-      if (truth(i,t)==2 && truth(t,i)!=2){
+    } else { // Est: Either i - t or i and t are not adjacent
+      if (truth(i,t)==1 && truth(t,i)!=1){ // Truth: i -> t
         ++missing;
         if (verbose){
           Rcout << " | Est. Graph: Not a parent | True graph: Parent | ";
           Rcout << "Missing: " << missing;
         }
-        if (est(i,t)==1 && est(t,i)==1){ // We have a potential parent here
+        if (est(i,t)==1 && est(t,i)==1){ // Est: i - t
           ++potential;
           if (verbose){
-            Rcout << " | Open circle edge in Est. Graph | Potential: " << potential;
+            Rcout << " | Undirected edge in Est. Graph | Potential: " << potential;
           }
+        }
+      } else if (truth(i,t)==1 && truth(t,i)==1 && est(i,t)==1 && est(t,i)==1){ // Both undirected
+        ++potential;
+        if (verbose){
+          Rcout << " | Both graphs have undirected edges | Potential: " << potential;  
         }
       } 
       if (verbose) Rcout << "\n";
@@ -245,7 +269,7 @@ List parent_recovery_accuracy(NumericMatrix est,NumericMatrix truth,NumericVecto
   int num_missing=0;
   int num_potential=0;
   
-  int p = est.nrow();
+  //int p = est.nrow();
   std::for_each(targets.begin(),targets.end(),[&](int t) {pra_onetarget(est,truth,t,num_correct,num_missing,num_added,num_potential,verbose);});
   
   return List::create(
@@ -321,20 +345,17 @@ int get_edge_number(NumericMatrix G){
 }
 
 // [[Rcpp::export]]
-DataFrame all_metrics(NumericMatrix est,NumericMatrix true_dag,NumericMatrix cpdag,NumericVector targets,bool verbose=false){
-  // Convert true_dag and cpdag to mixed graph notation
-  NumericMatrix true_dag_conv = convert_true_dag(true_dag);
-  NumericMatrix cpdag_conv = convert_pc_amat(cpdag);
+DataFrame all_metrics(NumericMatrix est,NumericMatrix true_cpdag,NumericMatrix est_cpdag,NumericVector targets,bool verbose=false){
   
   // Get all cpdag results first
-  List cpdag_skeleton = compare_skeletons(cpdag_conv,true_dag_conv,verbose);
-  List cpdag_vstruct = compare_v_structures(cpdag_conv,true_dag_conv,verbose);
-  List cpdag_pra = parent_recovery_accuracy(cpdag_conv,true_dag_conv,targets,verbose);
+  List cpdag_skeleton = compare_skeletons(est_cpdag,true_cpdag,verbose);
+  List cpdag_vstruct = compare_v_structures(est_cpdag,true_cpdag,verbose);
+  List cpdag_pra = parent_recovery_accuracy(est_cpdag,true_cpdag,targets,verbose);
   
   // Get the estimated dag next
-  List est_skeleton = compare_skeletons(est,true_dag_conv,verbose);
-  List est_vstruct = compare_v_structures(est,true_dag_conv,verbose);
-  List est_pra = parent_recovery_accuracy(est,true_dag_conv,targets,verbose);
+  List est_skeleton = compare_skeletons(est,true_cpdag,verbose);
+  List est_vstruct = compare_v_structures(est,true_cpdag,verbose);
+  List est_pra = parent_recovery_accuracy(est,true_cpdag,targets,verbose);
   
   return DataFrame::create(
     _["pc_skel_fp"]=cpdag_skeleton["skel_fp"],

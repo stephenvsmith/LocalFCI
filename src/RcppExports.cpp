@@ -117,6 +117,16 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// convertMixedGraph
+void convertMixedGraph(NumericMatrix& G);
+RcppExport SEXP _LocalFCI_convertMixedGraph(SEXP GSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
+    convertMixedGraph(G);
+    return R_NilValue;
+END_RCPP
+}
 // minDiscPath
 NumericVector minDiscPath(NumericMatrix pag, int a, int b, int c, bool verbose);
 RcppExport SEXP _LocalFCI_minDiscPath(SEXP pagSEXP, SEXP aSEXP, SEXP bSEXP, SEXP cSEXP, SEXP verboseSEXP) {
@@ -255,17 +265,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // all_metrics
-DataFrame all_metrics(NumericMatrix est, NumericMatrix true_dag, NumericMatrix cpdag, NumericVector targets, bool verbose);
-RcppExport SEXP _LocalFCI_all_metrics(SEXP estSEXP, SEXP true_dagSEXP, SEXP cpdagSEXP, SEXP targetsSEXP, SEXP verboseSEXP) {
+DataFrame all_metrics(NumericMatrix est, NumericMatrix true_cpdag, NumericMatrix est_cpdag, NumericVector targets, bool verbose);
+RcppExport SEXP _LocalFCI_all_metrics(SEXP estSEXP, SEXP true_cpdagSEXP, SEXP est_cpdagSEXP, SEXP targetsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type cpdag(cpdagSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type true_cpdag(true_cpdagSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type est_cpdag(est_cpdagSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type targets(targetsSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(all_metrics(est, true_dag, cpdag, targets, verbose));
+    rcpp_result_gen = Rcpp::wrap(all_metrics(est, true_cpdag, est_cpdag, targets, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -525,6 +535,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_rule9", (DL_FUNC) &_LocalFCI_rule9, 3},
     {"_LocalFCI_rule10", (DL_FUNC) &_LocalFCI_rule10, 3},
     {"_LocalFCI_allRules", (DL_FUNC) &_LocalFCI_allRules, 4},
+    {"_LocalFCI_convertMixedGraph", (DL_FUNC) &_LocalFCI_convertMixedGraph, 1},
     {"_LocalFCI_minDiscPath", (DL_FUNC) &_LocalFCI_minDiscPath, 5},
     {"_LocalFCI_minUncovPdPath", (DL_FUNC) &_LocalFCI_minUncovPdPath, 6},
     {"_LocalFCI_get_skeleton_total", (DL_FUNC) &_LocalFCI_get_skeleton_total, 3},

@@ -54,7 +54,7 @@ void rule1search(NumericMatrix &G, int beta,int alpha,bool &track_changes,bool v
 // [[Rcpp::export]]
 bool rule1(NumericMatrix &G,bool &track_changes,bool verbose=false) {
   int p = G.nrow(); // Square matrix
-  int gamma;
+  //int gamma;
   // Outer loops: Go through every node to find an asterisk. The node it is incident on is alpha
   // The connected node is beta, which must have an arrowhead pointing into it.
   for (int alpha = 0;alpha<p;++alpha){
@@ -117,7 +117,7 @@ void rule2search(NumericMatrix &G, int beta,int alpha,bool condition1,bool condi
 // [[Rcpp::export]]
 bool rule2(NumericMatrix &G,bool &track_changes,bool verbose=false) {
   int p = G.nrow(); // Square matrix
-  int gamma;
+  //int gamma;
   bool condition1;
   bool condition2;
   // Searching for alpha -> beta OR alpha *-> beta
@@ -191,8 +191,8 @@ bool rule3(NumericMatrix &G,bool &track_changes,bool verbose=false) {
   int gamma;
   List searchResults;
   NumericVector gammaVals;
-  bool condition1;
-  bool condition2;
+  //bool condition1;
+  //bool condition2;
   // (alpha (*) (2) beta (2) (*) gamma)
   for (int alpha = 0;alpha<p;++alpha){
     for (int beta = 0;beta<p;++beta){
@@ -514,5 +514,47 @@ void allRules(NumericMatrix &G,List sepsets,NumericVector neighborhood,bool verb
     track_changes = rule8(G,track_changes,verbose);
     track_changes = rule9(G,track_changes,verbose);
     track_changes = rule10(G,track_changes,verbose);
+  }
+}
+
+/*
+ * Because of the special circumstances of our algorithm,
+ * we are able to reassign certain edges because of our knowledge of targets
+ * <-> => - ([2,2] to [1,1]) DONE
+ * o-> => -> (decrement both i and j by 1) DONE
+ * -> => -> (no change, but adj. matrix has to account differently, [3,2] to [0,1]) DONE 
+ * o-o => - (no change in adj. matrix) DONE
+ * -o => -> ([3,1] to [0,1]) DONE
+ */
+
+// [[Rcpp::export]]
+void convertMixedGraph(NumericMatrix &G){
+  int p = G.ncol();
+  for (int i=0;i<p;++i){
+    for (int j=i+1;j<p;++j){
+      if (G(i,j)==2 && G(j,i)==2){
+        // Convert bidirected edge to undirected
+        G(i,j)=1;
+        G(i,j)=1;
+      } else if ((G(i,j)==1 && G(j,i)==2) || (G(i,j)==2 && G(j,i)==1)){
+        // Convert o-> to ->
+        --G(i,j);
+        --G(j,i);
+      } else if (G(i,j)==2 && G(j,i)==3){
+        // Convert -> [3,2] to -> [0,1]
+        --G(i,j);
+        G(j,i)=0;
+      } else if (G(j,i)==2 && G(i,j)==3){
+        // Convert <- [2,3] to <- [1,0]  
+        --G(j,i);
+        G(i,j)=0;
+      } else if (G(i,j)==3 && G(j,i)==1){
+        // Convert -o [3,1] to -> [0,1]
+        G(i,j)=0;
+      } else if (G(i,j)==1 && G(j,i)==3){
+        // Convert o- [1,3] to <- [1,0]
+        G(j,i)=0;  
+      }
+    }
   }
 }

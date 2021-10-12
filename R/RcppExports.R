@@ -33,6 +33,10 @@ allRules <- function(G, sepsets, neighborhood, verbose) {
     invisible(.Call(`_LocalFCI_allRules`, G, sepsets, neighborhood, verbose))
 }
 
+convertMixedGraph <- function(G) {
+    invisible(.Call(`_LocalFCI_convertMixedGraph`, G))
+}
+
 minDiscPath <- function(pag, a, b, c, verbose = FALSE) {
     .Call(`_LocalFCI_minDiscPath`, pag, a, b, c, verbose)
 }
@@ -73,8 +77,8 @@ convert_pc_amat <- function(G) {
     .Call(`_LocalFCI_convert_pc_amat`, G)
 }
 
-all_metrics <- function(est, true_dag, cpdag, targets, verbose = FALSE) {
-    .Call(`_LocalFCI_all_metrics`, est, true_dag, cpdag, targets, verbose)
+all_metrics <- function(est, true_cpdag, est_cpdag, targets, verbose = FALSE) {
+    .Call(`_LocalFCI_all_metrics`, est, true_cpdag, est_cpdag, targets, verbose)
 }
 
 neighborhood_metrics <- function(G) {
