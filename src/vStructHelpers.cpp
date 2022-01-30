@@ -30,8 +30,9 @@ NumericVector get_nonadjacent(NumericMatrix M,int i){
   return final;
 }
 
+
 // Determines whether or not i is in vector x
-bool check_membership(NumericVector x,int i){
+bool isMember(NumericVector x,int i){
   NumericVector::iterator it = x.begin();
   int j;
   
@@ -44,6 +45,7 @@ bool check_membership(NumericVector x,int i){
   
   return false;
 }
+
 
 /*
  * Translates the estimated skeleton in shrunken form to the estimated skeleton in the final, expanded form
@@ -66,7 +68,7 @@ void makeFinalGraph(NumericMatrix &G,const NumericMatrix &C,NumericVector &neigh
     }
   }
 }
-
+/*
 // Reviewed: 12/16/20
 // We are trying to identify structures i -> k <- j
 // Where i and j are not adjacent, and k is not in the separating set of i and j
@@ -92,17 +94,6 @@ List get_v_structures_efficient(List L) {
   NumericVector j_adj;
   NumericVector j_vals;
   NumericVector k_vals;
-  
-  List sublist_i;
-  List sublist_j;
-  bool valid_v_struct;
-  bool valid_v_struct_check;
-  String node_i;
-  String node_j;
-  int node_k;
-  
-  NumericVector sepset_ij;
-  NumericVector sepset_ji;
   
   if (verbose){
     Rcout << "Beginning loops to find v-structures.\n";
@@ -139,28 +130,14 @@ List get_v_structures_efficient(List L) {
           }
           // If there are no common neighbors, move to next j
           if (k_vals.length()!=0){
-            // We loop through all of the common neighbors
-            node_i = String((char) neighborhood(i));
-            node_j = String((char) neighborhood(j));
-            // Identify separating sets for nodes i and j
-            sublist_j = S[node_j];
-            sepset_ji = sublist_j[node_i];
-            sublist_i = S[node_i];
-            sepset_ij = sublist_i[node_j];
             for (NumericVector::iterator it2 = k_vals.begin();it2!=k_vals.end();++it2){
               k = *it2;
               if (verbose){
                 Rcout << "k: " << k << " (" << names(neighborhood(k)) << ")\n"; 
               }
               // Verify if k is in separating set for i and j
-              node_k = neighborhood(k);
-              valid_v_struct = !check_membership(sepset_ji,node_k);
-              // Check other way just in case
-              valid_v_struct_check = !check_membership(sepset_ij,node_k);
-              if (valid_v_struct && valid_v_struct_check){
+              if (S->isSeparated(i,j,k)){
                 if (verbose){
-                  Rcout << "Separation Set: ";
-                  print_vector_elements_nonames(sepset_ij);
                   Rcout << " | V-Structure: " << node_i.get_cstring() << "*->" << node_k << "<-*" << node_j.get_cstring() << std::endl; 
                 }
                 G(i,k) = 2; // An arrow is denoted by "2"
@@ -186,4 +163,4 @@ List get_v_structures_efficient(List L) {
     _["p"] = L["p"]
   );
 }
-
+*/

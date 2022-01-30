@@ -1,33 +1,45 @@
+data("asiaDAG")
+
+nodes <- colnames(asiaDAG)
+p <- ncol(asiaDAG)
+
 test_that("Get correct neighbors and check separating set update",{
-  data("asiaDAG")
-  
-  nodes <- colnames(asiaDAG)
-  p <- ncol(asiaDAG)
   target <- 5 # "either" is the target
-  neighbors <- get_neighbors_from_dag(target,p,asiaDAG,verbose = FALSE)
+  neighbors <- getNbhd(p,nodes,asiaDAG,target,verbose = FALSE)
   neighbor_names <- nodes[neighbors+1]
   expect_equal(nodes[target+1],"either")
-  expect_equal(setdiff(neighbor_names,c("tub","lung","xray","dysp","bronc")),character(0))
+  expect_equal(setdiff(neighbor_names,c("tub","lung","xray","dysp","bronc","either")),character(0))
   
+  cat("\n\n")
+  printS(neighbors)
+  cat("\n\n")
+  
+  size <- length(neighbors)-1
+  for (n in 0:size){
+    for (n2 in setdiff(0:size,n)){
+      #cat("\nNeighbor 1: ",n," | ","Neighbor 2: ",n2,"\n")
+      testthat::expect_true(is.na(getInitialValues(neighbors,n,n2)))
+    }
+  }
   set.seed(111)
-  neighborhood_full <- sample(1:8,8,replace = FALSE)
-  S <- create_conditioning_sets_efficient_cpp2(neighborhood_full)
-  change_S_0_efficient(S,neighborhood_full[6],neighborhood_full[2])
-  change_S_0_efficient(S,neighborhood_full[2],neighborhood_full[6])
-  expect_equal(neighborhood_full[c(6,2)],c(1,3))
-  expect_equal(S[["1"]][["3"]],-1)
-  expect_equal(S[["3"]][["1"]],-1)
-  
-  neighborhood <- c(target,neighbors)
-  expect_equal(length(neighborhood),6)
-  expect_equal(sort(neighborhood),c(1,3,4,5,6,7))
-  S <- create_conditioning_sets_efficient_cpp2(neighborhood)
-  i <- 2
-  j <- 6
+  neighborhood_shuffled <- sample(1:size,size,replace = FALSE)
+  expect_equal(setListEmptySet(neighbors,neighborhood_shuffled[1],neighborhood_shuffled[2]),-1)
+  expect_equal(setListEmptySet(neighbors,neighborhood_shuffled[2],neighborhood_shuffled[5]),-1)
+
+
+  i <- 0
+  j <- 1
   kvals <- 4:5
-  change_S_efficient(S,neighborhood[i],neighborhood[j],kvals)
-  change_S_efficient(S,neighborhood[j],neighborhood[i],kvals)
-  expect_equal(S[[as.name(neighborhood[i])]][[as.name(neighborhood[j])]],kvals)
-  expect_equal(S[[as.name(neighborhood[j])]][[as.name(neighborhood[i])]],kvals)
+  cat('\n\n')
+  expect_equal(setListEfficient(neighbors,i,j,kvals),kvals)
+  cat('\n\n')
+  expect_equal(setListEfficient(neighbors,j,i,kvals),kvals)
+  cat('\n\n')
+  expect_equal(setListTrue(neighbors,i,j,kvals),neighbors[kvals+1])
+  cat('\n\n')
+  expect_equal(setListTrue(neighbors,j,i,kvals),neighbors[kvals+1])
+  cat('\n\n')
+  
+  
 
 })

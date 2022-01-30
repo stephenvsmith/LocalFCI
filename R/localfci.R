@@ -5,8 +5,22 @@ localfci_cpp <- function(data=NULL,true_dag=NULL,targets,lmax=3,tol=0.05,
     data <- as.matrix(data)
   }
   
+  if (verbose){
+    head(data)
+  }
+  
   if (is.data.frame(true_dag)){
     true_dag <- as.matrix(true_dag)
+  }
+  
+  if (verbose) {
+    head(true_dag)
+  }
+  
+  # To account for zero-indexing
+  cpp_target <- targets-1 
+  if (verbose){
+    cat("The node value for the C++ function is",cpp_target)
   }
   
   # We change the target to target - 1 in order to accommodate change to C++

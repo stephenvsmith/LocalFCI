@@ -195,11 +195,18 @@ void print_matrix(NumericMatrix m){
 }
 
 void print_S_vals(List S){
+  CharacterVector Snames = S.names();
+  CharacterVector Subnames;
   List sublist;
+  String i_char;
+  String j_char;
   for (int i=0;i<S.length();++i){
     sublist = S[i];
+    i_char = Snames[i];
+    Subnames = sublist.names();
     for (int j=0;j<sublist.length();++j){
-      Rcout << "S[[" << i << "]][[" << j << "]] = ";
+      j_char = Subnames[j];
+      Rcout << "S[[" << i_char.get_cstring() << "]][[" << j_char.get_cstring() << "]] = ";
       print_vector_elements_nonames(sublist[j],"",""," ");
       Rcout << " ";
     }

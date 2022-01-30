@@ -11,7 +11,7 @@ List fci_setup(NumericMatrix &true_dag,
 //List get_skeleton_total(List var_list,arma::mat df,double signif_level);
 List fci_sample_get_skeleton_efficient_cpp(List var_list,arma::mat df,double signif_level);
 
-List create_conditioning_sets_efficient_cpp(int p);
+void create_conditioning_sets_efficient_cpp(List &S,NumericVector &neighbors);
 
 List fci_sample_skeleton_setup_efficient_cpp(NumericMatrix &true_dag,const IntegerVector &targets,
                                              StringVector &names,const int &lmax,bool &verbose);
@@ -26,7 +26,7 @@ void check_separation_sample_efficient(const int &l,const int &i,const int &j,
                              const StringVector &names,const NumericVector &neighborhood,
                              NumericMatrix C,
                              List S,double &pval,int &num_tests,arma::mat &df,int &n,
-                             double &signif_level,bool &verbose);
+                             double &signif_level,bool &verbose); 
 
 void check_separation_sample_efficient_target(const int &l,const int &i,const int &j,
                                               const NumericMatrix &kvals,
