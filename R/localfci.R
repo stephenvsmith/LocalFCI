@@ -1,12 +1,32 @@
-localfci_cpp <- function(data=NULL,true_dag=NULL,targets,lmax=3,tol=0.05,
+localfci_cpp <- function(data=NULL,true_dag=NULL,targets,node_names=NULL,lmax=3,tol=0.01,method="MMPC",
                         verbose = TRUE){
-  node_names <- colnames(true_dag)
+  if (is.null(node_names)){
+    node_names <- paste0("V",1:ncol(data))
+  }
   if (is.data.frame(data)){
     data <- as.matrix(data)
   }
+  # Store data information
+  data_means <- colMeans(data)
+  data_cov <- stats::cov(data)
+  
+  # Scale the data
+  data <- scale(data)
+  
+  # TODO: Add results from this to the final output
+  if (is.null(true_dag)){
+    # Find Markov Blankets
+    mbList <- getAllMBs(targets,data,tol,method)
+    
+    # Create adjacency matrix based on Markov Blankets
+    true_dag <- getEstInitialDAG(mbList,targets,ncol(data))
+  } else {
+    mbList <- list()
+  }
+  
   
   if (verbose){
-    head(data)
+    utils::head(data)
   }
   
   if (is.data.frame(true_dag)){
@@ -24,5 +44,11 @@ localfci_cpp <- function(data=NULL,true_dag=NULL,targets,lmax=3,tol=0.05,
   }
   
   # We change the target to target - 1 in order to accommodate change to C++
-  return(fci(true_dag,data,targets-1,node_names,lmax,tol,verbose))
+  return(list(
+    "results"=fci(true_dag,data,targets-1,node_names,lmax,tol,verbose),
+    "referenceDAG"=true_dag,
+    "mbList"=mbList,
+    "data_means"=data_means,
+    "data_cov"=data_cov)
+  )
 }

@@ -1,10 +1,4 @@
-#include <algorithm>
 #include "lfci.h"
-#include "sharedFunctions.h"
-#include "skeletonHelpersEfficient.h"
-#include "vStructHelpers.h"
-#include "pCorTest.h"
-//#include "RulesHelpers.h"
 
 LocalFCI::LocalFCI(NumericMatrix true_dag,arma::mat df,
                    NumericVector targets,
@@ -97,7 +91,6 @@ void LocalFCI::checkSeparation(int l,int i,int j,NumericMatrix kvals){
   List test_result;
   
   // Initially assumes we are considering an empty set
-  NumericVector sep;
   arma::uvec sep_arma;
   
   if (l == 0){
@@ -115,8 +108,8 @@ void LocalFCI::checkSeparation(int l,int i,int j,NumericMatrix kvals){
         Rcout << " (p-value>" << signif_level << ")"<< std::endl;
         //Rcout << "i = " << i << " | j = " << j << " | N_i = " << neighborhood(i) << " | N_j = " << neighborhood(j) << std::endl;
       }
-      S->changeListEfficient(i,j,NumericVector::create(-1));
-      S->changeListEfficient(j,i,NumericVector::create(-1));
+      S->changeList(i,j);
+      S->changeList(j,i);
       
       C_tilde->setAmatVal(i,j,0);
       C_tilde->setAmatVal(j,i,0);
@@ -124,7 +117,7 @@ void LocalFCI::checkSeparation(int l,int i,int j,NumericMatrix kvals){
   } else {
     k = 0;
     keep_checking_k = true;
-    while (keep_checking_k & (k<kp)){
+    while (keep_checking_k && (k<kp)){
       sep = kvals( _ , k ); // sep is the vector of the true values of the potential separating nodes (i.e. not efficient numbering)
       sep_arma = as<arma::uvec>(sep);
       if (verbose){
@@ -147,8 +140,8 @@ void LocalFCI::checkSeparation(int l,int i,int j,NumericMatrix kvals){
           print_vector_elements(sep,names,""," ");
           Rcout << " (p-value>" << signif_level << ")"<< std::endl;
         }
-        S->changeListEfficient(i,j,sep);
-        S->changeListEfficient(j,i,sep);
+        S->changeList(i,j,sep);
+        S->changeList(j,i,sep);
         C_tilde->setAmatVal(i,j,0);
         C_tilde->setAmatVal(j,i,0);
         keep_checking_k = false;
@@ -165,6 +158,7 @@ void LocalFCI::checkSeparation(int l,int i,int j,NumericMatrix kvals){
 }
 
 void LocalFCI::get_skeleton_total(){
+  auto total_skeleton_start = high_resolution_clock::now();
   NumericVector neighbors;
   NumericVector edges_i;
   
@@ -222,11 +216,14 @@ void LocalFCI::get_skeleton_total(){
       print_elements();
     }
   }
+  auto total_skeleton_end = high_resolution_clock::now();
+  auto duration = duration_cast<microseconds>(total_skeleton_end-total_skeleton_start);
+  total_skeleton_time = duration.count() / 1000000.;
 }
 
 void LocalFCI::get_skeleton_target(int t){
   // TODO: Ensure that t is in targets
-  
+  auto target_skeleton_start = high_resolution_clock::now();
   int l = -1;
   int i;
   int j;
@@ -241,7 +238,6 @@ void LocalFCI::get_skeleton_target(int t){
   target_neighborhood.push_back(target_efficient);
   std::sort(target_neighborhood.begin(),target_neighborhood.end());
   
-  // TODO: MOVE PRINTING FUNCTIONS TO ANOTHER FILE
   if (verbose){
     Rcout << "\n\nFinding skeleton for the neighborhood of target " << t;
     Rcout << " (Efficient Number: " << target_efficient << ")"<< std::endl;
@@ -282,7 +278,8 @@ void LocalFCI::get_skeleton_target(int t){
           if (l>0){
             // Find neighbors of i and j from the true DAG (or they are estimated)
             // These neighbors are using the true node numbers (check documentation for this function)
-            neighbors = true_DAG -> getPotentialSepNodes(neighborhood(i),neighborhood(j),verbose);
+            neighbors = true_DAG -> getNeighborsMultiTargets(NumericVector::create(neighborhood(i),neighborhood(j)),
+                                                             verbose);
             if (verbose){
               print_vector_elements_nonames(neighbors,"Potential separating nodes: ","\n");  
             }
@@ -300,7 +297,7 @@ void LocalFCI::get_skeleton_target(int t){
             checkSeparation(l,i,j,kvals);
             
             if (verbose){
-              // TODO: iteration_print(l,i,j,sep,names,pval);
+              iteration_print(l,i,j,sep,names,p_vals.back());
             }
           }
         }
@@ -314,7 +311,12 @@ void LocalFCI::get_skeleton_target(int t){
     C_tilde -> printAmat();
     Rcout << "Conclusion of algorithm.\n";
   }
-  
+  // Save the amount of time taken for the algorithm
+  auto target_skeleton_end = high_resolution_clock::now();
+  auto duration = duration_cast<microseconds>(target_skeleton_end-target_skeleton_start);
+  double total_time = duration.count() / 1000000.;
+
+  target_skeleton_times.push_back(total_time);
   
 }
 
@@ -323,6 +325,7 @@ void LocalFCI::get_skeleton_target(int t){
 void LocalFCI::get_v_structures_efficient() {
   int j;
   int k;
+  int k_eff;
   
   bool no_neighbors;
   bool j_invalid;
@@ -335,8 +338,7 @@ void LocalFCI::get_v_structures_efficient() {
   
   List sublist_i;
   List sublist_j;
-  bool valid_v_struct;
-  bool valid_v_struct_check;
+
   String node_i;
   String node_j;
   
@@ -373,6 +375,7 @@ void LocalFCI::get_v_structures_efficient() {
           }
           j_adj = C_tilde->getAdjacent(j);
           k_vals = intersect(i_adj,j_adj); // k must be a neighbor of i and j
+          std::sort(k_vals.begin(),k_vals.end());
           if (verbose && k_vals.length()>0){
             Rcout << "Potential k values: ";
             print_vector_elements(k_vals,names[neighborhood],"","\n");
@@ -380,23 +383,24 @@ void LocalFCI::get_v_structures_efficient() {
           // If there are no common neighbors, move to next j
           if (k_vals.length()!=0){
             // We loop through all of the common neighbors
-            sepset_ij = S->getSepSetTrue(i,j);
-            sepset_ji = S->getSepSetTrue(j,i);
+            sepset_ij = S->getSepSet(i,j);
+            sepset_ji = S->getSepSet(j,i);
             for (NumericVector::iterator it2 = k_vals.begin();it2!=k_vals.end();++it2){
               k = *it2;
               if (verbose){
                 Rcout << "k: " << k << " (" << names(neighborhood(k)) << ")\n"; 
               }
               // Verify if k is in separating set for i and j
+              k_eff = k;
               k = neighborhood(k); // Switch k to true numbering
-              if (S->isSeparatedTrue(i,j,k)){ // True just refers to numbering
+              if (S->isPotentialVStruct(i,j,k)){ // True just refers to numbering
                 if (verbose){
                   Rcout << "Separation Set: ";
                   print_vector_elements_nonames(sepset_ij);
                   Rcout << " | V-Structure (True Numbering): " << neighborhood(i) << "*->" << k << "<-*" << neighborhood(j) << std::endl; 
                 }
-                C_tilde->setAmatVal(i,k,2); // An arrow is denoted by "2"
-                C_tilde->setAmatVal(j,k,2); // i and j are separated ("0")
+                C_tilde->setAmatVal(i,k_eff,2); // An arrow is denoted by "2"
+                C_tilde->setAmatVal(j,k_eff,2); // i and j are separated ("0")
               }
             }
           }
@@ -445,13 +449,15 @@ void LocalFCI::get_v_structures_efficient() {
 void LocalFCI::rule1search(int beta,int alpha,bool &track_changes,bool verbose){
   // Search for beta o-* gamma (beta (1) (!=0) gamma)
   for (int gamma=0;gamma<p;++gamma){
-    if (C_tilde->getAmatVal(gamma,beta)==1 && C_tilde->getAmatVal(beta,gamma)!= 0){ 
-      if (C_tilde->getAmatVal(alpha,gamma)==0 & C_tilde->getAmatVal(gamma,alpha)==0){
+    if ((C_tilde->operator()(gamma,beta)==1) && (C_tilde->operator()(beta,gamma)!= 0)){ 
+      if ((C_tilde->getAmatVal(alpha,gamma)==0) && (C_tilde->getAmatVal(gamma,alpha)==0)){
         if (C_tilde->getAmatVal(beta,gamma)==3){
           Rcout << "Contradiction in Rule 1! " << "G(" << beta << "," << gamma << ")=3 when it must be changed to 2\n";
         }
-        C_tilde->setAmatVal(beta,gamma,2); // arrowhead incident on gamma for edge connecting beta and gamma
-        C_tilde->setAmatVal(gamma,beta,3); // regular anchor incident on gamma for edge connecting beta and gamma
+        C_tilde->operator()(beta,gamma)=2;
+        C_tilde->operator()(gamma,beta)=3;
+        //C_tilde->setAmatVal(beta,gamma,2); // arrowhead incident on gamma for edge connecting beta and gamma
+        //C_tilde->setAmatVal(gamma,beta,3); // regular anchor incident on gamma for edge connecting beta and gamma
         if (verbose){
           Rcout << "Rule 1:\n";
           Rcout << "Orient: " << alpha << " *-> " << beta << " o-* " << gamma;
@@ -504,8 +510,8 @@ void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bo
     }
   } else if (condition2){ // Condition 2 refers to alpha *-> beta -> gamma
     for (int gamma=0;gamma<p;++gamma){
-      if (C_tilde->getAmatVal(gamma,beta)==3 & C_tilde->getAmatVal(beta,gamma)==2){ // beta -> gamma
-        if (C_tilde->getAmatVal(alpha,gamma)==1 & C_tilde->getAmatVal(gamma,alpha)!=0){ // alpha *-o gamma
+      if ((C_tilde->getAmatVal(gamma,beta)==3) && (C_tilde->getAmatVal(beta,gamma)==2)){ // beta -> gamma
+        if ((C_tilde->getAmatVal(alpha,gamma)==1) && (C_tilde->getAmatVal(gamma,alpha)!=0)){ // alpha *-o gamma
           C_tilde->setAmatVal(alpha,gamma,2); // alpha *-> gamma
           if (verbose){
             Rcout << "Rule 2:\n";
@@ -530,8 +536,8 @@ bool LocalFCI::rule2(bool &track_changes,bool verbose) {
   // Searching for alpha -> beta OR alpha *-> beta
   for (int alpha = 0;alpha<p;++alpha){
     for (int beta = 0;beta<p;++beta){
-      condition1 = (C_tilde->getAmatVal(alpha,beta)==2) & (C_tilde->getAmatVal(beta,alpha)==3); // alpha -> beta
-      condition2 = (C_tilde->getAmatVal(alpha,beta)==2) & (C_tilde->getAmatVal(beta,alpha)!=0); // alpha *-> beta
+      condition1 = (C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)==3); // alpha -> beta
+      condition2 = (C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)!=0); // alpha *-> beta
       if (condition1 | condition2){
         rule2search(beta,alpha,condition1,condition2,track_changes,verbose);
       }
@@ -574,11 +580,11 @@ void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bo
   bool condition2;
   // We are searching for alpha (*) (1) theta (1) (*) gamma
   for (int theta = 0;theta<p;++theta){
-    condition1 = C_tilde->getAmatVal(alpha,theta)==1 & C_tilde->getAmatVal(theta,alpha)!=0; // alpha *-o theta
-    condition2 = C_tilde->getAmatVal(theta,gamma)!=0 & C_tilde->getAmatVal(gamma,theta)==1; // theta o-* gamma
+    condition1 = (C_tilde->getAmatVal(alpha,theta)==1) && (C_tilde->getAmatVal(theta,alpha)!=0); // alpha *-o theta
+    condition2 = (C_tilde->getAmatVal(theta,gamma)!=0) && (C_tilde->getAmatVal(gamma,theta)==1); // theta o-* gamma
     if (condition1 && condition2){
-      if (C_tilde->getAmatVal(alpha,gamma)==0 && C_tilde->getAmatVal(gamma,alpha)==0){ // alpha and gamma are not adjacent
-        if (C_tilde->getAmatVal(theta,beta)==1 && C_tilde->getAmatVal(beta,theta)!=0){ // theta *-o beta
+      if ((C_tilde->getAmatVal(alpha,gamma)==0) && (C_tilde->getAmatVal(gamma,alpha)==0)){ // alpha and gamma are not adjacent
+        if ((C_tilde->getAmatVal(theta,beta)==1) && (C_tilde->getAmatVal(beta,theta)!=0)){ // theta *-o beta
           C_tilde->setAmatVal(theta,beta,2); // theta *-> beta
           if (verbose){
             Rcout << "Rule 3:\n";
@@ -602,7 +608,7 @@ bool LocalFCI::rule3(bool &track_changes,bool verbose) {
   // (alpha (*) (2) beta (2) (*) gamma)
   for (int alpha = 0;alpha<p;++alpha){
     for (int beta = 0;beta<p;++beta){
-      if (C_tilde->getAmatVal(alpha,beta)==2 & C_tilde->getAmatVal(beta,alpha)!=0){ // alpha *-> beta <-* gamma
+      if ((C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)!=0)){ // alpha *-> beta <-* gamma
         searchResults = rule3asearch(beta,alpha); // Search for gamma
         if (searchResults["rule3success"]){
           // Iterate over all values of gamma to find values of theta
@@ -633,16 +639,14 @@ bool LocalFCI::check_sep_r4(int beta,NumericVector md_path,bool verbose){
   int n = md_path.length();
   int theta = md_path(0);
   int gamma = md_path(n-1);
-
-  NumericVector set = S->getSepSetTrue(theta,gamma); // This is S[theta][gamma]
-  bool cond1 = isMember(set,beta);
-  set = S->getSepSetTrue(gamma,theta); // This is S[gamma][theta]
-  bool cond2 = isMember(set,beta);
+  
+  if (verbose) Rcout << " of " << theta << " and " << gamma << " by " << neighborhood(beta);
+  bool cond1 = S->isSeparated(theta,gamma,neighborhood(beta));
   if (verbose) Rcout << "...finished\n";
-  return (cond1 && cond2);
+  return (cond1);
 }
 
-bool LocalFCI::rule4(NumericVector neighborhood,bool &track_changes,bool verbose){
+bool LocalFCI::rule4(bool &track_changes,bool verbose){
 
   bool cond1;
   bool cond2;
@@ -667,7 +671,7 @@ bool LocalFCI::rule4(NumericVector neighborhood,bool &track_changes,bool verbose
                 } else {
                   if(check_sep_r4(beta,md_path,verbose)){
                     if (verbose){
-                      Rcout << "\nRule 4\nThere is a discriminating path between";
+                      Rcout << "\nRule 4\nThere is a discriminating path between ";
                       Rcout << md_path(0) << " and " << gamma << " for " << beta;
                       Rcout << " and " << beta << " is in the SepSet of " << gamma;
                       Rcout << " and " << md_path(0) << ". Orient: ";
@@ -940,7 +944,7 @@ void LocalFCI::convertMixedGraph(){
       if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==2){
         // Convert bidirected edge to undirected
         C_tilde->setAmatVal(i,j,1);
-        C_tilde->setAmatVal(i,j,1);
+        C_tilde->setAmatVal(j,i,1);
       } else if ((C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==2) || (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==1)){
         // Convert o-> to ->
         C_tilde->setAmatVal(i,j,G_ij-1);
@@ -962,6 +966,25 @@ void LocalFCI::convertMixedGraph(){
       }
     }
   }
+}
+
+void LocalFCI::convertFinalGraph(Graph* g){
+  int current_val = 0;
+  int nrow = C_tilde ->getNRow();
+  int ncol = C_tilde -> getNCol();
+  for (int i=0;i<nrow;++i){
+    for (int j=0;j<ncol;++j){
+      //Rcout << "(" << neighborhood(i) << "," << neighborhood(j) << "): ";
+      current_val = C_tilde -> getAmatVal(i,j);
+      //Rcout << current_val << std::endl;
+      g -> setAmatVal(neighborhood(i),neighborhood(j),current_val);  
+    }
+  }
+  //C_tilde -> printAmat();
+  delete C_tilde;
+  C_tilde = g;
+  //C_tilde -> printAmat();
+  g = nullptr;
 }
 
 

@@ -12,26 +12,29 @@ class Graph {
 public:
   
   // Constructors
-  Graph(int nodes); // Tested in graphtests.cpp and test_Graph.R
+  Graph(int nodes); // Tested
   Graph(int nodes,StringVector node_names,NumericMatrix adj) : 
-  p(nodes),names(node_names),amat(adj) {}; // Tested in graphtests.cpp and test_Graph.R
+  p(nodes),names(node_names),amat(adj) {}; // Tested
+  
+  // Fills the adjacency matrix with zeros
+  void emptyGraph();
   
   // Accessors
   int size() {
     return p;
   }
   
-  // Tested in graphtests.cpp and test_Graph.R
+  // Tested
   StringVector getNodeNames(){
     return names;
   }
   
-  // Tested in graphtests.cpp and test_Graph.R
+  // Tested
   NumericMatrix getAmat(){
     return amat;
   }
   
-  // Tested in graphtests.cpp and test_Graph.R
+  // Tested
   int getAmatVal(int i,int j){
     return amat(i,j);
   }
@@ -73,7 +76,9 @@ public:
     amat = m;
   }
   
-  // Tested in graphtests.cpp and test_Graph.R
+  int operator ()(unsigned i,unsigned j) const    {return amat(i,j);}
+  double & operator ()(unsigned i, unsigned j) {return amat(i,j);}
+  
   void setAmatVal(int i,int j,int val){
     amat(i,j) = val;
   }

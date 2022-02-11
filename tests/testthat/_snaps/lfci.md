@@ -15,12 +15,6 @@
     There are 8 nodes in the DAG.
     There are 4 nodes in the neighborhood.
     All nodes being considered: 1 2 3 5
-    Constructing our graph.
-    Our current matrix:
-    0 1 1 1
-    1 0 1 1
-    1 1 0 1
-    1 1 1 0
     Our starting matrix is 4x4.
     0 1 1 1
     1 0 1 1
@@ -87,12 +81,6 @@
     There are 8 nodes in the DAG.
     There are 4 nodes in the neighborhood.
     All nodes being considered: 1 2 3 5
-    Constructing our graph.
-    Our current matrix:
-    0 1 1 1
-    1 0 1 1
-    1 1 0 1
-    1 1 1 0
     Our starting matrix is 4x4.
     0 1 1 1
     1 0 1 1
@@ -241,14 +229,6 @@
     There are 8 nodes in the DAG.
     There are 6 nodes in the neighborhood.
     All nodes being considered: 1 2 3 4 5 7
-    Constructing our graph.
-    Our current matrix:
-    0 1 1 1 1 1
-    1 0 1 1 1 1
-    1 1 0 1 1 1
-    1 1 1 0 1 1
-    1 1 1 1 0 1
-    1 1 1 1 1 0
     Our starting matrix is 6x6.
     0 1 1 1 1 1
     1 0 1 1 1 1
@@ -550,7 +530,7 @@
     S[[5]][[1]] = nan S[[5]][[2]] = 3 S[[5]][[3]] = nan S[[5]][[4]] = -1 S[[5]][[5]] = nan S[[5]][[7]] = nan 
     S[[7]][[1]] = 5 S[[7]][[2]] = 3 4 S[[7]][[3]] = 5 S[[7]][[4]] = nan S[[7]][[5]] = nan S[[7]][[7]] = nan 
 
----
+# Testing V-Structure function
 
     There are 2 targets.
     Targets: lung bronc
@@ -575,14 +555,6 @@
     There are 8 nodes in the DAG.
     There are 6 nodes in the neighborhood.
     All nodes being considered: 1 2 3 4 5 7
-    Constructing our graph.
-    Our current matrix:
-    0 1 1 1 1 1
-    1 0 1 1 1 1
-    1 1 0 1 1 1
-    1 1 1 0 1 1
-    1 1 1 1 0 1
-    1 1 1 1 1 0
     Our starting matrix is 6x6.
     0 1 1 1 1 1
     1 0 1 1 1 1
@@ -891,9 +863,11 @@
     The value of i is 1
     The value of j is 2
     The p-value is 3.57115e-12
+    l: 0 | i: 1 | j: 2 | k: nan | p-val: 3.57115e-12
     The value of i is 2
     The value of j is 4
     The p-value is 2.97187e-109
+    l: 0 | i: 2 | j: 4 | k: nan | p-val: 2.97187e-109
     The value of i is 4
     The value of l is 1
     The value of i is 1
@@ -927,6 +901,7 @@
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
     The p-value is 6.33935e-09
     smoke is NOT separated from lung by node(s): either  (p-value<0.01)
+    l: 1 | i: 1 | j: 2 | k: either | p-val: 6.33935e-09
     The value of i is 2
     The value of j is 4
     Target: 3
@@ -967,6 +942,7 @@
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 7 (dysp)
     The p-value is 1.21991e-94
     lung is NOT separated from either by node(s): dysp  (p-value<0.01)
+    l: 1 | i: 2 | j: 4 | k: dysp | p-val: 1.21991e-94
     The value of i is 4
     The value of l is 2
     The value of i is 1
@@ -1000,6 +976,7 @@
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 5 (bronc either)
     The p-value is 3.38235e-08
     smoke is NOT separated from lung by node(s): bronc either  (p-value<0.01)
+    l: 2 | i: 1 | j: 2 | k: bronc either | p-val: 3.38235e-08
     The value of i is 2
     The value of j is 4
     Target: 3
@@ -1055,6 +1032,7 @@
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 6 7 (xray dysp)
     The p-value is 1.5714e-67
     lung is NOT separated from either by node(s): xray dysp  (p-value<0.01)
+    l: 2 | i: 2 | j: 4 | k: xray dysp | p-val: 1.5714e-67
     The value of i is 4
     The value of l is 3
     The value of i is 1
@@ -1082,6 +1060,7 @@
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 4 5 (tub bronc either)
     The p-value is 4.79431e-07
     smoke is NOT separated from lung by node(s): tub bronc either  (p-value<0.01)
+    l: 3 | i: 1 | j: 2 | k: tub bronc either | p-val: 4.79431e-07
     The value of i is 2
     The value of j is 4
     Target: 3
@@ -1137,6 +1116,7 @@
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 6 7 (bronc xray dysp)
     The p-value is 1.00846e-44
     lung is NOT separated from either by node(s): bronc xray dysp  (p-value<0.01)
+    l: 3 | i: 2 | j: 4 | k: bronc xray dysp | p-val: 1.00846e-44
     The value of i is 4
     The final C matrix:
     0 0 0 0 1 0
@@ -1154,9 +1134,11 @@
     The value of i is 1
     The value of j is 3
     The p-value is 6.44217e-19
+    l: 0 | i: 1 | j: 3 | k: nan | p-val: 6.44217e-19
     The value of i is 3
     The value of j is 5
     The p-value is 6.74668e-84
+    l: 0 | i: 3 | j: 5 | k: nan | p-val: 6.74668e-84
     The value of i is 5
     The value of l is 1
     The value of i is 1
@@ -1190,6 +1172,7 @@
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 7 (dysp)
     The p-value is 1.40787e-17
     smoke is NOT separated from bronc by node(s): dysp  (p-value<0.01)
+    l: 1 | i: 1 | j: 3 | k: dysp | p-val: 1.40787e-17
     The value of i is 3
     The value of j is 5
     Target: 4
@@ -1216,6 +1199,7 @@
     Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 5 (either)
     The p-value is 1.86754e-176
     bronc is NOT separated from dysp by node(s): either  (p-value<0.01)
+    l: 1 | i: 3 | j: 5 | k: either | p-val: 1.86754e-176
     The value of i is 5
     The value of l is 2
     The value of i is 1
@@ -1249,6 +1233,7 @@
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 7 (either dysp)
     The p-value is 5.75598e-07
     smoke is NOT separated from bronc by node(s): either dysp  (p-value<0.01)
+    l: 2 | i: 1 | j: 3 | k: either dysp | p-val: 5.75598e-07
     The value of i is 3
     The value of j is 5
     Target: 4
@@ -1272,6 +1257,7 @@
     Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 5 (smoke either)
     The p-value is 9.14632e-161
     bronc is NOT separated from dysp by node(s): smoke either  (p-value<0.01)
+    l: 2 | i: 3 | j: 5 | k: smoke either | p-val: 9.14632e-161
     The value of i is 5
     The value of l is 3
     The value of i is 1
@@ -1299,6 +1285,7 @@
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 5 7 (lung either dysp)
     The p-value is 5.76336e-07
     smoke is NOT separated from bronc by node(s): lung either dysp  (p-value<0.01)
+    l: 3 | i: 1 | j: 3 | k: lung either dysp | p-val: 5.76336e-07
     The value of i is 3
     The value of j is 5
     Target: 4
@@ -1327,4 +1314,36 @@
     1 0 1 0 0 1
     0 0 0 1 1 0
     Conclusion of algorithm.
+    Beginning loops to find v-structures.
+    i: 0 (tub)
+    j: 1 (smoke)
+    j: 2 (lung)
+    Potential k values: either
+    k: 4 (either)
+    Separation Set: -1 | V-Structure (True Numbering): 1*->5<-*3
+    j: 3 (bronc)
+    j: 5 (dysp)
+    Potential k values: either
+    k: 4 (either)
+    i: 1 (smoke)
+    j: 4 (either)
+    Potential k values: lung
+    k: 2 (lung)
+    j: 5 (dysp)
+    Potential k values: bronc
+    k: 3 (bronc)
+    i: 2 (lung)
+    j: 3 (bronc)
+    Potential k values: smoke
+    k: 1 (smoke)
+    j: 5 (dysp)
+    Potential k values: either
+    k: 4 (either)
+    i: 3 (bronc)
+    j: 4 (either)
+    Potential k values: dysp
+    k: 5 (dysp)
+    Separation Set: -1 | V-Structure (True Numbering): 4*->7<-*5
+    i: 4 (either)
+    i: 5 (dysp)
 

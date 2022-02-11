@@ -1,24 +1,6 @@
 #include "sharedFunctions.h"
 using namespace Rcpp;
 
-// SKELETON HELPER FUNCTIONS
-
-/*
- * This function returns a vector showing the current graph edges coming from node i in the graph
- * being worked on. Assumes an undirected graph.
- * Tested: 12/16/20
- */
-// [[Rcpp::export]]
-NumericVector get_current_edges(int i,int p,NumericMatrix graph){
-  NumericVector current_edges;
-  for (int j=0;j<p;++j){
-    if (graph(i,j)==1){
-      current_edges.push_back(j);
-    }
-  }
-  return current_edges;
-}
-
 /*
  * This function generates all possible combinations of a vector x of length l and puts them in a matrix
  * It uses the R function combn to produce the results.
@@ -37,11 +19,11 @@ NumericMatrix combn_cpp(NumericVector x,int l){
     result = NumericMatrix(1,1);
     result(0,0) = NA_REAL;
     return result;
-  } else if (xlength==1 & l == 1){
+  } else if (xlength==1 && l == 1){
     result = NumericMatrix(1,1);
     result(0,0) = x(0);
     return result;
-  } else if (l>=1 & xlength>1) {
+  } else if (l>=1 && xlength>1) {
     Function f("combn");
     result = f(Named("x")=x,_["m"]=l);
     return result;
@@ -51,96 +33,6 @@ NumericMatrix combn_cpp(NumericVector x,int l){
   }
   
   return result;
-}
-
-
-// TRUE DAG HELPER FUNCTION
-
-/*
- * This function has been tested.
- * File: test_skeletonhelpers.R
- */
-
-/*
- * This function helps us to get the neighbors from the true DAG.
- * Input: target node i, number of nodes p, and the true DAG
- * Returns: Vector of neighbors 
- * Reviewed: 12/16/20
- */
-// [[Rcpp::export]]
-NumericVector get_neighbors_from_dag(const int &i,const int &p,const NumericMatrix &true_dag,bool &verbose){
-  NumericVector neighbors;
-  NumericVector parents;
-  NumericVector children;
-  if (verbose){
-    Rcout << "FUNCTION get_neighbors_from_dag. Node " << i << std::endl;
-  }
-  if (p<true_dag.ncol()){
-    Rcout << "WARNING: iteration stop value is less than the number of columns in the adj. matrix.\n"; 
-  }
-  for (int j = 0;j<p;++j){
-    if (true_dag(j,i)==1){ 
-      parents.push_back(j);
-      if (verbose)
-        Rcout << "Call from get_neighbors_from_dag. Node " << j << " is a parent.\n";
-    } else if (true_dag(i,j)==1){
-      children.push_back(j);
-      if (verbose)
-        Rcout << "Call from get_neighbors_from_dag. Node " << j << " is a child.\n";
-    }
-  }
-  
-  NumericVector potential_spouses;
-  int current_val;
-  for (NumericVector::iterator it = children.begin(); it != children.end(); ++it){
-    if (verbose)
-      Rcout << "Call from get_neighbors_from_dag. We are evaluating the following child: " << *it << std::endl;
-    for (int j = 0; j<p; ++j){
-      current_val = true_dag(j,*it);
-      if (current_val == 1 & i != j){
-        potential_spouses.push_back(j);
-        if (verbose)
-          Rcout << "Call from get_neighbors_from_dag. Node " << j << " is a potential spouse of node " << i << ".\n";
-      }
-    }
-  }
-  
-  neighbors = union_(parents,children);
-  neighbors = union_(neighbors,potential_spouses);
-  neighbors = setdiff(neighbors,NumericVector::create(i));
-  std::sort(neighbors.begin(),neighbors.end());
-  if (verbose){
-    Rcout << "Neighbors of node " << i;
-    print_vector_elements_nonames(neighbors,": ","",", ");
-    Rcout << "\n\n";
-  }
-  
-  return neighbors;
-}
-
-// [[Rcpp::export]]
-NumericVector get_multiple_neighbors_from_dag(const NumericVector &targets,const int &p,const NumericMatrix &true_dag,bool &verbose){
-  NumericVector neighbors;
-  int num_targets = targets.length();
-  int t;
-  
-  for (int i = 0; i<num_targets; ++i){
-    t = targets(i);
-    if (verbose)
-      Rcout << "Target: " << t << std::endl;
-    if (i == 0){
-      neighbors = get_neighbors_from_dag(t,p,true_dag,verbose);
-    } else {
-      neighbors = union_(neighbors,get_neighbors_from_dag(t,p,true_dag,verbose));
-    }
-  }
-  std::sort(neighbors.begin(),neighbors.end());
-  if (verbose){
-    Rcout << "Total Neighborhood:\n";
-    print_vector_elements_nonames(neighbors,"","\n",", ");
-  }
-  
-  return neighbors;
 }
 
 
@@ -194,25 +86,6 @@ void print_matrix(NumericMatrix m){
   }
 }
 
-void print_S_vals(List S){
-  CharacterVector Snames = S.names();
-  CharacterVector Subnames;
-  List sublist;
-  String i_char;
-  String j_char;
-  for (int i=0;i<S.length();++i){
-    sublist = S[i];
-    i_char = Snames[i];
-    Subnames = sublist.names();
-    for (int j=0;j<sublist.length();++j){
-      j_char = Subnames[j];
-      Rcout << "S[[" << i_char.get_cstring() << "]][[" << j_char.get_cstring() << "]] = ";
-      print_vector_elements_nonames(sublist[j],"",""," ");
-      Rcout << " ";
-    }
-    Rcout << std::endl;
-  }
-}
 
 void iteration_print(const int &l,const int &i,const int &j,const NumericVector &sep,const StringVector &names,const double &pval){
   Rcout << "l: " << l << " | i: " << i << " | j: " << j << " | k: ";

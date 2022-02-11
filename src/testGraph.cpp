@@ -47,7 +47,7 @@ NumericVector check_neighbors_retrieval(int nodes,StringVector node_names,Numeri
 // [[Rcpp::export]]
 int check_amat_retrieval(int nodes,StringVector node_names,NumericMatrix adj,int i,int j){
   DAG g(nodes,node_names,adj);
-  return g.getAmatVal(i,j);
+  return g(i,j);
 }
 
 // [[Rcpp::export]]
@@ -74,9 +74,10 @@ List check_adjacent_non_adjacent(int nodes,StringVector node_names,NumericMatrix
 // [[Rcpp::export]]
 int check_amat_setval(int nodes,StringVector node_names,NumericMatrix adj,int i,int j,int val){
   Graph g(nodes,node_names,adj);
-  g.setAmatVal(i,j,val);
+  //g.setAmatVal(i,j,val);
+  g(i,j)=val;
   
-  return g.getAmatVal(i,j);
+  return g(i,j);
 }
 
 

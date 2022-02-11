@@ -11,198 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// initializeLocalFCI
-void initializeLocalFCI(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
-RcppExport SEXP _LocalFCI_initializeLocalFCI(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
-    initializeLocalFCI(td, df, t, names);
-    return R_NilValue;
-END_RCPP
-}
-// checkSkeletonTotal
-NumericMatrix checkSkeletonTotal(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
-RcppExport SEXP _LocalFCI_checkSkeletonTotal(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(checkSkeletonTotal(td, df, t, names));
-    return rcpp_result_gen;
-END_RCPP
-}
-// checkSkeletonBoth
-NumericMatrix checkSkeletonBoth(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
-RcppExport SEXP _LocalFCI_checkSkeletonBoth(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(checkSkeletonBoth(td, df, t, names));
-    return rcpp_result_gen;
-END_RCPP
-}
-// checkVStruct
-NumericMatrix checkVStruct(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
-RcppExport SEXP _LocalFCI_checkVStruct(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(checkVStruct(td, df, t, names));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_amat_works
-NumericMatrix check_amat_works(int nodes, StringVector node_names, NumericMatrix adj);
-RcppExport SEXP _LocalFCI_check_amat_works(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_amat_works(nodes, node_names, adj));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_amat_works_onepar
-NumericMatrix check_amat_works_onepar(int nodes);
-RcppExport SEXP _LocalFCI_check_amat_works_onepar(SEXP nodesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_amat_works_onepar(nodes));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_names_works
-StringVector check_names_works(int nodes, StringVector node_names, NumericMatrix adj);
-RcppExport SEXP _LocalFCI_check_names_works(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_names_works(nodes, node_names, adj));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_dag_object
-List check_dag_object(int nodes, StringVector node_names, NumericMatrix adj);
-RcppExport SEXP _LocalFCI_check_dag_object(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_dag_object(nodes, node_names, adj));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_neighbors_retrieval
-NumericVector check_neighbors_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int t);
-RcppExport SEXP _LocalFCI_check_neighbors_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP tSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    Rcpp::traits::input_parameter< int >::type t(tSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_neighbors_retrieval(nodes, node_names, adj, t));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_amat_retrieval
-int check_amat_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int i, int j);
-RcppExport SEXP _LocalFCI_check_amat_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< int >::type j(jSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_amat_retrieval(nodes, node_names, adj, i, j));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_amat_row_retrieval
-NumericVector check_amat_row_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int i);
-RcppExport SEXP _LocalFCI_check_amat_row_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_amat_row_retrieval(nodes, node_names, adj, i));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_amat_col_retrieval
-NumericVector check_amat_col_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int j);
-RcppExport SEXP _LocalFCI_check_amat_col_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP jSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    Rcpp::traits::input_parameter< int >::type j(jSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_amat_col_retrieval(nodes, node_names, adj, j));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_adjacent_non_adjacent
-List check_adjacent_non_adjacent(int nodes, StringVector node_names, NumericMatrix adj, int i);
-RcppExport SEXP _LocalFCI_check_adjacent_non_adjacent(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_adjacent_non_adjacent(nodes, node_names, adj, i));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_amat_setval
-int check_amat_setval(int nodes, StringVector node_names, NumericMatrix adj, int i, int j, int val);
-RcppExport SEXP _LocalFCI_check_amat_setval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP, SEXP valSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< int >::type j(jSEXP);
-    Rcpp::traits::input_parameter< int >::type val(valSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_amat_setval(nodes, node_names, adj, i, j, val));
-    return rcpp_result_gen;
-END_RCPP
-}
 // fci
 List fci(NumericMatrix true_dag, arma::mat df, NumericVector targets, StringVector names, int lmax, double signif_level, bool verbose);
 RcppExport SEXP _LocalFCI_fci(SEXP true_dagSEXP, SEXP dfSEXP, SEXP targetsSEXP, SEXP namesSEXP, SEXP lmaxSEXP, SEXP signif_levelSEXP, SEXP verboseSEXP) {
@@ -351,6 +159,367 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// combn_cpp
+NumericMatrix combn_cpp(NumericVector x, int l);
+RcppExport SEXP _LocalFCI_combn_cpp(SEXP xSEXP, SEXP lSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type l(lSEXP);
+    rcpp_result_gen = Rcpp::wrap(combn_cpp(x, l));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_amat_works
+NumericMatrix check_amat_works(int nodes, StringVector node_names, NumericMatrix adj);
+RcppExport SEXP _LocalFCI_check_amat_works(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_amat_works(nodes, node_names, adj));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_amat_works_onepar
+NumericMatrix check_amat_works_onepar(int nodes);
+RcppExport SEXP _LocalFCI_check_amat_works_onepar(SEXP nodesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_amat_works_onepar(nodes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_names_works
+StringVector check_names_works(int nodes, StringVector node_names, NumericMatrix adj);
+RcppExport SEXP _LocalFCI_check_names_works(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_names_works(nodes, node_names, adj));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_dag_object
+List check_dag_object(int nodes, StringVector node_names, NumericMatrix adj);
+RcppExport SEXP _LocalFCI_check_dag_object(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_dag_object(nodes, node_names, adj));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_neighbors_retrieval
+NumericVector check_neighbors_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int t);
+RcppExport SEXP _LocalFCI_check_neighbors_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP tSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type t(tSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_neighbors_retrieval(nodes, node_names, adj, t));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_amat_retrieval
+int check_amat_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int i, int j);
+RcppExport SEXP _LocalFCI_check_amat_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_amat_retrieval(nodes, node_names, adj, i, j));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_amat_row_retrieval
+NumericVector check_amat_row_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int i);
+RcppExport SEXP _LocalFCI_check_amat_row_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_amat_row_retrieval(nodes, node_names, adj, i));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_amat_col_retrieval
+NumericVector check_amat_col_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int j);
+RcppExport SEXP _LocalFCI_check_amat_col_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_amat_col_retrieval(nodes, node_names, adj, j));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_adjacent_non_adjacent
+List check_adjacent_non_adjacent(int nodes, StringVector node_names, NumericMatrix adj, int i);
+RcppExport SEXP _LocalFCI_check_adjacent_non_adjacent(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_adjacent_non_adjacent(nodes, node_names, adj, i));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_amat_setval
+int check_amat_setval(int nodes, StringVector node_names, NumericMatrix adj, int i, int j, int val);
+RcppExport SEXP _LocalFCI_check_amat_setval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP, SEXP valSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< int >::type val(valSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_amat_setval(nodes, node_names, adj, i, j, val));
+    return rcpp_result_gen;
+END_RCPP
+}
+// initializeLocalFCI
+void initializeLocalFCI(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
+RcppExport SEXP _LocalFCI_initializeLocalFCI(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    initializeLocalFCI(td, df, t, names);
+    return R_NilValue;
+END_RCPP
+}
+// checkSkeletonTotal
+NumericMatrix checkSkeletonTotal(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
+RcppExport SEXP _LocalFCI_checkSkeletonTotal(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkSkeletonTotal(td, df, t, names));
+    return rcpp_result_gen;
+END_RCPP
+}
+// checkSkeletonBoth
+NumericMatrix checkSkeletonBoth(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
+RcppExport SEXP _LocalFCI_checkSkeletonBoth(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkSkeletonBoth(td, df, t, names));
+    return rcpp_result_gen;
+END_RCPP
+}
+// checkVStruct
+NumericMatrix checkVStruct(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
+RcppExport SEXP _LocalFCI_checkVStruct(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkVStruct(td, df, t, names));
+    return rcpp_result_gen;
+END_RCPP
+}
+// checkAdjMatConversion
+NumericMatrix checkAdjMatConversion(NumericMatrix td, arma::mat df, NumericVector t, StringVector names, NumericMatrix m, NumericVector neighbors);
+RcppExport SEXP _LocalFCI_checkAdjMatConversion(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP, SEXP mSEXP, SEXP neighborsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type neighbors(neighborsSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkAdjMatConversion(td, df, t, names, m, neighbors));
+    return rcpp_result_gen;
+END_RCPP
+}
+// checkSeparationTest
+List checkSeparationTest(NumericMatrix td, arma::mat df, NumericVector t, StringVector names, int i, int j, int l, NumericVector nodes_to_skip);
+RcppExport SEXP _LocalFCI_checkSeparationTest(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP, SEXP iSEXP, SEXP jSEXP, SEXP lSEXP, SEXP nodes_to_skipSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< int >::type l(lSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type nodes_to_skip(nodes_to_skipSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkSeparationTest(td, df, t, names, i, j, l, nodes_to_skip));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testRule1
+NumericMatrix testRule1(NumericMatrix td, arma::mat dummy_df, NumericVector dummy_t, StringVector names, NumericMatrix m);
+RcppExport SEXP _LocalFCI_testRule1(SEXP tdSEXP, SEXP dummy_dfSEXP, SEXP dummy_tSEXP, SEXP namesSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dummy_df(dummy_dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dummy_t(dummy_tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(testRule1(td, dummy_df, dummy_t, names, m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testRule2
+NumericMatrix testRule2(NumericMatrix td, arma::mat dummy_df, NumericVector dummy_t, StringVector names, NumericMatrix m);
+RcppExport SEXP _LocalFCI_testRule2(SEXP tdSEXP, SEXP dummy_dfSEXP, SEXP dummy_tSEXP, SEXP namesSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dummy_df(dummy_dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dummy_t(dummy_tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(testRule2(td, dummy_df, dummy_t, names, m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testRule3
+NumericMatrix testRule3(NumericMatrix td, arma::mat dummy_df, NumericVector dummy_t, StringVector names, NumericMatrix m);
+RcppExport SEXP _LocalFCI_testRule3(SEXP tdSEXP, SEXP dummy_dfSEXP, SEXP dummy_tSEXP, SEXP namesSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dummy_df(dummy_dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dummy_t(dummy_tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(testRule3(td, dummy_df, dummy_t, names, m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testRule4
+NumericMatrix testRule4(NumericMatrix td, arma::mat dummy_df, NumericVector dummy_t, StringVector names, NumericMatrix m, int i, int j, NumericVector k);
+RcppExport SEXP _LocalFCI_testRule4(SEXP tdSEXP, SEXP dummy_dfSEXP, SEXP dummy_tSEXP, SEXP namesSEXP, SEXP mSEXP, SEXP iSEXP, SEXP jSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dummy_df(dummy_dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dummy_t(dummy_tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(testRule4(td, dummy_df, dummy_t, names, m, i, j, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testRule8
+NumericMatrix testRule8(NumericMatrix td, arma::mat dummy_df, NumericVector dummy_t, StringVector names, NumericMatrix m);
+RcppExport SEXP _LocalFCI_testRule8(SEXP tdSEXP, SEXP dummy_dfSEXP, SEXP dummy_tSEXP, SEXP namesSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dummy_df(dummy_dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dummy_t(dummy_tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(testRule8(td, dummy_df, dummy_t, names, m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testRule9
+NumericMatrix testRule9(NumericMatrix td, arma::mat dummy_df, NumericVector dummy_t, StringVector names, NumericMatrix m);
+RcppExport SEXP _LocalFCI_testRule9(SEXP tdSEXP, SEXP dummy_dfSEXP, SEXP dummy_tSEXP, SEXP namesSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dummy_df(dummy_dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dummy_t(dummy_tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(testRule9(td, dummy_df, dummy_t, names, m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testRule10
+NumericMatrix testRule10(NumericMatrix td, arma::mat dummy_df, NumericVector dummy_t, StringVector names, NumericMatrix m);
+RcppExport SEXP _LocalFCI_testRule10(SEXP tdSEXP, SEXP dummy_dfSEXP, SEXP dummy_tSEXP, SEXP namesSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dummy_df(dummy_dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dummy_t(dummy_tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(testRule10(td, dummy_df, dummy_t, names, m));
+    return rcpp_result_gen;
+END_RCPP
+}
+// testallRules
+NumericMatrix testallRules(NumericMatrix td, arma::mat dummy_df, NumericVector dummy_t, StringVector names, NumericMatrix m);
+RcppExport SEXP _LocalFCI_testallRules(SEXP tdSEXP, SEXP dummy_dfSEXP, SEXP dummy_tSEXP, SEXP namesSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dummy_df(dummy_dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type dummy_t(dummy_tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(testallRules(td, dummy_df, dummy_t, names, m));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getNbhd
 NumericVector getNbhd(int p, StringVector node_names, NumericMatrix adj, NumericVector targets, bool verbose);
 RcppExport SEXP _LocalFCI_getNbhd(SEXP pSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP targetsSEXP, SEXP verboseSEXP) {
@@ -445,203 +614,8 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// get_current_edges
-NumericVector get_current_edges(int i, int p, NumericMatrix graph);
-RcppExport SEXP _LocalFCI_get_current_edges(SEXP iSEXP, SEXP pSEXP, SEXP graphSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< int >::type p(pSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type graph(graphSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_current_edges(i, p, graph));
-    return rcpp_result_gen;
-END_RCPP
-}
-// combn_cpp
-NumericMatrix combn_cpp(NumericVector x, int l);
-RcppExport SEXP _LocalFCI_combn_cpp(SEXP xSEXP, SEXP lSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type l(lSEXP);
-    rcpp_result_gen = Rcpp::wrap(combn_cpp(x, l));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_neighbors_from_dag
-NumericVector get_neighbors_from_dag(const int& i, const int& p, const NumericMatrix& true_dag, bool& verbose);
-RcppExport SEXP _LocalFCI_get_neighbors_from_dag(SEXP iSEXP, SEXP pSEXP, SEXP true_dagSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
-    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type true_dag(true_dagSEXP);
-    Rcpp::traits::input_parameter< bool& >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_neighbors_from_dag(i, p, true_dag, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_multiple_neighbors_from_dag
-NumericVector get_multiple_neighbors_from_dag(const NumericVector& targets, const int& p, const NumericMatrix& true_dag, bool& verbose);
-RcppExport SEXP _LocalFCI_get_multiple_neighbors_from_dag(SEXP targetsSEXP, SEXP pSEXP, SEXP true_dagSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericVector& >::type targets(targetsSEXP);
-    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type true_dag(true_dagSEXP);
-    Rcpp::traits::input_parameter< bool& >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_multiple_neighbors_from_dag(targets, p, true_dag, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// create_conditioning_sets_efficient_cpp2
-List create_conditioning_sets_efficient_cpp2(NumericVector& neighbors);
-RcppExport SEXP _LocalFCI_create_conditioning_sets_efficient_cpp2(SEXP neighborsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector& >::type neighbors(neighborsSEXP);
-    rcpp_result_gen = Rcpp::wrap(create_conditioning_sets_efficient_cpp2(neighbors));
-    return rcpp_result_gen;
-END_RCPP
-}
-// fci_setup
-List fci_setup(NumericMatrix& true_dag, const NumericVector& targets, StringVector& names, const int& lmax, bool& verbose);
-RcppExport SEXP _LocalFCI_fci_setup(SEXP true_dagSEXP, SEXP targetsSEXP, SEXP namesSEXP, SEXP lmaxSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type true_dag(true_dagSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type targets(targetsSEXP);
-    Rcpp::traits::input_parameter< StringVector& >::type names(namesSEXP);
-    Rcpp::traits::input_parameter< const int& >::type lmax(lmaxSEXP);
-    Rcpp::traits::input_parameter< bool& >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(fci_setup(true_dag, targets, names, lmax, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// change_S_efficient
-void change_S_efficient(List& S, int i, int j, NumericVector sep);
-RcppExport SEXP _LocalFCI_change_S_efficient(SEXP SSEXP, SEXP iSEXP, SEXP jSEXP, SEXP sepSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List& >::type S(SSEXP);
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< int >::type j(jSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type sep(sepSEXP);
-    change_S_efficient(S, i, j, sep);
-    return R_NilValue;
-END_RCPP
-}
-// change_S_0_efficient
-void change_S_0_efficient(List& S, int i, int j);
-RcppExport SEXP _LocalFCI_change_S_0_efficient(SEXP SSEXP, SEXP iSEXP, SEXP jSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< List& >::type S(SSEXP);
-    Rcpp::traits::input_parameter< int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< int >::type j(jSEXP);
-    change_S_0_efficient(S, i, j);
-    return R_NilValue;
-END_RCPP
-}
-// get_potential_sep
-NumericVector get_potential_sep(const int& i, const int& j, const NumericVector& neighborhood, const int& p, const NumericMatrix& true_dag);
-RcppExport SEXP _LocalFCI_get_potential_sep(SEXP iSEXP, SEXP jSEXP, SEXP neighborhoodSEXP, SEXP pSEXP, SEXP true_dagSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
-    Rcpp::traits::input_parameter< const int& >::type j(jSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type neighborhood(neighborhoodSEXP);
-    Rcpp::traits::input_parameter< const int& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type true_dag(true_dagSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_potential_sep(i, j, neighborhood, p, true_dag));
-    return rcpp_result_gen;
-END_RCPP
-}
-// check_separation_sample_efficient
-void check_separation_sample_efficient(const int& l, const int& i, const int& j, const NumericMatrix& kvals, NumericVector& sep, NumericMatrix true_dag, const StringVector& names, const NumericVector& neighborhood, NumericMatrix C, List S, double& pval, int& num_tests, arma::mat& R, int& n, double& signif_level, bool& verbose);
-RcppExport SEXP _LocalFCI_check_separation_sample_efficient(SEXP lSEXP, SEXP iSEXP, SEXP jSEXP, SEXP kvalsSEXP, SEXP sepSEXP, SEXP true_dagSEXP, SEXP namesSEXP, SEXP neighborhoodSEXP, SEXP CSEXP, SEXP SSEXP, SEXP pvalSEXP, SEXP num_testsSEXP, SEXP RSEXP, SEXP nSEXP, SEXP signif_levelSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int& >::type l(lSEXP);
-    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
-    Rcpp::traits::input_parameter< const int& >::type j(jSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type kvals(kvalsSEXP);
-    Rcpp::traits::input_parameter< NumericVector& >::type sep(sepSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
-    Rcpp::traits::input_parameter< const StringVector& >::type names(namesSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type neighborhood(neighborhoodSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type C(CSEXP);
-    Rcpp::traits::input_parameter< List >::type S(SSEXP);
-    Rcpp::traits::input_parameter< double& >::type pval(pvalSEXP);
-    Rcpp::traits::input_parameter< int& >::type num_tests(num_testsSEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type R(RSEXP);
-    Rcpp::traits::input_parameter< int& >::type n(nSEXP);
-    Rcpp::traits::input_parameter< double& >::type signif_level(signif_levelSEXP);
-    Rcpp::traits::input_parameter< bool& >::type verbose(verboseSEXP);
-    check_separation_sample_efficient(l, i, j, kvals, sep, true_dag, names, neighborhood, C, S, pval, num_tests, R, n, signif_level, verbose);
-    return R_NilValue;
-END_RCPP
-}
-// check_separation_sample_efficient_target
-void check_separation_sample_efficient_target(const int& l, const int& i, const int& j, const NumericMatrix& kvals, NumericVector& sep, NumericMatrix true_dag, const StringVector& names, const NumericVector& neighborhood, NumericMatrix C, List S, double& pval, int& num_tests, arma::mat& R, int& n, double& signif_level, bool& verbose);
-RcppExport SEXP _LocalFCI_check_separation_sample_efficient_target(SEXP lSEXP, SEXP iSEXP, SEXP jSEXP, SEXP kvalsSEXP, SEXP sepSEXP, SEXP true_dagSEXP, SEXP namesSEXP, SEXP neighborhoodSEXP, SEXP CSEXP, SEXP SSEXP, SEXP pvalSEXP, SEXP num_testsSEXP, SEXP RSEXP, SEXP nSEXP, SEXP signif_levelSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const int& >::type l(lSEXP);
-    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
-    Rcpp::traits::input_parameter< const int& >::type j(jSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type kvals(kvalsSEXP);
-    Rcpp::traits::input_parameter< NumericVector& >::type sep(sepSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
-    Rcpp::traits::input_parameter< const StringVector& >::type names(namesSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type neighborhood(neighborhoodSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type C(CSEXP);
-    Rcpp::traits::input_parameter< List >::type S(SSEXP);
-    Rcpp::traits::input_parameter< double& >::type pval(pvalSEXP);
-    Rcpp::traits::input_parameter< int& >::type num_tests(num_testsSEXP);
-    Rcpp::traits::input_parameter< arma::mat& >::type R(RSEXP);
-    Rcpp::traits::input_parameter< int& >::type n(nSEXP);
-    Rcpp::traits::input_parameter< double& >::type signif_level(signif_levelSEXP);
-    Rcpp::traits::input_parameter< bool& >::type verbose(verboseSEXP);
-    check_separation_sample_efficient_target(l, i, j, kvals, sep, true_dag, names, neighborhood, C, S, pval, num_tests, R, n, signif_level, verbose);
-    return R_NilValue;
-END_RCPP
-}
-// makeFinalGraph
-void makeFinalGraph(NumericMatrix& G, const NumericMatrix& C, NumericVector& neighborhood);
-RcppExport SEXP _LocalFCI_makeFinalGraph(SEXP GSEXP, SEXP CSEXP, SEXP neighborhoodSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix& >::type G(GSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type C(CSEXP);
-    Rcpp::traits::input_parameter< NumericVector& >::type neighborhood(neighborhoodSEXP);
-    makeFinalGraph(G, C, neighborhood);
-    return R_NilValue;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_LocalFCI_initializeLocalFCI", (DL_FUNC) &_LocalFCI_initializeLocalFCI, 4},
-    {"_LocalFCI_checkSkeletonTotal", (DL_FUNC) &_LocalFCI_checkSkeletonTotal, 4},
-    {"_LocalFCI_checkSkeletonBoth", (DL_FUNC) &_LocalFCI_checkSkeletonBoth, 4},
-    {"_LocalFCI_checkVStruct", (DL_FUNC) &_LocalFCI_checkVStruct, 4},
-    {"_LocalFCI_check_amat_works", (DL_FUNC) &_LocalFCI_check_amat_works, 3},
-    {"_LocalFCI_check_amat_works_onepar", (DL_FUNC) &_LocalFCI_check_amat_works_onepar, 1},
-    {"_LocalFCI_check_names_works", (DL_FUNC) &_LocalFCI_check_names_works, 3},
-    {"_LocalFCI_check_dag_object", (DL_FUNC) &_LocalFCI_check_dag_object, 3},
-    {"_LocalFCI_check_neighbors_retrieval", (DL_FUNC) &_LocalFCI_check_neighbors_retrieval, 4},
-    {"_LocalFCI_check_amat_retrieval", (DL_FUNC) &_LocalFCI_check_amat_retrieval, 5},
-    {"_LocalFCI_check_amat_row_retrieval", (DL_FUNC) &_LocalFCI_check_amat_row_retrieval, 4},
-    {"_LocalFCI_check_amat_col_retrieval", (DL_FUNC) &_LocalFCI_check_amat_col_retrieval, 4},
-    {"_LocalFCI_check_adjacent_non_adjacent", (DL_FUNC) &_LocalFCI_check_adjacent_non_adjacent, 4},
-    {"_LocalFCI_check_amat_setval", (DL_FUNC) &_LocalFCI_check_amat_setval, 6},
     {"_LocalFCI_fci", (DL_FUNC) &_LocalFCI_fci, 7},
     {"_LocalFCI_compare_skeletons", (DL_FUNC) &_LocalFCI_compare_skeletons, 3},
     {"_LocalFCI_compare_v_structures", (DL_FUNC) &_LocalFCI_compare_v_structures, 3},
@@ -653,6 +627,31 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_get_partial_correlation", (DL_FUNC) &_LocalFCI_get_partial_correlation, 4},
     {"_LocalFCI_fisherZ", (DL_FUNC) &_LocalFCI_fisherZ, 3},
     {"_LocalFCI_condIndTest", (DL_FUNC) &_LocalFCI_condIndTest, 6},
+    {"_LocalFCI_combn_cpp", (DL_FUNC) &_LocalFCI_combn_cpp, 2},
+    {"_LocalFCI_check_amat_works", (DL_FUNC) &_LocalFCI_check_amat_works, 3},
+    {"_LocalFCI_check_amat_works_onepar", (DL_FUNC) &_LocalFCI_check_amat_works_onepar, 1},
+    {"_LocalFCI_check_names_works", (DL_FUNC) &_LocalFCI_check_names_works, 3},
+    {"_LocalFCI_check_dag_object", (DL_FUNC) &_LocalFCI_check_dag_object, 3},
+    {"_LocalFCI_check_neighbors_retrieval", (DL_FUNC) &_LocalFCI_check_neighbors_retrieval, 4},
+    {"_LocalFCI_check_amat_retrieval", (DL_FUNC) &_LocalFCI_check_amat_retrieval, 5},
+    {"_LocalFCI_check_amat_row_retrieval", (DL_FUNC) &_LocalFCI_check_amat_row_retrieval, 4},
+    {"_LocalFCI_check_amat_col_retrieval", (DL_FUNC) &_LocalFCI_check_amat_col_retrieval, 4},
+    {"_LocalFCI_check_adjacent_non_adjacent", (DL_FUNC) &_LocalFCI_check_adjacent_non_adjacent, 4},
+    {"_LocalFCI_check_amat_setval", (DL_FUNC) &_LocalFCI_check_amat_setval, 6},
+    {"_LocalFCI_initializeLocalFCI", (DL_FUNC) &_LocalFCI_initializeLocalFCI, 4},
+    {"_LocalFCI_checkSkeletonTotal", (DL_FUNC) &_LocalFCI_checkSkeletonTotal, 4},
+    {"_LocalFCI_checkSkeletonBoth", (DL_FUNC) &_LocalFCI_checkSkeletonBoth, 4},
+    {"_LocalFCI_checkVStruct", (DL_FUNC) &_LocalFCI_checkVStruct, 4},
+    {"_LocalFCI_checkAdjMatConversion", (DL_FUNC) &_LocalFCI_checkAdjMatConversion, 6},
+    {"_LocalFCI_checkSeparationTest", (DL_FUNC) &_LocalFCI_checkSeparationTest, 8},
+    {"_LocalFCI_testRule1", (DL_FUNC) &_LocalFCI_testRule1, 5},
+    {"_LocalFCI_testRule2", (DL_FUNC) &_LocalFCI_testRule2, 5},
+    {"_LocalFCI_testRule3", (DL_FUNC) &_LocalFCI_testRule3, 5},
+    {"_LocalFCI_testRule4", (DL_FUNC) &_LocalFCI_testRule4, 8},
+    {"_LocalFCI_testRule8", (DL_FUNC) &_LocalFCI_testRule8, 5},
+    {"_LocalFCI_testRule9", (DL_FUNC) &_LocalFCI_testRule9, 5},
+    {"_LocalFCI_testRule10", (DL_FUNC) &_LocalFCI_testRule10, 5},
+    {"_LocalFCI_testallRules", (DL_FUNC) &_LocalFCI_testallRules, 5},
     {"_LocalFCI_getNbhd", (DL_FUNC) &_LocalFCI_getNbhd, 5},
     {"_LocalFCI_printS", (DL_FUNC) &_LocalFCI_printS, 1},
     {"_LocalFCI_getInitialValues", (DL_FUNC) &_LocalFCI_getInitialValues, 3},
@@ -660,18 +659,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_setListEfficient", (DL_FUNC) &_LocalFCI_setListEfficient, 4},
     {"_LocalFCI_setListTrue", (DL_FUNC) &_LocalFCI_setListTrue, 4},
     {"_LocalFCI_checkSeparationFunc", (DL_FUNC) &_LocalFCI_checkSeparationFunc, 5},
-    {"_LocalFCI_get_current_edges", (DL_FUNC) &_LocalFCI_get_current_edges, 3},
-    {"_LocalFCI_combn_cpp", (DL_FUNC) &_LocalFCI_combn_cpp, 2},
-    {"_LocalFCI_get_neighbors_from_dag", (DL_FUNC) &_LocalFCI_get_neighbors_from_dag, 4},
-    {"_LocalFCI_get_multiple_neighbors_from_dag", (DL_FUNC) &_LocalFCI_get_multiple_neighbors_from_dag, 4},
-    {"_LocalFCI_create_conditioning_sets_efficient_cpp2", (DL_FUNC) &_LocalFCI_create_conditioning_sets_efficient_cpp2, 1},
-    {"_LocalFCI_fci_setup", (DL_FUNC) &_LocalFCI_fci_setup, 5},
-    {"_LocalFCI_change_S_efficient", (DL_FUNC) &_LocalFCI_change_S_efficient, 4},
-    {"_LocalFCI_change_S_0_efficient", (DL_FUNC) &_LocalFCI_change_S_0_efficient, 3},
-    {"_LocalFCI_get_potential_sep", (DL_FUNC) &_LocalFCI_get_potential_sep, 5},
-    {"_LocalFCI_check_separation_sample_efficient", (DL_FUNC) &_LocalFCI_check_separation_sample_efficient, 16},
-    {"_LocalFCI_check_separation_sample_efficient_target", (DL_FUNC) &_LocalFCI_check_separation_sample_efficient_target, 16},
-    {"_LocalFCI_makeFinalGraph", (DL_FUNC) &_LocalFCI_makeFinalGraph, 3},
     {NULL, NULL, 0}
 };
 

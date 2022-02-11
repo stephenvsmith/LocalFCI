@@ -35,10 +35,10 @@ test_that("Get correct neighbors and check separating set update",{
   cat('\n\n')
   expect_equal(setListEfficient(neighbors,j,i,kvals),kvals)
   cat('\n\n')
-  expect_equal(setListTrue(neighbors,i,j,kvals),neighbors[kvals+1])
-  cat('\n\n')
-  expect_equal(setListTrue(neighbors,j,i,kvals),neighbors[kvals+1])
-  cat('\n\n')
+  # expect_equal(setListTrue(neighbors,i,j,kvals),neighbors[kvals+1])
+  # cat('\n\n')
+  # expect_equal(setListTrue(neighbors,j,i,kvals),neighbors[kvals+1])
+  # cat('\n\n')
   
   
 

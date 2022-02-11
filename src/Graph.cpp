@@ -3,15 +3,16 @@
 using namespace Rcpp;
 
 Graph::Graph(int nodes) : p(nodes) {
-  Rcout << "Constructing our graph.\n";
   StringVector tmp(nodes);
   names = tmp;
   NumericMatrix tmp1(nodes);
   amat = tmp1;
   std::fill(amat.begin(), amat.end(), 1); //tested
   amat.fill_diag(0); //tested
-  Rcout << "Our current matrix:\n";
-  print_matrix(amat);
+}
+
+void Graph::emptyGraph(){
+  std::fill(amat.begin(),amat.end(),0);  
 }
 
 NumericVector Graph::getAdjacent(int i){

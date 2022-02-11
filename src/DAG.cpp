@@ -40,7 +40,7 @@ NumericVector DAG::getNeighbors(const int &i,bool &verbose){
       Rcout << "Call from get_neighbors_from_dag. We are evaluating the following child: " << *it << std::endl;
     for (int j = 0; j<p; ++j){
       current_val = Graph::getAmatVal(j,*it);
-      if (current_val == 1 & i != j){
+      if (current_val == 1 && i != j){
         potential_spouses.push_back(j);
         if (verbose)
           Rcout << "Call from get_neighbors_from_dag. Node " << j << " is a potential spouse of node " << i << ".\n";
@@ -86,11 +86,4 @@ NumericVector DAG::getNeighborsMultiTargets(const NumericVector &targets,bool &v
   }
   
   return neighbors;
-}
-
-// TODO: should probably change all instances of this to just using the function above
-NumericVector DAG::getPotentialSepNodes(const int &i,const int &j,bool &verbose){
-  NumericVector targets = NumericVector::create(i,j);
-  NumericVector potential_seps = getNeighborsMultiTargets(targets,verbose);
-  return potential_seps;
 }

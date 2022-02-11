@@ -18,9 +18,6 @@ public:
   // Tested in graphtests.cpp and test_Graph.R
   NumericVector getNeighborsMultiTargets(const NumericVector &targets,bool &verbose);
   
-  // Basically tested, but is a redundant function
-  NumericVector getPotentialSepNodes(const int &i,const int &j,bool &verbose);
-  
   // TODO: CHECK ACYCLICITY
 };
 

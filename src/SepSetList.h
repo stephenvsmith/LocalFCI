@@ -2,23 +2,24 @@
 #define SepSetList_H
 
 #include "sharedFunctions.h"
+#include <algorithm>
 using namespace Rcpp;
 
 class SepSetList {
 public:
   SepSetList(NumericVector &neighbors);
-  
-  //void changeListTrue(int i,int j,NumericVector sep);
-  void changeListEfficient(int i,int j,NumericVector sep); // Tested
-  void changeListEfficient(int i,int j); // Tested | TODO: INCORPORATE THIS INTO THE REST OF THE CODE
-  
-  //NumericVector getSepSetEfficient(int i,int j); // tested
-  NumericVector getSepSetTrue(int i,int j); // tested
 
-  //bool isSeparatedEfficient(int i, int j,int k);
-  bool isSeparatedTrue(int i, int j,int k);
+  void changeList(int i,int j,NumericVector sep); // Tested
+  void changeList(int i,int j); // Tested
+
+  NumericVector getSepSet(int i,int j); // tested
+
+  bool isPotentialVStruct(int i, int j,int k);
+  bool isSeparated(int i,int j,int k);
   
   void printSepSetList(); // tested
+  
+  List getS() { return S; };
 private:
   NumericVector nodes;
   List S;

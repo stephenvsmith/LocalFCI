@@ -22,7 +22,7 @@ void printS(NumericVector neighbors){
 // [[Rcpp::export]]
 NumericVector getInitialValues(NumericVector neighbors,int i,int j){
   SepSetList *S = new SepSetList(neighbors);
-  NumericVector results = S -> getSepSetTrue(i,j);
+  NumericVector results = S -> getSepSet(i,j);
   delete S;
   return results;
 }
@@ -30,9 +30,9 @@ NumericVector getInitialValues(NumericVector neighbors,int i,int j){
 // [[Rcpp::export]]
 NumericVector setListEmptySet(NumericVector neighbors,int i,int j){
   SepSetList *S = new SepSetList(neighbors);
-  S -> changeListEfficient(i,j);
+  S -> changeList(i,j);
   S -> printSepSetList();
-  NumericVector results = S -> getSepSetTrue(i,j);
+  NumericVector results = S -> getSepSet(i,j);
   delete S;
   return results;
 }
@@ -40,9 +40,9 @@ NumericVector setListEmptySet(NumericVector neighbors,int i,int j){
 // [[Rcpp::export]]
 NumericVector setListEfficient(NumericVector neighbors,int i,int j,NumericVector kvals){
   SepSetList *S = new SepSetList(neighbors);
-  S -> changeListEfficient(i,j,kvals);
+  S -> changeList(i,j,kvals);
   S -> printSepSetList();
-  NumericVector results = S -> getSepSetTrue(i,j);
+  NumericVector results = S -> getSepSet(i,j);
   delete S;
   return results;
 }
@@ -50,9 +50,9 @@ NumericVector setListEfficient(NumericVector neighbors,int i,int j,NumericVector
 // [[Rcpp::export]]
 NumericVector setListTrue(NumericVector neighbors,int i,int j,NumericVector kvals){
   SepSetList *S = new SepSetList(neighbors);
-  S -> changeListEfficient(i,j,kvals);
+  S -> changeList(i,j,kvals);
   S -> printSepSetList();
-  NumericVector results = S -> getSepSetTrue(i,j);
+  NumericVector results = S -> getSepSet(i,j);
   delete S;
   return results;
 }
@@ -61,8 +61,8 @@ NumericVector setListTrue(NumericVector neighbors,int i,int j,NumericVector kval
 // [[Rcpp::export]]
 bool checkSeparationFunc(NumericVector neighbors,int i,int j,NumericVector sep,int val_to_check){
   SepSetList *S = new SepSetList(neighbors);
-  S -> changeListEfficient(i,j,sep);
-  NumericVector results = S -> isSeparatedTrue(i,j,val_to_check);
+  S -> changeList(i,j,sep);
+  NumericVector results = S -> isPotentialVStruct(i,j,val_to_check);
   delete S;
   return results;
 }
