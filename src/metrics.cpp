@@ -389,7 +389,7 @@ DataFrame neighborhood_metrics(NumericMatrix G){
   );
 }
 
-
+// TODO: create a function to compare the estimated DAG to the reference DAG
 
 
 

@@ -6,11 +6,6 @@
 
 using namespace Rcpp;
 
-#ifdef RCPP_USE_GLOBAL_ROSTREAM
-Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
-Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
-#endif
-
 // fci
 List fci(NumericMatrix true_dag, arma::mat df, NumericVector targets, StringVector names, int lmax, double signif_level, bool verbose);
 RcppExport SEXP _LocalFCI_fci(SEXP true_dagSEXP, SEXP dfSEXP, SEXP targetsSEXP, SEXP namesSEXP, SEXP lmaxSEXP, SEXP signif_levelSEXP, SEXP verboseSEXP) {

@@ -1,7 +1,7 @@
 localfci_cpp <- function(data=NULL,true_dag=NULL,targets,node_names=NULL,lmax=3,tol=0.01,method="MMPC",
                         verbose = TRUE){
   if (is.null(node_names)){
-    node_names <- paste0("V",1:ncol(data))
+    node_names <- paste0("V",0:(ncol(data)-1))
   }
   if (is.data.frame(data)){
     data <- as.matrix(data)
@@ -43,9 +43,17 @@ localfci_cpp <- function(data=NULL,true_dag=NULL,targets,node_names=NULL,lmax=3,
     cat("The node value for the C++ function is",cpp_target)
   }
   
+  results <- fci(true_dag,data,targets-1,node_names,lmax,tol,verbose)
+  
   # We change the target to target - 1 in order to accommodate change to C++
   return(list(
-    "results"=fci(true_dag,data,targets-1,node_names,lmax,tol,verbose),
+    "amat"=results$G,
+    "S"=results$S,
+    "NumTests"=results$NumTests,
+    "Nodes"=results$allNodes+1, # to convert to R numbering
+    "totalSkeletonTime"=results$totalSkeletonTime,
+    "targetSkeletonTimes"=results$targetSkeletonTimes,
+    "totalTime"=results$totalTime,
     "referenceDAG"=true_dag,
     "mbList"=mbList,
     "data_means"=data_means,
