@@ -35,9 +35,9 @@ p <- length(node_names)
 test_that("Wrapper function works",{
   results <- localfci_cpp(true_dag = asiaDAG,data = asiadf,targets = c(1,6),node_names=node_names,verbose = FALSE)
   g <- empty.graph(node_names)
-  amat(g) <- results$results$G
-  for (result_part in setdiff(names(results$results),c("totalSkeletonTime","targetSkeletonTimes","totalTime"))){
+  amat(g) <- results$amat
+  for (result_part in setdiff(names(results),c("totalSkeletonTime","targetSkeletonTimes","totalTime"))){
     #expect_snapshot_output(results$results[[result_part]])
-    expect_snapshot_output(print(results$results[[result_part]]))
+    expect_snapshot_output(print(results[[result_part]]))
   }
 })

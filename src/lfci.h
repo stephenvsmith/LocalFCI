@@ -23,11 +23,11 @@ public:
   
   ~LocalFCI(){delete C_tilde; delete true_DAG; delete S;};
   
-  void change_S_0_efficient(int i,int j);
-  void change_S_efficient(int i,int j,NumericVector sep);
-  
+  //Printing Functions
   void print_elements();
   void printAmat(){ C_tilde -> printAmat(); };
+  
+  // For debugging and algorithm analysis
   bool verbose;
   
   int getSize(){ return p; }

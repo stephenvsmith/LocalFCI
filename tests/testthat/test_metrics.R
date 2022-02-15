@@ -42,7 +42,7 @@ test_that("checking metric functions",{
   data("asiaDAG")
   data("asiadf")
   est <- localfci_cpp(data=asiadf,true_dag = asiaDAG,targets = t,verbose = FALSE)
-  est <- est$results
+
   pc.fit <- as(pcalg::pc(suffStat = list(C = cor(asiadf), n = nrow(asiadf)),
                   indepTest = gaussCItest, ## indep.test: partial correlations
                   alpha=0.05, labels = colnames(asiaDAG),
@@ -56,6 +56,6 @@ test_that("checking metric functions",{
   # graphviz.plot(lfci_g)
   # graphviz.plot(pc_g)
   # graphviz.compare(lfci_g,pc_g)
-  expect_snapshot_output(all_metrics(est$G,asiaDAG,pc_asia,t-1))
+  expect_snapshot_output(all_metrics(est$amat,asiaDAG,pc_asia,t-1))
   
 })

@@ -980,10 +980,9 @@ void LocalFCI::convertFinalGraph(Graph* g){
       g -> setAmatVal(neighborhood(i),neighborhood(j),current_val);  
     }
   }
-  //C_tilde -> printAmat();
+
   delete C_tilde;
   C_tilde = g;
-  //C_tilde -> printAmat();
   g = nullptr;
 }
 

@@ -49,7 +49,11 @@ NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector 
   Graph* C_new = new Graph(lfci.getSize());
   C_new -> emptyGraph();
   lfci.convertFinalGraph(C_new);
+  C_new = nullptr;
   //lfci.printAmat();
+  
+  Rcout << "Final\n";
+  lfci.print_elements();
   return lfci.getAmat();
 }
 
