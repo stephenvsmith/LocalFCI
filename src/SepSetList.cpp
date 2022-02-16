@@ -23,7 +23,7 @@ void checkInputValues(int i,int j, int N){
 
 void SepSetList::changeList(int i,int j,NumericVector sep){
   checkInputValues(i,j,N);
-  print_vector_elements_nonames(sep,"Separation Values:","\n"," ");
+  // print_vector_elements_nonames(sep,"Separation Values:","\n"," ");
   NumericVector sep_new;
   sep_new = clone(sep);
   List sublist;
