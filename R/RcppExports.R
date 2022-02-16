@@ -49,6 +49,10 @@ combn_cpp <- function(x, l) {
     .Call(`_LocalFCI_combn_cpp`, x, l)
 }
 
+testCondInd <- function(R, i, j, k, n, signif_level) {
+    .Call(`_LocalFCI_testCondInd`, R, i, j, k, n, signif_level)
+}
+
 check_amat_works <- function(nodes, node_names, adj) {
     .Call(`_LocalFCI_check_amat_works`, nodes, node_names, adj)
 }

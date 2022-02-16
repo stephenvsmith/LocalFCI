@@ -1,10 +1,10 @@
+data("asiadf")
+C <- cor(asiadf)
+
 test_that("Partial Correlation function is accurate",{
-  data("asiadf")
-  C <- cor(asiadf)
-  true_result <- cor(asiadf)[1,3]
+  true_result <- C[1,3]
   est_result <- get_partial_correlation(cor(asiadf),0,2,double())
   expect_equal(est_result,true_result)
-  
   
   true_result <- ppcor::pcor(asiadf)
   for (i in 0:7){
@@ -17,7 +17,6 @@ test_that("Partial Correlation function is accurate",{
 })
 
 test_that("Make sure you are obtaining the correct test results",{
-  C <- cor(asiadf)
   k1 <- numeric(0)
   n <- nrow(asiadf)
   alpha <- 0.05

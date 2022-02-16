@@ -12,7 +12,7 @@ NumericMatrix combn_cpp(NumericVector x,int l){
   NumericMatrix result;
   
   if (l > x.length()){
-    Rcout << "There aren't enough neighbors for the current value of l\n";
+    stop("There aren't enough neighbors for the current value of l\n");
   }
   
   if (l==0){

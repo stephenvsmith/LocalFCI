@@ -171,6 +171,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// testCondInd
+List testCondInd(arma::mat R, const int& i, const int& j, const arma::uvec& k, const int& n, const double& signif_level);
+RcppExport SEXP _LocalFCI_testCondInd(SEXP RSEXP, SEXP iSEXP, SEXP jSEXP, SEXP kSEXP, SEXP nSEXP, SEXP signif_levelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type R(RSEXP);
+    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
+    Rcpp::traits::input_parameter< const int& >::type j(jSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const double& >::type signif_level(signif_levelSEXP);
+    rcpp_result_gen = Rcpp::wrap(testCondInd(R, i, j, k, n, signif_level));
+    return rcpp_result_gen;
+END_RCPP
+}
 // check_amat_works
 NumericMatrix check_amat_works(int nodes, StringVector node_names, NumericMatrix adj);
 RcppExport SEXP _LocalFCI_check_amat_works(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
@@ -628,6 +644,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_fisherZ", (DL_FUNC) &_LocalFCI_fisherZ, 3},
     {"_LocalFCI_condIndTest", (DL_FUNC) &_LocalFCI_condIndTest, 6},
     {"_LocalFCI_combn_cpp", (DL_FUNC) &_LocalFCI_combn_cpp, 2},
+    {"_LocalFCI_testCondInd", (DL_FUNC) &_LocalFCI_testCondInd, 6},
     {"_LocalFCI_check_amat_works", (DL_FUNC) &_LocalFCI_check_amat_works, 3},
     {"_LocalFCI_check_amat_works_onepar", (DL_FUNC) &_LocalFCI_check_amat_works_onepar, 1},
     {"_LocalFCI_check_names_works", (DL_FUNC) &_LocalFCI_check_names_works, 3},

@@ -16,6 +16,9 @@ void Graph::emptyGraph(){
 }
 
 NumericVector Graph::getAdjacent(int i){
+  if (i < 0 || i>=p){
+    stop("Call from getAdjacent: invalid index i=%i",i);
+  }
   NumericVector current_edges;
   for (int j=0;j<p;++j){
     if (amat(i,j)==1 || amat(j,i)==1){
@@ -27,6 +30,9 @@ NumericVector Graph::getAdjacent(int i){
 
 // Returns nodes that are not adjacent to i in the estimated skeleton
 NumericVector Graph::getNonAdjacent(int i){
+  if (i < 0 || i>=p){
+    stop("Call from getAdjacent: invalid index i=%i",i);
+  }
   NumericVector final;
   
   for (int j=0;j<p;++j){

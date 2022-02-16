@@ -95,7 +95,6 @@ void LocalFCI::checkSeparation(int l,int i,int j,NumericMatrix kvals){
   
   if (l == 0){
     sep = NA_REAL;
-    //Rcout << "Size of arma vector when l=0: " << sep_arma.size() << std::endl;
     test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
     ++num_tests;
     p_vals.push_back(test_result["pval"]);
@@ -200,6 +199,17 @@ void LocalFCI::get_skeleton_total(){
                 Rcout << "There is " << neighbors.length() << " neighbor.\n";
               }
             }
+            if (neighbors.length()>neighborhood.length()){
+              stop("Invalid number of neighbors for nodes i and j.\n");
+            }
+
+            std::for_each(neighbors.begin(),neighbors.end(),[this](int n){
+              if (n>=N){
+                stop("Neighbor value %i is too large.",n);
+              } else if (n<0){
+                stop("Neighbor value is negative");
+              }
+            });
             kvals = combn_cpp(neighborhood[neighbors],l);
             // check whether nodes i and j are separated by any of the potential separating sets in kvals
             checkSeparation(l,i,j,kvals);
@@ -211,10 +221,8 @@ void LocalFCI::get_skeleton_total(){
     
   }
   if (verbose){
-    if (verbose){
-      Rcout << "\n\nValues after Total Skeleton Run\n\n";
-      print_elements();
-    }
+    Rcout << "\n\nValues after Total Skeleton Run\n\n";
+    print_elements();
   }
   auto total_skeleton_end = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(total_skeleton_end-total_skeleton_start);
@@ -448,7 +456,7 @@ void LocalFCI::get_v_structures_efficient() {
 
 void LocalFCI::rule1search(int beta,int alpha,bool &track_changes,bool verbose){
   // Search for beta o-* gamma (beta (1) (!=0) gamma)
-  for (int gamma=0;gamma<p;++gamma){
+  for (int gamma=0;gamma<N;++gamma){
     if ((C_tilde->operator()(gamma,beta)==1) && (C_tilde->operator()(beta,gamma)!= 0)){ 
       if ((C_tilde->getAmatVal(alpha,gamma)==0) && (C_tilde->getAmatVal(gamma,alpha)==0)){
         if (C_tilde->getAmatVal(beta,gamma)==3){
@@ -473,8 +481,8 @@ bool LocalFCI::rule1(bool &track_changes,bool verbose) {
   //int gamma;
   // Outer loops: Go through every node to find an asterisk. The node it is incident on is alpha
   // The connected node is beta, which must have an arrowhead pointing into it.
-  for (int alpha = 0;alpha<p;++alpha){
-    for (int beta = 0;beta<p;++beta){
+  for (int alpha = 0;alpha<N;++alpha){
+    for (int beta = 0;beta<N;++beta){
       if (C_tilde->getAmatVal(alpha,beta)==2 && C_tilde->getAmatVal(beta,alpha)!=0){ // alpha *-> beta
         rule1search(beta,alpha,track_changes,verbose);
       }
@@ -495,7 +503,7 @@ void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bo
   
   // Condition 1 refers to alpha -> beta *-> gamma
   if (condition1){
-    for (int gamma=0;gamma<p;++gamma){
+    for (int gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(gamma,beta)!=0 && C_tilde->getAmatVal(beta,gamma)==2){ // beta *-> gamma
         if (C_tilde->getAmatVal(alpha,gamma)==1 && C_tilde->getAmatVal(gamma,alpha)!=0){ // alpha *-o gamma
           C_tilde->setAmatVal(alpha,gamma,2); // alpha *-> gamma
@@ -509,7 +517,7 @@ void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bo
       }
     }
   } else if (condition2){ // Condition 2 refers to alpha *-> beta -> gamma
-    for (int gamma=0;gamma<p;++gamma){
+    for (int gamma=0;gamma<N;++gamma){
       if ((C_tilde->getAmatVal(gamma,beta)==3) && (C_tilde->getAmatVal(beta,gamma)==2)){ // beta -> gamma
         if ((C_tilde->getAmatVal(alpha,gamma)==1) && (C_tilde->getAmatVal(gamma,alpha)!=0)){ // alpha *-o gamma
           C_tilde->setAmatVal(alpha,gamma,2); // alpha *-> gamma
@@ -534,8 +542,8 @@ bool LocalFCI::rule2(bool &track_changes,bool verbose) {
   bool condition1;
   bool condition2;
   // Searching for alpha -> beta OR alpha *-> beta
-  for (int alpha = 0;alpha<p;++alpha){
-    for (int beta = 0;beta<p;++beta){
+  for (int alpha = 0;alpha<N;++alpha){
+    for (int beta = 0;beta<N;++beta){
       condition1 = (C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)==3); // alpha -> beta
       condition2 = (C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)!=0); // alpha *-> beta
       if (condition1 | condition2){
@@ -557,8 +565,7 @@ bool LocalFCI::rule2(bool &track_changes,bool verbose) {
 List LocalFCI::rule3asearch(int beta,int alpha){
   NumericVector gammafinal; // There may be multiple values of gamma for which this holds. This assures we get them all.
   bool success = false;
-  
-  for (int gamma=0;gamma<p;++gamma){
+  for (int gamma=0;gamma<N;++gamma){
     // Search for beta <-* gamma
     if (C_tilde->getAmatVal(gamma,beta)==2 && C_tilde->getAmatVal(beta,gamma)!=0 && gamma!= alpha){
       gammafinal.push_back(gamma);
@@ -575,11 +582,10 @@ List LocalFCI::rule3asearch(int beta,int alpha){
 }
 
 void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bool &track_changes,bool verbose){
-
   bool condition1;
   bool condition2;
   // We are searching for alpha (*) (1) theta (1) (*) gamma
-  for (int theta = 0;theta<p;++theta){
+  for (int theta = 0;theta<N;++theta){
     condition1 = (C_tilde->getAmatVal(alpha,theta)==1) && (C_tilde->getAmatVal(theta,alpha)!=0); // alpha *-o theta
     condition2 = (C_tilde->getAmatVal(theta,gamma)!=0) && (C_tilde->getAmatVal(gamma,theta)==1); // theta o-* gamma
     if (condition1 && condition2){
@@ -599,15 +605,14 @@ void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bo
 
 
 bool LocalFCI::rule3(bool &track_changes,bool verbose) {
-
   int gamma;
   List searchResults;
   NumericVector gammaVals;
   //bool condition1;
   //bool condition2;
   // (alpha (*) (2) beta (2) (*) gamma)
-  for (int alpha = 0;alpha<p;++alpha){
-    for (int beta = 0;beta<p;++beta){
+  for (int alpha = 0;alpha<N;++alpha){
+    for (int beta = 0;beta<N;++beta){
       if ((C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)!=0)){ // alpha *-> beta <-* gamma
         searchResults = rule3asearch(beta,alpha); // Search for gamma
         if (searchResults["rule3success"]){
@@ -647,16 +652,15 @@ bool LocalFCI::check_sep_r4(int beta,NumericVector md_path,bool verbose){
 }
 
 bool LocalFCI::rule4(bool &track_changes,bool verbose){
-
   bool cond1;
   bool cond2;
   bool done;
   NumericVector md_path;
-  for (int beta=0;beta<p;++beta){
-    for (int gamma=0;gamma<p;++gamma){
+  for (int beta=0;beta<N;++beta){
+    for (int gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(beta,gamma)!=0 && C_tilde->getAmatVal(gamma,beta)==1){
         //Rcout << "Potential beta: " << beta << " | Potential gamma: " << gamma;
-        for (int alpha=0;alpha<p;++alpha){
+        for (int alpha=0;alpha<N;++alpha){
           cond1 = C_tilde->getAmatVal(beta,alpha)==2 && C_tilde->getAmatVal(alpha,beta)!=0;
           cond2 = C_tilde->getAmatVal(gamma,alpha)==3 && C_tilde->getAmatVal(alpha,gamma)==2; // triangle structure exists but is not oriented
           if (cond1 && cond2){
@@ -710,14 +714,13 @@ bool LocalFCI::rule4(bool &track_changes,bool verbose){
 
 
 bool LocalFCI::rule8(bool &track_changes,bool verbose){
-  
   bool cond1;
   bool cond2;
   bool cond3;
-  for (int alpha=0;alpha<p;++alpha){
-    for (int gamma=0;gamma<p;++gamma){
+  for (int alpha=0;alpha<N;++alpha){
+    for (int gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(alpha,gamma)==2 && C_tilde->getAmatVal(gamma,alpha)==1){ // alpha o-> gamma
-        for (int beta=0;beta<p;++beta){
+        for (int beta=0;beta<N;++beta){
           cond1 = C_tilde->getAmatVal(beta,alpha)==3 && C_tilde->getAmatVal(alpha,beta)==2; // alpha -> beta
           cond2 = C_tilde->getAmatVal(beta,alpha)==3 && C_tilde->getAmatVal(alpha,beta)==1; // alpha -o beta
           if (cond1 || cond2){
@@ -757,14 +760,14 @@ bool LocalFCI::rule9(bool &track_changes,bool verbose){
   std::vector<int> beta_vals;
   int beta_current;
   NumericVector upd;
-  
-  for (int alpha=0;alpha<p;++alpha){
-    for (int gamma=0;gamma<p;++gamma){
+
+  for (int alpha=0;alpha<N;++alpha){
+    for (int gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(alpha,gamma)==2 && C_tilde->getAmatVal(gamma,alpha)==1){ // alpha o-> gamma
         //Rcout << "Potential alpha: " << alpha << " | Potential gamma: " << gamma << std::endl;
         beta_vals.clear();
         // Find all beta such that alpha (o-)-(o>) beta, and beta and gamma are not connected
-        for (int beta=0;beta<p;++beta){
+        for (int beta=0;beta<N;++beta){
           cond1 = C_tilde->getAmatVal(alpha,beta) == 2 || C_tilde->getAmatVal(alpha,beta) == 1;
           cond2 = C_tilde->getAmatVal(beta,alpha) == 1 || C_tilde->getAmatVal(beta,alpha) == 3;
           cond3 = C_tilde->getAmatVal(gamma,beta) == 0 && C_tilde->getAmatVal(beta,gamma) == 0;
@@ -826,12 +829,12 @@ bool LocalFCI::rule10(bool &track_changes,bool verbose){
   
   
   
-  for (int alpha=0;alpha<p;++alpha){
-    for (int gamma=0;gamma<p;++gamma){ // search for alpha o-> gamma
+  for (int alpha=0;alpha<N;++alpha){
+    for (int gamma=0;gamma<N;++gamma){ // search for alpha o-> gamma
       cond1 = C_tilde->getAmatVal(alpha,gamma)==2 && C_tilde->getAmatVal(gamma,alpha)==1;
       if (cond1){
         //Rcout << "Potential alpha: " << alpha << " | Potential gamma: " << gamma << std::endl;
-        for (int b=0;b<p;++b){ // search for beta -> gamma
+        for (int b=0;b<N;++b){ // search for beta -> gamma
           cond1 = C_tilde->getAmatVal(gamma,b)==3 && C_tilde->getAmatVal(b,gamma)==2;
           if (cond1){
             //Rcout << "Potential beta: " << b << std::endl;
@@ -866,7 +869,7 @@ bool LocalFCI::rule10(bool &track_changes,bool verbose){
               } else { // search for two minimal uncovered p.d. paths
                 // Find all x s.t. a (-o)-(o>) x  
                 x_vals = NumericVector(0); // Creates an empty vector
-                for (int x=0;x<p;++x){
+                for (int x=0;x<N;++x){
                   cond1 = C_tilde->getAmatVal(alpha,x)==1 || C_tilde->getAmatVal(alpha,x)==2;
                   cond2 = C_tilde->getAmatVal(x,alpha)==1 || C_tilde->getAmatVal(x,alpha)==3;
                   cond3 = x != gamma;
@@ -937,8 +940,8 @@ void LocalFCI::allRules(bool verbose){
 void LocalFCI::convertMixedGraph(){
   int G_ij;
   int G_ji;
-  for (int i=0;i<p;++i){
-    for (int j=i+1;j<p;++j){
+  for (int i=0;i<N;++i){
+    for (int j=0;j<N;++j){
       G_ij = C_tilde -> getAmatVal(i,j);
       G_ji = C_tilde -> getAmatVal(j,i);
       if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==2){

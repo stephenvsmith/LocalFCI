@@ -2,7 +2,7 @@
 using namespace Rcpp;
 
 SepSetList::SepSetList(NumericVector &neighbors):nodes(neighbors){
-  int N = neighbors.length();
+  N = neighbors.length();
   for (int i=0;i<N;++i){
     List subset = List::create();
     for (int j=0;j<N;++j){
@@ -12,7 +12,18 @@ SepSetList::SepSetList(NumericVector &neighbors):nodes(neighbors){
   }
 }
 
+void checkInputValues(int i,int j, int N){
+  if (i<0 || i>=N){
+    stop("Input i=%i is invalid",i);
+  }
+  if (j<0 || j>=N){
+    stop("Input j=%i is invalid",j);
+  }
+}
+
 void SepSetList::changeList(int i,int j,NumericVector sep){
+  checkInputValues(i,j,N);
+  print_vector_elements_nonames(sep,"Separation Values:","\n"," ");
   NumericVector sep_new;
   sep_new = clone(sep);
   List sublist;
@@ -21,7 +32,8 @@ void SepSetList::changeList(int i,int j,NumericVector sep){
 }
 
 void SepSetList::changeList(int i,int j){
-  changeList(i,j,NumericVector::create(-1));  
+  NumericVector tmp = { -1 };
+  changeList(i,j,tmp);  
 }
 
 /*

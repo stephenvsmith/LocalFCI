@@ -36,16 +36,29 @@ public:
   
   // Tested
   int getAmatVal(int i,int j){
+    if (i<0 || j<0){
+      stop("Invalid negative index");
+    }
+    if (i>=p || j>=p){
+      Rcout << "i = " << i << " | j = " << j << " | Number of Nodes=" << p << std::endl; 
+      stop("Invalid index: too large");
+    }
     return amat(i,j);
   }
   
   // Tested in graphtests.cpp and test_Graph.R
   NumericVector getAmatRow(int row){
+    if (row>=p){
+      stop("Row value too large\n");
+    }
     return amat(row,_);
   }
   
   // Tested in graphtests.cpp and test_Graph.R
   NumericVector getAmatCol(int col){
+    if (col>=p){
+      stop("Column value too large\n");
+    }
     return amat(_,col);
   }
   

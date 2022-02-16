@@ -21,6 +21,7 @@ public:
   
   List getS() { return S; };
 private:
+  int N;
   NumericVector nodes;
   List S;
 };

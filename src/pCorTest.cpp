@@ -5,7 +5,6 @@ using namespace Rcpp;
 // Here, we are treating C as the correlation matrix
 // [[Rcpp::export]]
 double get_partial_correlation(arma::mat C,int i,int j,arma::uvec k){
-  
   if (i == j){
     return(1.0);
   }
@@ -14,9 +13,9 @@ double get_partial_correlation(arma::mat C,int i,int j,arma::uvec k){
   int k_size = k.size();
   
   if (k_size==0){
-    pc = C(i,j);
+    return C(i,j);
   } else if (k_size==1){
-    //Rcout << "i=" << i << " | j=" << j << " | k=" << k(0) << " | C(i,k)=" << C(i,k(0)) << " | C(j,k)" << C(j,k(0)) << std::endl;
+    Rcout << "i=" << i << " | j=" << j << " | k=" << k(0) << " | C(i,k)=" << C(i,k(0)) << " | C(j,k)" << C(j,k(0)) << std::endl;
     pc = (C(i,j)-C(i,k(0))*C(j,k(0))) / sqrt( (1-pow(C(i,k(0)),2))*(1-pow(C(j,k(0)),2)));
   } else {
     arma::uvec indices(k_size+2);
@@ -47,6 +46,14 @@ double fisherZ(double pc,int n,int k_size){
   return sqrt(n - k_size - 3) * 0.5 * log_part(pc);
 }
 
+void printListVals(List l){
+  bool a = l["result"];
+  double b = l["pval"];
+  Rcout << "List Values:\n";
+  Rcout << "Result: " << a;
+  Rcout << "P-Value: " << b;
+}
+
 // [[Rcpp::export]]
 List condIndTest(arma::mat &C,const int &i,const int &j,const arma::uvec &k,const int &n,const double &signif_level){
   double pc = get_partial_correlation(C,i,j,k);
@@ -55,9 +62,15 @@ List condIndTest(arma::mat &C,const int &i,const int &j,const arma::uvec &k,cons
   bool lower = pc_transformed < 0;
   
   double cutoff = R::qnorm(1-signif_level/2,0.0,1.0,true,false);
-  //Rcpp::Rcout << "Value = " << pc_transformed << " | Cutoff = " << cutoff << " | Result = " << std::abs(pc_transformed) - cutoff << std::endl;
+  // Rcpp::Rcout << "Value = " << pc_transformed << " | Cutoff = " << cutoff << " | Result = " << std::abs(pc_transformed) - cutoff << std::endl;
+  // Rcpp::Rcout << "Results: " << (std::abs(pc_transformed) <= cutoff) << " | " << 2*R::pnorm(pc_transformed,0.0,1.0,lower,false) << std::endl;
+  
+  bool accept_H0 = std::abs(pc_transformed) <= cutoff;
+  double pval=2*R::pnorm(pc_transformed,0.0,1.0,lower,false);
+  //printListVals(res);
+  
   return List::create(
-    _["result"]=std::abs(pc_transformed) <= cutoff, // The null hypothesis is accepted (p-value large) => H_0: r = 0 => Conditional independence
-    _["pval"]=2*R::pnorm(pc_transformed,0.0,1.0,lower,false)                           
+    _["result"]=accept_H0, // The null hypothesis is accepted (p-value large) => H_0: r = 0 => Conditional independence
+    _["pval"]=pval
   );
 }
