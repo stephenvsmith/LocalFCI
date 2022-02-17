@@ -454,7 +454,7 @@ void LocalFCI::get_v_structures_efficient() {
  * If alpha and gamma are not adjacent, then orient the triple: alpha *-> beta -> gamma
  */
 
-void LocalFCI::rule1search(int beta,int alpha,bool &track_changes,bool verbose){
+void LocalFCI::rule1search(int beta,int alpha,bool &track_changes){
   // Search for beta o-* gamma (beta (1) (!=0) gamma)
   for (int gamma=0;gamma<N;++gamma){
     if ((C_tilde->operator()(gamma,beta)==1) && (C_tilde->operator()(beta,gamma)!= 0)){ 
@@ -477,14 +477,14 @@ void LocalFCI::rule1search(int beta,int alpha,bool &track_changes,bool verbose){
   }
 }
 
-bool LocalFCI::rule1(bool &track_changes,bool verbose) {
+bool LocalFCI::rule1(bool &track_changes) {
   //int gamma;
   // Outer loops: Go through every node to find an asterisk. The node it is incident on is alpha
   // The connected node is beta, which must have an arrowhead pointing into it.
   for (int alpha = 0;alpha<N;++alpha){
     for (int beta = 0;beta<N;++beta){
       if (C_tilde->getAmatVal(alpha,beta)==2 && C_tilde->getAmatVal(beta,alpha)!=0){ // alpha *-> beta
-        rule1search(beta,alpha,track_changes,verbose);
+        rule1search(beta,alpha,track_changes);
       }
     }
   }
@@ -499,7 +499,7 @@ bool LocalFCI::rule1(bool &track_changes,bool verbose) {
  * 
  */
 
-void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bool &track_changes,bool verbose){
+void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bool &track_changes){
   
   // Condition 1 refers to alpha -> beta *-> gamma
   if (condition1){
@@ -537,7 +537,7 @@ void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bo
   
 }
 
-bool LocalFCI::rule2(bool &track_changes,bool verbose) {
+bool LocalFCI::rule2(bool &track_changes) {
   //int gamma;
   bool condition1;
   bool condition2;
@@ -547,7 +547,7 @@ bool LocalFCI::rule2(bool &track_changes,bool verbose) {
       condition1 = (C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)==3); // alpha -> beta
       condition2 = (C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)!=0); // alpha *-> beta
       if (condition1 | condition2){
-        rule2search(beta,alpha,condition1,condition2,track_changes,verbose);
+        rule2search(beta,alpha,condition1,condition2,track_changes);
       }
     }
   }
@@ -581,7 +581,7 @@ List LocalFCI::rule3asearch(int beta,int alpha){
   );
 }
 
-void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bool &track_changes,bool verbose){
+void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bool &track_changes){
   bool condition1;
   bool condition2;
   // We are searching for alpha (*) (1) theta (1) (*) gamma
@@ -604,7 +604,7 @@ void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bo
 }
 
 
-bool LocalFCI::rule3(bool &track_changes,bool verbose) {
+bool LocalFCI::rule3(bool &track_changes) {
   int gamma;
   List searchResults;
   NumericVector gammaVals;
@@ -620,7 +620,7 @@ bool LocalFCI::rule3(bool &track_changes,bool verbose) {
           gammaVals = searchResults["gamma"];
           for (NumericVector::iterator it = gammaVals.begin();it != gammaVals.end();++it){
             gamma = *it;
-            rule3bsearch(alpha,beta,gamma,track_changes,verbose);
+            rule3bsearch(alpha,beta,gamma,track_changes);
           }
         }
       }
@@ -639,7 +639,7 @@ bool LocalFCI::rule3(bool &track_changes,bool verbose) {
  * 
  */
 
-bool LocalFCI::check_sep_r4(int beta,NumericVector md_path,bool verbose){
+bool LocalFCI::check_sep_r4(int beta,NumericVector md_path){
   if (verbose) Rcout << "Checking separation";
   int n = md_path.length();
   int theta = md_path(0);
@@ -651,7 +651,7 @@ bool LocalFCI::check_sep_r4(int beta,NumericVector md_path,bool verbose){
   return (cond1);
 }
 
-bool LocalFCI::rule4(bool &track_changes,bool verbose){
+bool LocalFCI::rule4(bool &track_changes){
   bool cond1;
   bool cond2;
   bool done;
@@ -669,11 +669,11 @@ bool LocalFCI::rule4(bool &track_changes,bool verbose){
             while(C_tilde->getAmatVal(gamma,beta)==1){
               while(!done && C_tilde->getAmatVal(alpha,beta)!=0 && C_tilde->getAmatVal(alpha,gamma)!=0 && C_tilde->getAmatVal(beta,gamma)!=0){
                 //Rcout << "# of Nodes: " << G.ncol() << std::endl;
-                md_path = minDiscPath(alpha,beta,gamma,verbose);
+                md_path = minDiscPath(alpha,beta,gamma);
                 if (NumericVector::is_na(md_path(0))){
                   done = true; // We are done with this triangle  
                 } else {
-                  if(check_sep_r4(beta,md_path,verbose)){
+                  if(check_sep_r4(beta,md_path)){
                     if (verbose){
                       Rcout << "\nRule 4\nThere is a discriminating path between ";
                       Rcout << md_path(0) << " and " << gamma << " for " << beta;
@@ -713,7 +713,7 @@ bool LocalFCI::rule4(bool &track_changes,bool verbose){
 }
 
 
-bool LocalFCI::rule8(bool &track_changes,bool verbose){
+bool LocalFCI::rule8(bool &track_changes){
   bool cond1;
   bool cond2;
   bool cond3;
@@ -751,7 +751,7 @@ bool LocalFCI::rule8(bool &track_changes,bool verbose){
 }
 
 
-bool LocalFCI::rule9(bool &track_changes,bool verbose){
+bool LocalFCI::rule9(bool &track_changes){
   bool cond1;
   bool cond2;
   bool cond3;
@@ -781,7 +781,7 @@ bool LocalFCI::rule9(bool &track_changes,bool verbose){
         while (beta_vals.size() > 0 && C_tilde->getAmatVal(gamma,alpha)==1){
           beta_current = beta_vals[beta_vals.size()-1];
           beta_vals.pop_back();
-          upd = minUncovPdPath(p,alpha,beta_current,gamma,verbose);
+          upd = minUncovPdPath(alpha,beta_current,gamma);
           //Rcout << "Length of upd: " << upd.length() << std::endl;
           if (upd.length()>1){
             C_tilde->setAmatVal(gamma,alpha,3);
@@ -800,7 +800,7 @@ bool LocalFCI::rule9(bool &track_changes,bool verbose){
 }
 
 
-bool LocalFCI::rule10(bool &track_changes,bool verbose){
+bool LocalFCI::rule10(bool &track_changes){
   bool cond1;
   bool cond2;
   bool cond3;
@@ -890,10 +890,10 @@ bool LocalFCI::rule10(bool &track_changes,bool verbose){
                       second_pos = x2_vals(counter_x2);
                       //Rcout << "Potential first node on uncovered p.d. path p2: " << second_pos << std::endl;
                       ++counter_x2;
-                      t1 = minUncovPdPath(p,alpha,first_pos,beta,verbose);
+                      t1 = minUncovPdPath(alpha,first_pos,beta);
                       if (verbose) print_vector_elements_nonames(t1,"t1: ","\n");
                       if (t1.length()>1){
-                        t2 = minUncovPdPath(p,alpha,second_pos,d,verbose);
+                        t2 = minUncovPdPath(alpha,second_pos,d);
                         if (t2.length()>1 && first_pos!=second_pos && C_tilde->getAmatVal(first_pos,second_pos)==0){
                           C_tilde->setAmatVal(gamma,alpha,3);
                           if (verbose) Rcout << "\nRule 10\nOrient: " << alpha << " -> " << gamma << std::endl;
@@ -913,17 +913,17 @@ bool LocalFCI::rule10(bool &track_changes,bool verbose){
   return track_changes;
 }
 
-void LocalFCI::allRules(bool verbose){
+void LocalFCI::allRules(){
   bool track_changes = true;
   while (track_changes){
     track_changes = false;
-    track_changes = rule1(track_changes,verbose);
-    track_changes = rule2(track_changes,verbose);
-    track_changes = rule3(track_changes,verbose);
-    track_changes = rule4(track_changes,verbose);
-    track_changes = rule8(track_changes,verbose);
-    track_changes = rule9(track_changes,verbose);
-    track_changes = rule10(track_changes,verbose);
+    track_changes = rule1(track_changes);
+    track_changes = rule2(track_changes);
+    track_changes = rule3(track_changes);
+    track_changes = rule4(track_changes);
+    track_changes = rule8(track_changes);
+    track_changes = rule9(track_changes);
+    track_changes = rule10(track_changes);
   }
 }
 
@@ -1070,8 +1070,8 @@ List updatePathList(NumericVector mpath,NumericVector &set,List &old_paths,bool 
 }
 
 
-NumericVector LocalFCI::minDiscPath(int a,int b,int c,bool verbose=false){
-  LogicalVector visited(p);
+NumericVector LocalFCI::minDiscPath(int a,int b,int c){
+  LogicalVector visited(N);
   visited(a) = true;
   visited(b) = true;
   visited(c) = true;
@@ -1119,7 +1119,7 @@ NumericVector LocalFCI::minDiscPath(int a,int b,int c,bool verbose=false){
 }
 
 
-NumericVector LocalFCI::minUncovPdPath(int p, int alpha,int beta,int gamma,bool verbose){
+NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
   NumericVector path;
   NumericVector mpath;
   NumericVector final_path(0);
@@ -1128,7 +1128,7 @@ NumericVector LocalFCI::minUncovPdPath(int p, int alpha,int beta,int gamma,bool 
   int counter;
   int m;
   int d;
-  int n;
+  int n_path;
   bool uncov;
   bool done = false;
   NumericVector r_vals(0);
@@ -1147,11 +1147,11 @@ NumericVector LocalFCI::minUncovPdPath(int p, int alpha,int beta,int gamma,bool 
   // Check for paths of 4 or more (what we are interested in for rule 9)
   if (verbose) Rcout << "Checking for paths of 4 or more\n";
   if (!done){
-    visited.assign(p,false);
+    visited.assign(N,false);
     visited[alpha]=true;
     visited[beta]=true;
     visited[gamma]=true;
-    for (int theta=0;theta<p;++theta){
+    for (int theta=0;theta<N;++theta){
       cond1 = C_tilde->getAmatVal(beta,theta)==1 || C_tilde->getAmatVal(beta,theta)==2;
       cond2 = C_tilde->getAmatVal(theta,beta)==1 || C_tilde->getAmatVal(theta,beta)==3;
       cond3 = C_tilde->getAmatVal(theta,alpha) == 0 && C_tilde->getAmatVal(alpha,theta)== 0 && !visited[theta];
@@ -1179,9 +1179,9 @@ NumericVector LocalFCI::minUncovPdPath(int p, int alpha,int beta,int gamma,bool 
           }
           path.push_back(gamma);
           if (verbose) print_vector_elements_nonames(path,"Path: ","\n");
-          n = path.length();
+          n_path = path.length();
           uncov=true;
-          for (int i=0;i<n-2;++i){
+          for (int i=0;i<n_path-2;++i){
             cond1 = (C_tilde->getAmatVal(path(i),path(i+2))==0) && (C_tilde->getAmatVal(path(i+2),path(i))==0);
             if (!cond1){
               uncov = false;
@@ -1198,7 +1198,7 @@ NumericVector LocalFCI::minUncovPdPath(int p, int alpha,int beta,int gamma,bool 
           // d and c are not connected or connected with a "wrong" edge
           // iteratively search for neighbors of d not yet visited
           // and add them to potential members of the path
-          for (int i=0;i<p;++i){
+          for (int i=0;i<N;++i){
             cond1 = C_tilde->getAmatVal(d,i) == 1 || C_tilde->getAmatVal(d,i)==2;
             cond2 = C_tilde->getAmatVal(i,d) == 1 || C_tilde->getAmatVal(i,d)==3;
             cond3 = !visited[i];

@@ -25,7 +25,7 @@ List fci(NumericMatrix true_dag,arma::mat df,
   
   lfci.get_v_structures_efficient();
 
-  lfci.allRules(verbose);
+  lfci.allRules();
   lfci.convertMixedGraph();
   Graph* C_new = new Graph(lfci.getSize());
   C_new -> emptyGraph();

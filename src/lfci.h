@@ -40,23 +40,23 @@ public:
   void get_v_structures_efficient();
   
   // Orientation Rules Helpers
-  NumericVector minDiscPath(int a,int b,int c,bool verbose);
-  NumericVector minUncovPdPath(int p,int alpha,int beta,int gamma,bool verbose);
+  NumericVector minDiscPath(int a,int b,int c); // TODO: remove verbose
+  NumericVector minUncovPdPath(int alpha,int beta,int gamma);
   
   // Orientation Rules
-  void rule1search(int beta,int alpha,bool &track_changes,bool verbose=false);
-  bool rule1(bool &track_changes,bool verbose=false);
-  void rule2search(int beta,int alpha,bool condition1,bool condition2,bool &track_changes,bool verbose=false);
-  bool rule2(bool &track_changes,bool verbose=false);
+  void rule1search(int beta,int alpha,bool &track_changes);
+  bool rule1(bool &track_changes);
+  void rule2search(int beta,int alpha,bool condition1,bool condition2,bool &track_changes);
+  bool rule2(bool &track_changes);
   List rule3asearch(int beta,int alpha);
-  void rule3bsearch(const int &alpha,const int &beta,const int &gamma,bool &track_changes,bool verbose=false);
-  bool rule3(bool &track_changes,bool verbose=false);
-  bool check_sep_r4(int beta,NumericVector md_path,bool verbose=false);
-  bool rule4(bool &track_changes,bool verbose = false);
-  bool rule8(bool &track_changes,bool verbose=false);
-  bool rule9(bool &track_changes,bool verbose=false);
-  bool rule10(bool &track_changes,bool verbose=false);
-  void allRules(bool verbose);
+  void rule3bsearch(const int &alpha,const int &beta,const int &gamma,bool &track_changes);
+  bool rule3(bool &track_changes);
+  bool check_sep_r4(int beta,NumericVector md_path);
+  bool rule4(bool &track_changes);
+  bool rule8(bool &track_changes);
+  bool rule9(bool &track_changes);
+  bool rule10(bool &track_changes);
+  void allRules();
   
   void convertMixedGraph();
   void convertFinalGraph(Graph* g);
