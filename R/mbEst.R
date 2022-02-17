@@ -1,5 +1,6 @@
 # This function will return the Markov Blanket for a target value
-getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFisher"){
+getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFisher",verbose=FALSE){
+  if (verbose) cat("We are estimating the Markov Blankets using",method,".\n")
   if (method=="MMPC"){
     mb <- MXM::MMPC(target=target,dataset=dataset,threshold=threshold,test=test)
   } else if (method=="SES"){
@@ -16,7 +17,8 @@ getAllMBs <- function(targets,dataset,threshold=0.01,method="MMPC"){
 
 # This function will take a list of Markov Blankets and form an adjacency matrix
 # All Markov Blanket nodes will be considered parents of the target for simplicity
-getEstInitialDAG <- function(mbList,targets,p){
+getEstInitialDAG <- function(mbList,targets,p,verbose=FALSE){
+  if (verbose) cat("Creating the reference DAG using Markov Blanket list.\n")
   adj <- matrix(0,nrow = p,ncol = p)
   lapply(1:length(targets),function(i){
     target <- targets[i]

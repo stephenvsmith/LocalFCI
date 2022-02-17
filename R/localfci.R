@@ -16,10 +16,10 @@ localfci_cpp <- function(data=NULL,true_dag=NULL,targets,node_names=NULL,lmax=3,
   # TODO: Add results from this to the final output
   if (is.null(true_dag)){
     # Find Markov Blankets
-    mbList <- getAllMBs(targets,data,tol,method)
+    mbList <- getAllMBs(targets,data,tol,method,verbose)
     
     # Create adjacency matrix based on Markov Blankets
-    true_dag <- getEstInitialDAG(mbList,targets,ncol(data))
+    true_dag <- getEstInitialDAG(mbList,targets,ncol(data),verbose)
   } else {
     mbList <- list()
   }
