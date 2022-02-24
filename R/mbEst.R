@@ -2,13 +2,16 @@
 getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFisher",verbose=FALSE){
   if (verbose) cat("Estimating Markov Blankets using\n",
                    "Algorithm:",method,"\n",
-                   "Test:",test,"\n")
+                   "Test:",test,"\n",
+                   "Tolerance:",threshold,"\n")
   
   if (method=="MMPC"){
     mb <- MXM::MMPC(target=target,dataset=dataset,threshold=threshold,test=test)
   } else if (method=="SES"){
     mb <- MXM::SES(target=target,dataset=dataset,threshold=threshold,test=test)
-  }
+  } else if (method=="gOMP"){
+    mb <- MXM::gomp(target=target,dataset=dataset,test = test)$res[,1] # there are more options here to explore, also need to look closer at output
+  } # There is also fbed.reg, 
   return(list("mb"=mb@selectedVars,
               "time"=mb@runtime[3]))
 }
@@ -36,7 +39,7 @@ getEstInitialDAG <- function(mbList,targets,p,verbose=FALSE){
     #   adj[neighbor,target] <<- 1
     # })
   })
-  if (verbose) cat("Nodes being considered",
+  if (verbose) cat("Nodes being considered:",
                    paste(all_nodes,collapse = ","),
                    "\n\n")
   return(adj)
