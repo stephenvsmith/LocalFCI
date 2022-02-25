@@ -8,7 +8,7 @@ This is the wrapper function for running the local FCI algorithm on a set of tar
 Runs the local FCI algorithm on a set of target nodes for a set significance level using observational data
 }
 \usage{
-localfci_cpp(data = NULL, true_dag = NULL, targets, lmax = 3, tol = 0.05, verbose = TRUE)
+localfci_cpp(data=NULL,true_dag=NULL,targets,node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,method="MMPC",test="testIndFisher",verbose = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
