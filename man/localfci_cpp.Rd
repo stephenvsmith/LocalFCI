@@ -27,6 +27,9 @@ The largest possible size of a separating set
   \item{tol}{
 The significance level of the conditional independence tests
 }
+  \item{mb_tol}{
+The significance level for the Markov Blanket recovery algorithm  
+}
   \item{verbose}{
 Determines whether or not there is printed output. Usually used for debugging purposes.
 }
