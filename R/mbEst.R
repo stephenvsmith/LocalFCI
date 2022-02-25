@@ -50,3 +50,114 @@ getTotalMBTime <- function(mbList){
     return(mb[["time"]])
   })))
 }
+
+# Measurement Function ----------------------------------------------------
+
+# Calculate metrics for recovery of Markov Blankets
+calcUndirRecovery <- function(ref,est,target){
+  # Get all the nodes connected to target via undirected edge in both graphs
+  undir_ref <- which(ref[target,]==1 & ref[,target]==1) 
+  undir_est <- which(est[target,]==1 & est[,target]==1) 
+  # If a node is in both vectors, then it is a true positive
+  # If it is in the reference but not in the estimated, then it is a false negative
+  # If it is in the estimated but not the reference, then it is a false positive
+  return(c(
+    "tp"=length(intersect(undir_ref,undir_est)),
+    "fn"=length(setdiff(undir_ref,undir_est)),
+    "fp"=length(setdiff(undir_est,undir_est))
+  ))
+}
+
+calcParentRecovery <- function(ref,est,target){
+  # Get all the parent nodes in both graphs
+  parent_ref <- which(ref[,target]==1) 
+  parent_est <- which(est[,target]==1) 
+  # If a node is in both vectors, then it is a true positive
+  # If it is in the reference but not in the estimated, then it is a false negative
+  # If it is in the estimated but not the reference, then it is a false positive
+  return(c(
+    "tp"=length(intersect(parent_ref,parent_est)),
+    "fn"=length(setdiff(parent_ref,parent_est)),
+    "fp"=length(setdiff(parent_est,parent_est))
+  ))
+}
+
+calcChildRecovery <- function(ref,est,target){
+  # Get all the child nodes in both graphs
+  child_ref <- which(ref[target,]==1) 
+  child_est <- which(est[target,]==1) 
+  # If a node is in both vectors, then it is a true positive
+  # If it is in the reference but not in the estimated, then it is a false negative
+  # If it is in the estimated but not the reference, then it is a false positive
+  return(c(
+    "tp"=length(intersect(child_ref,child_est)),
+    "fn"=length(setdiff(child_ref,child_est)),
+    "fp"=length(setdiff(child_est,child_est))
+  ))
+}
+
+getSpouses <- function(g,children,target){
+  
+  return(
+    sort(
+      unique(
+        unlist(
+          lapply(children,function(child){
+            # Find parents of the child that are not connected to target
+            child_parents <- which(g[,child]==1 & g[target,]==0 & g[,target]==0)
+            return(child_parents)
+          }))
+      )
+    )
+  )
+}
+
+calcSpouseRecovery <- function(ref,est,target){
+  # Get all the child nodes in both graphs
+  child_ref <- which(ref[target,]==1) 
+  child_est <- which(est[target,]==1) 
+  
+  spouses_ref <- getSpouses(ref,child_ref,target)
+  spouses_est <- getSpouses(ref,child_est,target)
+  # If a node is in both vectors, then it is a true positive
+  # If it is in the reference but not in the estimated, then it is a false negative
+  # If it is in the estimated but not the reference, then it is a false positive
+  return(c(
+    "tp"=length(intersect(spouses_ref,spouses_est)),
+    "fn"=length(setdiff(spouses_ref,spouses_est)),
+    "fp"=length(setdiff(spouses_est,spouses_est))
+  ))
+}
+
+mbRecoveryMetricsList <- function(ref,est,targets){
+  return(lapply(targets,function(target){
+    list(
+      "undirected"=calcUndirRecovery(ref,est,target),
+      "parent"=calcParentRecovery(ref,est,target),
+      "child"=calcChildRecovery(ref,est,target),
+      "spouse"=calcSpouseRecovery(ref,est,target)
+    )
+  }))
+}
+
+mbRecovery <- function(mbRecList){
+  return(
+    data.frame(
+      "undirectedMB_fn"=sum(sapply(mbRecList,function(x) return(x$undirected['fn']))),
+      "undirectedMB_fp"=sum(sapply(mbRecList,function(x) return(x$undirected['fp']))),
+      "undirectedMB_tp"=sum(sapply(mbRecList,function(x) return(x$undirected['tp']))),
+      "parentMB_fn"=sum(sapply(mbRecList,function(x) return(x$parent['fn']))),
+      "parentMB_fp"=sum(sapply(mbRecList,function(x) return(x$parent['fp']))),
+      "parentMB_tp"=sum(sapply(mbRecList,function(x) return(x$parent['tp']))),
+      "childMB_fn"=sum(sapply(mbRecList,function(x) return(x$child['fn']))),
+      "childMB_fp"=sum(sapply(mbRecList,function(x) return(x$child['fp']))),
+      "childMB_tp"=sum(sapply(mbRecList,function(x) return(x$child['tp']))),
+      "spouseMB_fn"=sum(sapply(mbRecList,function(x) return(x$spouse['fn']))),
+      "spouseMB_fp"=sum(sapply(mbRecList,function(x) return(x$spouse['fp']))),
+      "spouseMB_tp"=sum(sapply(mbRecList,function(x) return(x$spouse['tp'])))
+    )
+  )
+}
+
+
+
