@@ -4,7 +4,7 @@ getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFishe
                    "Algorithm:",method,"\n",
                    "Test:",test,"\n",
                    "Tolerance:",threshold,"\n")
-  
+
   if (method=="MMPC"){
     mb <- MXM::MMPC(target=target,dataset=dataset,threshold=threshold,test=test)
   } else if (method=="SES"){
@@ -12,6 +12,7 @@ getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFishe
   } else if (method=="gOMP"){
     mb <- MXM::gomp(target=target,dataset=dataset,test = test)$res[,1] # there are more options here to explore, also need to look closer at output
   } # There is also fbed.reg, 
+  if (verbose) cat("Results for target",target,":",paste(mb@selectedVars,collapse = ","),"\n")
   return(list("mb"=mb@selectedVars,
               "time"=mb@runtime[3]))
 }
@@ -19,28 +20,44 @@ getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFishe
 # This function will take a vector of targets and return a list of the markov blankets
 getAllMBs <- function(targets,dataset,threshold=0.01,method="MMPC",
                       test="testIndFisher",verbose=TRUE){
-  return(lapply(targets,
-                function(t) getMB(t,dataset,threshold,method,test,verbose)))
+  target_mbs <- lapply(targets,
+                       function(t) getMB(t,dataset,threshold,method,test,verbose))
+  additional_nodes <- unique(
+    setdiff(
+      unlist(getAllMBNodes(target_mbs)),targets))
+  if (length(additional_nodes)>0){
+    second_order_mbs <- lapply(additional_nodes,
+                               function(t) getMB(t,dataset,threshold,method,test,verbose))
+    final_list <- c(target_mbs,second_order_mbs)
+    names(final_list) <- as.character(c(targets,additional_nodes))
+    return(final_list)
+  } else {
+    names(target_mbs) <- as.character(targets)
+    return(target_mbs)
+  }
 }
 
 # This function will take a list of Markov Blankets and form an adjacency matrix
 # All Markov Blanket nodes will be considered parents of the target for simplicity
 getEstInitialDAG <- function(mbList,targets,p,verbose=FALSE){
-  
   if (verbose) cat("Creating the reference DAG using Markov Blanket list.\n")
   adj <- matrix(0,nrow = p,ncol = p)
-  all_nodes <- targets
-  lapply(1:length(targets),function(i){
-    target <- targets[i]
-    mb <- mbList[[i]][["mb"]]
-    adj[mb,target] <<- 1
-    all_nodes <<- union(all_nodes,mb)
-    # sapply(mb,function(neighbor){
-    #   adj[neighbor,target] <<- 1
-    # })
+  all_nodes <- as.numeric(names(mbList))
+  nodes_seq <- all_nodes
+  lapply(1:length(nodes_seq),function(i){
+    node <- all_nodes[i]
+    mb <- mbList[[as.character(node)]][["mb"]]
+    if (length(mb)>0){
+      sapply(mb,function(x){
+        if (adj[node,x]==0 & adj[x,node]==0){
+          adj[x,node] <<- 1
+        }
+      })
+      all_nodes <<- union(all_nodes,mb)
+    }
   })
   if (verbose) cat("Nodes being considered:",
-                   paste(all_nodes,collapse = ","),
+                   paste(sort(all_nodes),collapse = ","),
                    "\n\n")
   return(adj)
 }
@@ -49,6 +66,12 @@ getTotalMBTime <- function(mbList){
   return(sum(sapply(mbList,function(mb){
     return(mb[["time"]])
   })))
+}
+
+getAllMBNodes <- function(mbList){
+  return(
+    sapply(mbList,
+           function(x) return(x[["mb"]])))
 }
 
 # Measurement Function ----------------------------------------------------
