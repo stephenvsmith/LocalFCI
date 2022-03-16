@@ -87,6 +87,7 @@ public:
   
   void setAmat(NumericMatrix m){
     amat = m;
+    p = m.ncol();
   }
   
   int operator ()(unsigned i,unsigned j) const    {return amat(i,j);}

@@ -73,7 +73,14 @@ public:
   
   // Setters (Useful for testing)
   void setAmat(NumericMatrix m){
+    if (verbose){
+      Rcout << "We are manually changing the current adjacency matrix.\n";
+    }
     C_tilde -> setAmat(m);
+    N = C_tilde -> size();
+    if (verbose){
+      C_tilde -> printAmat();
+    }
   }
   
   void setS(int i,int j,NumericVector k){
@@ -89,7 +96,7 @@ private:
   int num_targets;
   int p;
   int n;
-  int N;
+  int N; // Tracks the size of the C_tilde matrix
   double signif_level;
   int num_tests=0;
   NumericVector neighborhood;

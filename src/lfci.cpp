@@ -478,7 +478,7 @@ void LocalFCI::rule1search(int beta,int alpha,bool &track_changes){
 }
 
 bool LocalFCI::rule1(bool &track_changes) {
-  //int gamma;
+  // int gamma;
   // Outer loops: Go through every node to find an asterisk. The node it is incident on is alpha
   // The connected node is beta, which must have an arrowhead pointing into it.
   for (int alpha = 0;alpha<N;++alpha){
