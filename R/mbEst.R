@@ -203,9 +203,9 @@ mbRecoveryTarget <- function(ref,est,target){
 
   # Compare MB recovery
   return(
-    c("tp"=length(intersect(ref_nodes,est_nodes)),
-      "fn"=length(setdiff(ref_nodes,est_nodes)),
-      "fp"=length(setdiff(est_nodes,ref_nodes)))
+    c("mb_tp"=length(intersect(ref_nodes,est_nodes)),
+      "mb_fn"=length(setdiff(ref_nodes,est_nodes)),
+      "mb_fp"=length(setdiff(est_nodes,ref_nodes)))
   )
 }
 
