@@ -11,15 +11,12 @@ test_that("Neighborhood Estimation",{
     expect_snapshot_output(mb$mb)
   })
   
-  adj <- getEstInitialDAG(mbList,targets,p)
+  adj <- getEstInitialDAG(mbList,p)
   for (i in 1:length(targets)){
     target <- targets[i]
     neighbors <- mbList[[i]][["mb"]]
     for (neighbor in neighbors){
-      expect_equal(adj[neighbor,target],1)
-      if (!(neighbor %in% targets)){
-        expect_equal(adj[target,neighbor],0)
-      }
+      expect_equal(adj[target,neighbor]+adj[neighbor,target],1)
     }
   }
   
@@ -27,5 +24,5 @@ test_that("Neighborhood Estimation",{
   for (i in 1:length(targets)){
     times[i] <- mbList[[i]][["time"]]
   }
-  expect_equal(getTotalMBTime(mbList),sum(times))
+  expect_equal(getTotalMBTime(mbList),sum(times),tolerance = 1e-02)
 })

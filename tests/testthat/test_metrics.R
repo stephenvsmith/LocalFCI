@@ -59,3 +59,119 @@ test_that("checking metric functions",{
   expect_snapshot_output(all_metrics(est$amat,asiaDAG,pc_asia,t-1))
   
 })
+
+true_amat <- matrix(c(
+  0,0,1,0,0,0,0,
+  0,0,1,0,0,0,0,
+  0,0,0,1,1,0,1,
+  0,0,0,0,0,1,0,
+  0,0,0,0,0,1,0,
+  0,0,0,0,0,0,0,
+  0,0,1,0,1,1,0
+),byrow = TRUE,nrow = 7)
+
+test_that("Checking MB metric functions (Specific)",{
+  
+  # Remove the edge 7 -> 5
+  test_amat <- true_amat
+  test_amat[7,5] <- 0
+  
+  # Check results
+  expect_equal(calcParentRecovery(true_amat,test_amat,5),
+               c("tp"=1,
+                 "fn"=1,
+                 "fp"=0)
+  )
+  expect_equal(calcChildRecovery(true_amat,test_amat,5),
+               c("tp"=1,
+                 "fn"=0,
+                 "fp"=0)
+  )
+  expect_equal(calcSpouseRecovery(true_amat,test_amat,5),
+               c("tp"=1,
+                 "fn"=0,
+                 "fp"=1)
+  )
+  
+  # Remove the edge from 1 -> 3 and add 1 -> 6
+  test_amat[1,3] <- 0
+  test_amat[1,6] <- 1
+  # 1 is missing and 2 is correct
+  expect_equal(calcParentRecovery(true_amat,test_amat,3),
+               c("tp"=1,
+                 "fn"=1,
+                 "fp"=0)
+  )
+  # 3 is missing and 6 is added
+  expect_equal(calcChildRecovery(true_amat,test_amat,1),
+               c("tp"=0,
+                 "fn"=1,
+                 "fp"=1)
+  )
+  # 4,5,8 are correct, but 1 is added
+  expect_equal(calcParentRecovery(true_amat,test_amat,6),
+               c("tp"=3,
+                 "fn"=0,
+                 "fp"=1)
+  )
+  # 5 and 7 are true spouses, but 1 is added
+  expect_equal(calcSpouseRecovery(true_amat,test_amat,4),
+               c("tp"=2,
+                 "fn"=0,
+                 "fp"=1)
+  )
+  # 4 is a true spouse, but 1 and 5 are added
+  expect_equal(calcSpouseRecovery(true_amat,test_amat,7),
+               c("tp"=1,
+                 "fn"=0,
+                 "fp"=2)
+  )
+  # We've added 4,5,8 as spouses and are missing 2
+  expect_equal(calcSpouseRecovery(true_amat,test_amat,1),
+               c("tp"=0,
+                 "fn"=1,
+                 "fp"=3)
+  )
+})
+
+test_that("Test MB Recovery (General) Function",{
+  test_amat <- matrix(
+    c(
+      0,0,0,0,0,0,0,
+      0,0,0,0,0,0,1,
+      1,0,0,0,0,0,1,
+      0,0,0,0,0,1,0,
+      0,0,0,1,0,1,1,
+      0,0,0,0,0,0,1,
+      0,0,0,0,0,0,0
+    ),
+    nrow = 7,byrow = TRUE
+  )
+  # 1 is connected to 3, but loses 2 as spouse
+  expect_equal(mbRecovery(true_amat,test_amat,1),
+             c("tp"=1,"fn"=1,"fp"=0)
+  )
+  # 2 loses 3 and 1 (spouse), adds 7 [At this stage we are double counting]
+  expect_equal(mbRecovery(true_amat,test_amat,c(1,2)),
+             c("tp"=1,"fn"=3,"fp"=1)
+  )
+  # 6 has perfect recovery (4,5,7)
+  expect_equal(mbRecovery(true_amat,test_amat,6),
+             c("tp"=3,"fn"=0,"fp"=0)
+  )
+  expect_equal(mbRecovery(true_amat,test_amat,c(1,2,6)),
+               c("tp"=4,"fn"=3,"fp"=1)
+  )
+  # 7 keeps 6,5,3 but loses 4 (spouse) and adds 2
+  expect_equal(mbRecovery(true_amat,test_amat,7),
+               c("tp"=3,"fn"=1,"fp"=1)
+  )
+})
+
+
+
+
+
+
+
+

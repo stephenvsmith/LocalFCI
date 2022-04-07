@@ -16,21 +16,17 @@ localfci_cpp <- function(data=NULL,true_dag=NULL,targets,
   data <- scale(data)
   
   if (is.null(true_dag)){
-    # Find Markov Blankets
+    # Find Markov Blankets (mbEst.R)
     mbList <- getAllMBs(targets,data,mb_tol,method,test,verbose)
     
-    # Create adjacency matrix based on Markov Blankets
-    true_dag <- getEstInitialDAG(mbList,targets,ncol(data),verbose)
+    # Create adjacency matrix based on Markov Blankets (mbEst.R)
+    true_dag <- getEstInitialDAG(mbList,ncol(data),verbose)
 
   } else {
     mbList <- list()
   }
   
-  
-  if (verbose){
-    utils::head(data)
-  }
-  
+  # Convert any data frame to a matrix
   if (is.data.frame(true_dag)){
     true_dag <- as.matrix(true_dag)
   }
@@ -39,10 +35,11 @@ localfci_cpp <- function(data=NULL,true_dag=NULL,targets,
     head(true_dag)
   }
   
-  # To account for zero-indexing
-  cpp_target <- targets-1 
+  # To account for zero-indexing in C++
+  cpp_targets <- targets-1 
   if (verbose){
-    cat("The node value for the C++ function is",cpp_target)
+    cat("The node value for the C++ function is",
+        paste(cpp_targets,collapse = ","))
   }
   
   results <- fci(true_dag,data,targets-1,node_names,lmax,tol,verbose)

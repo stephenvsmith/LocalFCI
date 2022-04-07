@@ -187,6 +187,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// testArmaCor
+arma::mat testArmaCor(arma::mat M);
+RcppExport SEXP _LocalFCI_testArmaCor(SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(testArmaCor(M));
+    return rcpp_result_gen;
+END_RCPP
+}
 // check_amat_works
 NumericMatrix check_amat_works(int nodes, StringVector node_names, NumericMatrix adj);
 RcppExport SEXP _LocalFCI_check_amat_works(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
@@ -645,6 +656,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_condIndTest", (DL_FUNC) &_LocalFCI_condIndTest, 6},
     {"_LocalFCI_combn_cpp", (DL_FUNC) &_LocalFCI_combn_cpp, 2},
     {"_LocalFCI_testCondInd", (DL_FUNC) &_LocalFCI_testCondInd, 6},
+    {"_LocalFCI_testArmaCor", (DL_FUNC) &_LocalFCI_testArmaCor, 1},
     {"_LocalFCI_check_amat_works", (DL_FUNC) &_LocalFCI_check_amat_works, 3},
     {"_LocalFCI_check_amat_works_onepar", (DL_FUNC) &_LocalFCI_check_amat_works_onepar, 1},
     {"_LocalFCI_check_names_works", (DL_FUNC) &_LocalFCI_check_names_works, 3},

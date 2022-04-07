@@ -100,7 +100,7 @@ arma::uvec test_sep_arma(){
 // [[Rcpp::export]]
 arma::mat test_subset_mat(arma::mat m,NumericVector i){
   arma::uvec ind = as<arma::uvec>(i);
-  return arma::cor(m.cols(ind)); //USE THIS TO CHANGE CORRELATION MATRIX AND MAKE FUNCTION TRANSLATION EASIER
+  return arma::cor(m.cols(ind)); // TODO: USE THIS TO CHANGE CORRELATION MATRIX AND MAKE FUNCTION TRANSLATION EASIER
 }
 
 // [[Rcpp::export]]

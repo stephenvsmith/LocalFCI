@@ -58,5 +58,5 @@ test_that("Testing Graph and DAG classes using asia data",{
   expect_equal(check_neighbors_retrieval(p,nodes,asiaDAG,target),result)
   
   # Neighbors of "either" should be "bronc" (spouse), "dysp" and "xray" (children), and "lung" and "tub" (parents)
-  #aexpect_equal(sort(nodes[get_neighbors_from_dag(which(nodes=="either")-1,p,asiaDAG,verbose=FALSE)+1]),c("bronc","dysp","lung","tub","xray"))
+  # expect_equal(sort(nodes[get_neighbors_from_dag(which(nodes=="either")-1,p,asiaDAG,verbose=FALSE)+1]),c("bronc","dysp","lung","tub","xray"))
 })

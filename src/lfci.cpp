@@ -401,7 +401,7 @@ void LocalFCI::get_v_structures_efficient() {
               // Verify if k is in separating set for i and j
               k_eff = k;
               k = neighborhood(k); // Switch k to true numbering
-              if (S->isPotentialVStruct(i,j,k)){ // True just refers to numbering
+              if (S->isPotentialVStruct(i,j,k)){ // TODO: SHOULD RENAME
                 if (verbose){
                   Rcout << "Separation Set: ";
                   print_vector_elements_nonames(sepset_ij);

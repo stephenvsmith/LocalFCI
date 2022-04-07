@@ -65,3 +65,9 @@ test_that("Make sure you are obtaining the correct test results",{
   }
 
 })
+
+test_that("Test that Rcpp Armadillo correlation function works correctly",{
+  R <- cor(asiadf)
+  dimnames(R) <- NULL
+  expect_equal(R,testArmaCor(as.matrix(asiadf)),tolerance = 1e-05)
+})

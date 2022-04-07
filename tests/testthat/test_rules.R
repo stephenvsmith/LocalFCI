@@ -51,7 +51,7 @@ test_that("Rule 2 is correct.",{
   
   for (i in 1:nrow(adj.mat2)){
     for (j in 1:ncol(adj.mat2)){
-      cond1 <- i==1 & j==3
+      cond1 <- i==1 & j==3 
       cond2 <- i==4 & j==6
       if (!(cond1 | cond2)){
         expect_equal(adj.mat2[i,j],adj.mat2orig[i,j])
@@ -98,7 +98,7 @@ test_that("Rule 4 is correct.",{
   nodes <- c("a","b","c","alpha","beta","gamma","theta")
 
   sep <- c(4)
-  expect_snapshot_output(adj.mat4 <- testRule4(asiaDAG[1:p,1:p],asiadf[,1:p],1:p,nodes,adj.mat4,5,6,sep))
+  expect_snapshot_output(adj.mat4 <- testRule4(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),nodes,adj.mat4,5,6,sep))
   expect_equal(adj.mat4[5,6],2)
   expect_equal(adj.mat4[6,5],3)
 
@@ -123,7 +123,7 @@ test_that("Rule 8 is correct.",{
   adj.mat8orig <- adj.mat8
   p <- ncol(adj.mat8)
 
-  expect_snapshot_output(adj.mat8 <- testRule8(asiaDAG[1:p,1:p],asiadf[,1:p],1:p,node_names,adj.mat8))
+  expect_snapshot_output(adj.mat8 <- testRule8(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),node_names,adj.mat8))
 
   expect_equal(adj.mat8[6,1],3)
   expect_equal(adj.mat8[1,6],2)
@@ -151,7 +151,7 @@ test_that("Rule 9 is correct.",{
   adj.mat9orig <- adj.mat9
   p <- ncol(adj.mat9)
 
-  expect_snapshot_output(adj.mat9 <- testRule9(asiaDAG[1:p,1:p],asiadf[,1:p],1:p,node_names,adj.mat9))
+  expect_snapshot_output(adj.mat9 <- testRule9(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),node_names,adj.mat9))
 
   expect_equal(adj.mat9[5,7],2)
   expect_equal(adj.mat9[7,5],3)
@@ -177,7 +177,7 @@ test_that("Rule 10 is correct.",{
                         0,2,1,0,0,0,0,0),nrow = 8,byrow = TRUE)
   adj.mat10orig <- adj.mat10
   p <- ncol(adj.mat10)
-  expect_snapshot_output(adj.mat10 <- testRule10(asiaDAG[1:p,1:p],asiadf[,1:p],1:p,node_names,adj.mat10))
+  expect_snapshot_output(adj.mat10 <- testRule10(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),node_names,adj.mat10))
 
   expect_equal(adj.mat10[3,5],2)
   expect_equal(adj.mat10[5,3],3)
@@ -202,7 +202,7 @@ test_that("All Rules is correct.",{
                         0,2,1,0,0,0,0,0),nrow = 8,byrow = TRUE)
   adj.mat10orig <- adj.mat10
   p <- ncol(adj.mat10)
-  expect_snapshot_output(adj.mat10 <- testallRules(asiaDAG[1:p,1:p],asiadf[,1:p],1:p,node_names,adj.mat10))
+  expect_snapshot_output(adj.mat10 <- testallRules(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),node_names,adj.mat10))
   
   expect_equal(adj.mat10[7,1],2)
   expect_equal(adj.mat10[1,7],3)

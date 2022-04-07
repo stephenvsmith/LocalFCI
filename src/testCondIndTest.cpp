@@ -13,3 +13,8 @@ List testCondInd(arma::mat R,const int &i,const int &j,const arma::uvec &k,const
   
   return test_result;
 }
+
+// [[Rcpp::export]]
+arma::mat testArmaCor(arma::mat M){
+  return arma::cor(M);
+}
