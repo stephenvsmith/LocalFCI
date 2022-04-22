@@ -456,6 +456,7 @@ void LocalFCI::get_v_structures_efficient() {
 
 void LocalFCI::rule1search(int beta,int alpha,bool &track_changes){
   // Search for beta o-* gamma (beta (1) (!=0) gamma)
+  //verbose = true;
   for (int gamma=0;gamma<N;++gamma){
     if ((C_tilde->operator()(gamma,beta)==1) && (C_tilde->operator()(beta,gamma)!= 0)){ 
       if ((C_tilde->getAmatVal(alpha,gamma)==0) && (C_tilde->getAmatVal(gamma,alpha)==0)){
@@ -500,7 +501,7 @@ bool LocalFCI::rule1(bool &track_changes) {
  */
 
 void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bool &track_changes){
-  
+  //verbose = true;
   // Condition 1 refers to alpha -> beta *-> gamma
   if (condition1){
     for (int gamma=0;gamma<N;++gamma){
@@ -584,6 +585,7 @@ List LocalFCI::rule3asearch(int beta,int alpha){
 void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bool &track_changes){
   bool condition1;
   bool condition2;
+  //verbose = true;
   // We are searching for alpha (*) (1) theta (1) (*) gamma
   for (int theta = 0;theta<N;++theta){
     condition1 = (C_tilde->getAmatVal(alpha,theta)==1) && (C_tilde->getAmatVal(theta,alpha)!=0); // alpha *-o theta
@@ -665,6 +667,9 @@ bool LocalFCI::rule4(bool &track_changes){
           cond2 = C_tilde->getAmatVal(gamma,alpha)==3 && C_tilde->getAmatVal(alpha,gamma)==2; // triangle structure exists but is not oriented
           if (cond1 && cond2){
             //Rcout << " | Potential alpha: " << alpha;
+            //Rcout << " | C_tilde[" << beta << ","<< alpha << "] = " << C_tilde -> getAmatVal(beta,alpha);
+            //Rcout << std::endl;
+            //C_tilde -> printAmat();
             done = false;
             while(C_tilde->getAmatVal(gamma,beta)==1){
               while(!done && C_tilde->getAmatVal(alpha,beta)!=0 && C_tilde->getAmatVal(alpha,gamma)!=0 && C_tilde->getAmatVal(beta,gamma)!=0){
@@ -695,6 +700,7 @@ bool LocalFCI::rule4(bool &track_changes){
                     C_tilde->setAmatVal(beta,gamma,2);
                     C_tilde->setAmatVal(gamma,beta,2);
                     if (C_tilde->getAmatVal(alpha,beta)==3){
+                      //Rcout << "C_tilde[" << alpha << "," << beta << "] = " << C_tilde->getAmatVal(alpha,beta) << std::endl;
                       Rcout << "\nContradiction in Rule 4b\n";  
                     }
                     C_tilde->setAmatVal(alpha,beta,2);
@@ -706,6 +712,7 @@ bool LocalFCI::rule4(bool &track_changes){
             } 
           }  
         }
+        //Rcout << std::endl;
       }
     }  
   }
@@ -969,6 +976,8 @@ void LocalFCI::convertMixedGraph(){
       }
     }
   }
+  //Rcout << std::endl << std::endl;
+  //C_tilde->printAmat();
 }
 
 void LocalFCI::convertFinalGraph(Graph* g){
@@ -1085,6 +1094,7 @@ NumericVector LocalFCI::minDiscPath(int a,int b,int c){
     int m; // tracks the current length of the minimum discriminating path
     int d; // gives the last value in the path
     int pred;
+    //verbose=true;
     while (counter < list_length){
       mpath = path_list[counter];
       if (verbose) print_vector_elements_nonames(mpath,"mpath: ","\n");

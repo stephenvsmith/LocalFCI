@@ -107,11 +107,12 @@ List compare_v_structures(NumericMatrix est,NumericMatrix truth,bool verbose){
           }
           triple_check = check_triple(est,i,j,k,verbose);
           if (triple_check["result"]){
-            continue_checking=false;
-            if (check_other_triple(truth,triple_check["order"],verbose))
+            if (check_other_triple(truth,triple_check["order"],verbose)){
+              continue_checking=false; // We don't need to check the true graph since v-structure was correctly identified
               ++num_correct;
+            }
             else
-              ++num_added;
+              ++num_added; // there could be a missing v-structure
           }
           
           // Now, we check if we missed any v-structures
@@ -192,7 +193,9 @@ List compare_directed_edges(NumericMatrix est,NumericMatrix truth){
 }
 */
  
-void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,int &correct,int &missing,int &added,int &potential,bool verbose){
+void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,
+                   int &correct,int &missing,int &added,int &potential,
+                   bool verbose){
   int p = est.nrow();
   for (int i=0;i<p;++i){
     if (i==t)
@@ -235,7 +238,7 @@ void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,int &correct,int 
       } else if (truth(i,t)==1 && truth(t,i)==1){ // Truth: i - t
         ++potential;
         if (verbose){
-          Rcout << " | Undirected edge in True Graph | Potential: " << potential;  
+          Rcout << " | Undirected edge in True Graph | Potential: " << potential << std::endl;  
         }
       }
     } else { // Est: Either i - t or i and t are not adjacent
@@ -270,7 +273,11 @@ List parent_recovery_accuracy(NumericMatrix est,NumericMatrix truth,NumericVecto
   int num_potential=0;
   
   //int p = est.nrow();
-  std::for_each(targets.begin(),targets.end(),[&](int t) {pra_onetarget(est,truth,t,num_correct,num_missing,num_added,num_potential,verbose);});
+  std::for_each(targets.begin(),
+                targets.end(),
+                [&](int t) {pra_onetarget(est,truth,t,
+                    num_correct,num_missing,num_added,num_potential,
+                    verbose);});
   
   return List::create(
     _["missing"]=num_missing,
