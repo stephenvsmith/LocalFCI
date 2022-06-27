@@ -18,15 +18,27 @@ List fci(NumericMatrix true_dag,arma::mat df,
   // Instantiate the Local FCI object
   LocalFCI lfci(true_dag,df,targets,names,lmax,signif_level,verbose);
   
-  lfci.get_skeleton_total(); // Finding the skeleton for the complete undirected graph on X_T U N_T
+  if (verbose){
+    Rcout << "Beginning algorithm over all neighborhoods.\n";
+  }
+  lfci.getSkeletonTotal(); // Finding the skeleton for the complete undirected graph on X_T U N_T
   
+  if (verbose){
+    Rcout << "Beginning algorithm over each individual neighborhood.\n";
+  }
   // Get the skeleton for each target node and its neighborhood
-  std::for_each(targets.begin(),targets.end(),[&lfci](int t){ lfci.get_skeleton_target(t); });
+  std::for_each(targets.begin(),
+                targets.end(),
+                [&lfci](int t){ lfci.getSkeletonTarget(t); });
   
-  lfci.get_v_structures_efficient();
+  // Rule 0: Obtain V Structures
+  lfci.getVStructures();
 
+  // Remaining FCI Rules
   lfci.allRules();
+  
   lfci.convertMixedGraph();
+  
   Graph* C_new = new Graph(lfci.getSize());
   C_new -> emptyGraph();
   lfci.convertFinalGraph(C_new); 
@@ -34,7 +46,7 @@ List fci(NumericMatrix true_dag,arma::mat df,
   
   auto end = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(end-start);
-  double total_time = duration.count() / 1000000.;
+  double total_time = duration.count() / 1e6;
   
   return List::create(
     _["G"]=lfci.getAmat(),

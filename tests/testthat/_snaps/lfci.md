@@ -1,6 +1,6 @@
 # Testing the LocalFCI object
 
-    There are 1 targets.
+    There is (are) 1 target(s).
     Targets: lung
     Target: 3
     FUNCTION get_neighbors_from_dag. Node 3
@@ -13,7 +13,7 @@
     Total Neighborhood:
     1, 2, 5
     There are 8 nodes in the DAG.
-    There are 4 nodes in the neighborhood.
+    There are 4 nodes in the neighborhoods we are considering.
     All nodes being considered: 1 2 3 5
     Our starting matrix is 4x4.
     0 1 1 1
@@ -63,8 +63,9 @@
     S[[2]][[1]] = nan S[[2]][[2]] = nan S[[2]][[3]] = nan S[[2]][[5]] = nan 
     S[[3]][[1]] = nan S[[3]][[2]] = nan S[[3]][[3]] = nan S[[3]][[5]] = nan 
     S[[5]][[1]] = nan S[[5]][[2]] = nan S[[5]][[3]] = nan S[[5]][[5]] = nan 
+    First and last elements of the dataset: -0.641447 0.198884
 
-# Testing the total skeleton function (one target)
+# Testing the LocalFCI object (Population)
 
     There are 1 targets.
     Targets: lung
@@ -80,6 +81,73 @@
     1, 2, 5
     There are 8 nodes in the DAG.
     There are 4 nodes in the neighborhood.
+    All nodes being considered: 1 2 3 5
+    Our starting matrix is 4x4.
+    0 1 1 1
+    1 0 1 1
+    1 1 0 1
+    1 1 1 0
+    
+    
+    
+    Our initial separating sets:
+    S[[1]][[1]] = nan S[[1]][[2]] = nan S[[1]][[3]] = nan S[[1]][[5]] = nan 
+    S[[2]][[1]] = nan S[[2]][[2]] = nan S[[2]][[3]] = nan S[[2]][[5]] = nan 
+    S[[3]][[1]] = nan S[[3]][[2]] = nan S[[3]][[3]] = nan S[[3]][[5]] = nan 
+    S[[5]][[1]] = nan S[[5]][[2]] = nan S[[5]][[3]] = nan S[[5]][[5]] = nan 
+    Population Version
+    Element mapping for efficient ordering:
+    1 0
+    2 1
+    3 2
+    5 3
+    
+    
+    p: 8
+    n: 0
+    N: 4
+    Number of Targets: 1
+    Node names: asia tub smoke lung bronc either xray dysp 
+    lmax: 3
+    verbose: 1
+    Nodes under consideration: 1 2 3 5
+    Ctilde:
+    Our Ctilde matrix is 4x4
+    0 1 1 1
+    1 0 1 1
+    1 1 0 1
+    1 1 1 0
+    Our DAG matrix is 
+    0 1 0 0 0 0 0 0
+    0 0 0 0 0 1 0 0
+    0 0 0 1 1 0 0 0
+    0 0 0 0 0 1 0 0
+    0 0 0 0 0 0 0 1
+    0 0 0 0 0 0 1 1
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+    Separating Set Values:
+    S[[1]][[1]] = nan S[[1]][[2]] = nan S[[1]][[3]] = nan S[[1]][[5]] = nan 
+    S[[2]][[1]] = nan S[[2]][[2]] = nan S[[2]][[3]] = nan S[[2]][[5]] = nan 
+    S[[3]][[1]] = nan S[[3]][[2]] = nan S[[3]][[3]] = nan S[[3]][[5]] = nan 
+    S[[5]][[1]] = nan S[[5]][[2]] = nan S[[5]][[3]] = nan S[[5]][[5]] = nan 
+
+# Testing the total skeleton function (one target)
+
+    There is (are) 1 target(s).
+    Targets: lung
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Total Neighborhood:
+    1, 2, 5
+    There are 8 nodes in the DAG.
+    There are 4 nodes in the neighborhoods we are considering.
     All nodes being considered: 1 2 3 5
     Our starting matrix is 4x4.
     0 1 1 1
@@ -124,12 +192,12 @@
     The value of i is 0 (tub)
     The value of j is 3 (either)
     There are 2 neighbors.
-    Efficient Setup: 0 -> 1 | 3 -> 5 | k (True Vals): 3 (lung)
-    The p-value is 9.35856e-14
-    tub is NOT separated from either by node(s): lung  (p-value<0.01)
     Efficient Setup: 0 -> 1 | 3 -> 5 | k (True Vals): 2 (smoke)
     The p-value is 2.23369e-08
     tub is NOT separated from either by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 3 -> 5 | k (True Vals): 3 (lung)
+    The p-value is 9.35856e-14
+    tub is NOT separated from either by node(s): lung  (p-value<0.01)
     The value of i is 1 (smoke)
     The value of j is 2 (lung)
     There is 1 neighbor.
@@ -159,9 +227,9 @@
     The value of i is 2 (lung)
     The value of j is 3 (either)
     There are 2 neighbors.
-    Efficient Setup: 2 -> 3 | 3 -> 5 | k (True Vals): 2 1 (smoke tub)
+    Efficient Setup: 2 -> 3 | 3 -> 5 | k (True Vals): 1 2 (tub smoke)
     The p-value is 4.9879e-111
-    lung is NOT separated from either by node(s): smoke tub  (p-value<0.01)
+    lung is NOT separated from either by node(s): tub smoke  (p-value<0.01)
     The value of i is 3 (either)
     The value of l is 3
     The value of i is 0 (tub)
@@ -203,10 +271,11 @@
     S[[2]][[1]] = -1 S[[2]][[2]] = nan S[[2]][[3]] = nan S[[2]][[5]] = 3 
     S[[3]][[1]] = -1 S[[3]][[2]] = nan S[[3]][[3]] = nan S[[3]][[5]] = nan 
     S[[5]][[1]] = nan S[[5]][[2]] = 3 S[[5]][[3]] = nan S[[5]][[5]] = nan 
+    First and last elements of the dataset: -0.641447 0.198884
 
 # Testing the total skeleton function (two targets)
 
-    There are 2 targets.
+    There is (are) 2 target(s).
     Targets: lung bronc
     Target: 3
     FUNCTION get_neighbors_from_dag. Node 3
@@ -227,7 +296,7 @@
     Total Neighborhood:
     1, 2, 5, 7
     There are 8 nodes in the DAG.
-    There are 6 nodes in the neighborhood.
+    There are 6 nodes in the neighborhoods we are considering.
     All nodes being considered: 1 2 3 4 5 7
     Our starting matrix is 6x6.
     0 1 1 1 1 1
@@ -300,12 +369,12 @@
     The value of i is 0 (tub)
     The value of j is 4 (either)
     There are 3 neighbors.
-    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 (lung)
-    The p-value is 9.35856e-14
-    tub is NOT separated from either by node(s): lung  (p-value<0.01)
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 7 (dysp)
     The p-value is 1.75872e-05
     tub is NOT separated from either by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 (lung)
+    The p-value is 9.35856e-14
+    tub is NOT separated from either by node(s): lung  (p-value<0.01)
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 2 (smoke)
     The p-value is 2.23369e-08
     tub is NOT separated from either by node(s): smoke  (p-value<0.01)
@@ -317,51 +386,45 @@
     The value of i is 1 (smoke)
     The value of j is 2 (lung)
     There are 3 neighbors.
-    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
-    The p-value is 6.33935e-09
-    smoke is NOT separated from lung by node(s): either  (p-value<0.01)
-    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 (bronc)
-    The p-value is 1.73265e-10
-    smoke is NOT separated from lung by node(s): bronc  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 7 (dysp)
     The p-value is 1.85744e-19
     smoke is NOT separated from lung by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 (bronc)
+    The p-value is 1.73265e-10
+    smoke is NOT separated from lung by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
+    The p-value is 6.33935e-09
+    smoke is NOT separated from lung by node(s): either  (p-value<0.01)
     The value of j is 3 (bronc)
     There are 3 neighbors.
-    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 (either)
-    The p-value is 5.30428e-18
-    smoke is NOT separated from bronc by node(s): either  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 (lung)
     The p-value is 3.36192e-17
     smoke is NOT separated from bronc by node(s): lung  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 7 (dysp)
     The p-value is 1.40787e-17
     smoke is NOT separated from bronc by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 (either)
+    The p-value is 5.30428e-18
+    smoke is NOT separated from bronc by node(s): either  (p-value<0.01)
     The value of j is 4 (either)
     There are 4 neighbors.
-    Efficient Setup: 1 -> 2 | 4 -> 5 | k (True Vals): 7 (dysp)
-    The p-value is 9.84372e-13
-    smoke is NOT separated from either by node(s): dysp  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 4 -> 5 | k (True Vals): 3 (lung)
     The p-value is 0.0944292
     smoke is separated from either by node(s): lung  (p-value>0.01)
     The value of j is 5 (dysp)
     There are 3 neighbors.
-    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 5 (either)
-    The p-value is 2.3399e-12
-    smoke is NOT separated from dysp by node(s): either  (p-value<0.01)
-    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 4 (bronc)
-    The p-value is 0.0018733
-    smoke is NOT separated from dysp by node(s): bronc  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 3 (lung)
     The p-value is 4.7219e-12
     smoke is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 0.0018733
+    smoke is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 5 (either)
+    The p-value is 2.3399e-12
+    smoke is NOT separated from dysp by node(s): either  (p-value<0.01)
     The value of i is 2 (lung)
     The value of j is 3 (bronc)
     There are 3 neighbors.
-    Efficient Setup: 2 -> 3 | 3 -> 4 | k (True Vals): 7 (dysp)
-    The p-value is 9.74475e-37
-    lung is NOT separated from bronc by node(s): dysp  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 3 -> 4 | k (True Vals): 2 (smoke)
     The p-value is 0.868413
     lung is separated from bronc by node(s): smoke  (p-value>0.01)
@@ -370,20 +433,23 @@
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 (bronc)
     The p-value is 7.07433e-108
     lung is NOT separated from either by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
+    The p-value is 3.10595e-117
+    lung is NOT separated from either by node(s): tub  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 (smoke)
     The p-value is 5.05153e-105
     lung is NOT separated from either by node(s): smoke  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 7 (dysp)
     The p-value is 1.21991e-94
     lung is NOT separated from either by node(s): dysp  (p-value<0.01)
-    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
-    The p-value is 3.10595e-117
-    lung is NOT separated from either by node(s): tub  (p-value<0.01)
     The value of j is 5 (dysp)
     There are 3 neighbors.
     Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 2 (smoke)
     The p-value is 4.8985e-21
     lung is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 3.01325e-48
+    lung is NOT separated from dysp by node(s): bronc  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 5 (either)
     The p-value is 0.0810771
     lung is separated from dysp by node(s): either  (p-value>0.01)
@@ -422,12 +488,12 @@
     The value of i is 1 (smoke)
     The value of j is 2 (lung)
     There are 3 neighbors.
-    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 7 4 (dysp bronc)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 7 (bronc dysp)
     The p-value is 2.32256e-08
-    smoke is NOT separated from lung by node(s): dysp bronc  (p-value<0.01)
-    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 7 5 (dysp either)
+    smoke is NOT separated from lung by node(s): bronc dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 7 (either dysp)
     The p-value is 3.23618e-08
-    smoke is NOT separated from lung by node(s): dysp either  (p-value<0.01)
+    smoke is NOT separated from lung by node(s): either dysp  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 5 (bronc either)
     The p-value is 3.38235e-08
     smoke is NOT separated from lung by node(s): bronc either  (p-value<0.01)
@@ -447,12 +513,12 @@
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 (tub smoke)
     The p-value is 4.9879e-111
     lung is NOT separated from either by node(s): tub smoke  (p-value<0.01)
-    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 7 (tub dysp)
-    The p-value is 2.39758e-102
-    lung is NOT separated from either by node(s): tub dysp  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 7 (smoke dysp)
     The p-value is 3.88973e-81
     lung is NOT separated from either by node(s): smoke dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 7 (tub dysp)
+    The p-value is 2.39758e-102
+    lung is NOT separated from either by node(s): tub dysp  (p-value<0.01)
     The value of i is 3 (bronc)
     The value of j is 5 (dysp)
     There are 2 neighbors.
@@ -529,10 +595,766 @@
     S[[4]][[1]] = -1 S[[4]][[2]] = nan S[[4]][[3]] = 2 S[[4]][[4]] = nan S[[4]][[5]] = -1 S[[4]][[7]] = nan 
     S[[5]][[1]] = nan S[[5]][[2]] = 3 S[[5]][[3]] = nan S[[5]][[4]] = -1 S[[5]][[5]] = nan S[[5]][[7]] = nan 
     S[[7]][[1]] = 5 S[[7]][[2]] = 3 4 S[[7]][[3]] = 5 S[[7]][[4]] = nan S[[7]][[5]] = nan S[[7]][[7]] = nan 
+    First and last elements of the dataset: -0.641447 0.198884
+
+# Testing the total skeleton function for population (one target)
+
+    There are 1 targets.
+    Targets: lung
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Total Neighborhood:
+    1, 2, 5
+    There are 8 nodes in the DAG.
+    There are 4 nodes in the neighborhood.
+    All nodes being considered: 1 2 3 5
+    Our starting matrix is 4x4.
+    0 1 1 1
+    1 0 1 1
+    1 1 0 1
+    1 1 1 0
+    
+    
+    
+    Our initial separating sets:
+    S[[1]][[1]] = nan S[[1]][[2]] = nan S[[1]][[3]] = nan S[[1]][[5]] = nan 
+    S[[2]][[1]] = nan S[[2]][[2]] = nan S[[2]][[3]] = nan S[[2]][[5]] = nan 
+    S[[3]][[1]] = nan S[[3]][[2]] = nan S[[3]][[3]] = nan S[[3]][[5]] = nan 
+    S[[5]][[1]] = nan S[[5]][[2]] = nan S[[5]][[3]] = nan S[[5]][[5]] = nan 
+    Population Version
+    Element mapping for efficient ordering:
+    1 0
+    2 1
+    3 2
+    5 3
+    
+    
+    The value of l is 0
+    The value of i is 0 (tub)
+    The value of j is 1 (smoke)
+    x: 2 
+    y: 3 
+    z:  
+    The p-value is 1
+    tub is separated from smoke (p-value>0.01)
+    The value of j is 2 (lung)
+    x: 2 
+    y: 4 
+    z:  
+    The p-value is 1
+    tub is separated from lung (p-value>0.01)
+    The value of j is 3 (either)
+    x: 2 
+    y: 6 
+    z:  
+    The p-value is 0
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    x: 3 
+    y: 4 
+    z:  
+    The p-value is 0
+    The value of j is 3 (either)
+    x: 3 
+    y: 6 
+    z:  
+    The p-value is 0
+    The value of i is 2 (lung)
+    The value of j is 3 (either)
+    x: 4 
+    y: 6 
+    z:  
+    The p-value is 0
+    The value of i is 3 (either)
+    The value of l is 1
+    The value of i is 0 (tub)
+    The value of j is 3 (either)
+    There are 2 neighbors.
+    Efficient Setup: 0 -> 1 | 3 -> 5 | k (True Vals): 2 (smoke)
+    x: 2 
+    y: 6 
+    z: 3 
+    The p-value is 0
+    tub is NOT separated from either by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 3 -> 5 | k (True Vals): 3 (lung)
+    x: 2 
+    y: 6 
+    z: 4 
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung  (p-value<0.01)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    There is 1 neighbor.
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
+    x: 3 
+    y: 4 
+    z: 6 
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): either  (p-value<0.01)
+    The value of j is 3 (either)
+    There are 2 neighbors.
+    Efficient Setup: 1 -> 2 | 3 -> 5 | k (True Vals): 3 (lung)
+    x: 3 
+    y: 6 
+    z: 4 
+    The p-value is 1
+    smoke is separated from either by node(s): lung  (p-value>0.01)
+    The value of i is 2 (lung)
+    The value of j is 3 (either)
+    There are 2 neighbors.
+    Efficient Setup: 2 -> 3 | 3 -> 5 | k (True Vals): 2 (smoke)
+    x: 4 
+    y: 6 
+    z: 3 
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 3 -> 5 | k (True Vals): 1 (tub)
+    x: 4 
+    y: 6 
+    z: 2 
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub  (p-value<0.01)
+    The value of i is 3 (either)
+    The value of l is 2
+    The value of i is 0 (tub)
+    The value of j is 3 (either)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    The value of i is 2 (lung)
+    The value of j is 3 (either)
+    There are 2 neighbors.
+    Efficient Setup: 2 -> 3 | 3 -> 5 | k (True Vals): 1 2 (tub smoke)
+    x: 4 
+    y: 6 
+    z: 2, 3 
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke  (p-value<0.01)
+    The value of i is 3 (either)
+    The value of l is 3
+    The value of i is 0 (tub)
+    The value of j is 3 (either)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    The value of i is 2 (lung)
+    The value of j is 3 (either)
+    The value of i is 3 (either)
+    
+    
+    Values after Total Skeleton Run
+    
+    p: 8
+    n: 0
+    N: 4
+    Number of Targets: 1
+    Node names: asia tub smoke lung bronc either xray dysp 
+    lmax: 3
+    verbose: 1
+    Nodes under consideration: 1 2 3 5
+    Ctilde:
+    Our Ctilde matrix is 4x4
+    0 0 0 1
+    0 0 1 0
+    0 1 0 1
+    1 0 1 0
+    Our DAG matrix is 
+    0 1 0 0 0 0 0 0
+    0 0 0 0 0 1 0 0
+    0 0 0 1 1 0 0 0
+    0 0 0 0 0 1 0 0
+    0 0 0 0 0 0 0 1
+    0 0 0 0 0 0 1 1
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+    Separating Set Values:
+    S[[1]][[1]] = nan S[[1]][[2]] = -1 S[[1]][[3]] = -1 S[[1]][[5]] = nan 
+    S[[2]][[1]] = -1 S[[2]][[2]] = nan S[[2]][[3]] = nan S[[2]][[5]] = 3 
+    S[[3]][[1]] = -1 S[[3]][[2]] = nan S[[3]][[3]] = nan S[[3]][[5]] = nan 
+    S[[5]][[1]] = nan S[[5]][[2]] = 3 S[[5]][[3]] = nan S[[5]][[5]] = nan 
+
+# Testing the total skeleton function for population (two targets)
+
+    There are 2 targets.
+    Targets: lung bronc
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Target: 4
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    Total Neighborhood:
+    1, 2, 5, 7
+    There are 8 nodes in the DAG.
+    There are 6 nodes in the neighborhood.
+    All nodes being considered: 1 2 3 4 5 7
+    Our starting matrix is 6x6.
+    0 1 1 1 1 1
+    1 0 1 1 1 1
+    1 1 0 1 1 1
+    1 1 1 0 1 1
+    1 1 1 1 0 1
+    1 1 1 1 1 0
+    
+    
+    
+    Our initial separating sets:
+    S[[1]][[1]] = nan S[[1]][[2]] = nan S[[1]][[3]] = nan S[[1]][[4]] = nan S[[1]][[5]] = nan S[[1]][[7]] = nan 
+    S[[2]][[1]] = nan S[[2]][[2]] = nan S[[2]][[3]] = nan S[[2]][[4]] = nan S[[2]][[5]] = nan S[[2]][[7]] = nan 
+    S[[3]][[1]] = nan S[[3]][[2]] = nan S[[3]][[3]] = nan S[[3]][[4]] = nan S[[3]][[5]] = nan S[[3]][[7]] = nan 
+    S[[4]][[1]] = nan S[[4]][[2]] = nan S[[4]][[3]] = nan S[[4]][[4]] = nan S[[4]][[5]] = nan S[[4]][[7]] = nan 
+    S[[5]][[1]] = nan S[[5]][[2]] = nan S[[5]][[3]] = nan S[[5]][[4]] = nan S[[5]][[5]] = nan S[[5]][[7]] = nan 
+    S[[7]][[1]] = nan S[[7]][[2]] = nan S[[7]][[3]] = nan S[[7]][[4]] = nan S[[7]][[5]] = nan S[[7]][[7]] = nan 
+    Population Version
+    Element mapping for efficient ordering:
+    1 0
+    2 1
+    3 2
+    4 3
+    5 4
+    7 5
+    
+    
+    The value of l is 0
+    The value of i is 0 (tub)
+    The value of j is 1 (smoke)
+    x: 2 
+    y: 3 
+    z:  
+    The p-value is 1
+    tub is separated from smoke (p-value>0.01)
+    The value of j is 2 (lung)
+    x: 2 
+    y: 4 
+    z:  
+    The p-value is 1
+    tub is separated from lung (p-value>0.01)
+    The value of j is 3 (bronc)
+    x: 2 
+    y: 5 
+    z:  
+    The p-value is 1
+    tub is separated from bronc (p-value>0.01)
+    The value of j is 4 (either)
+    x: 2 
+    y: 6 
+    z:  
+    The p-value is 0
+    The value of j is 5 (dysp)
+    x: 2 
+    y: 8 
+    z:  
+    The p-value is 0
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    x: 3 
+    y: 4 
+    z:  
+    The p-value is 0
+    The value of j is 3 (bronc)
+    x: 3 
+    y: 5 
+    z:  
+    The p-value is 0
+    The value of j is 4 (either)
+    x: 3 
+    y: 6 
+    z:  
+    The p-value is 0
+    The value of j is 5 (dysp)
+    x: 3 
+    y: 8 
+    z:  
+    The p-value is 0
+    The value of i is 2 (lung)
+    The value of j is 3 (bronc)
+    x: 4 
+    y: 5 
+    z:  
+    The p-value is 0
+    The value of j is 4 (either)
+    x: 4 
+    y: 6 
+    z:  
+    The p-value is 0
+    The value of j is 5 (dysp)
+    x: 4 
+    y: 8 
+    z:  
+    The p-value is 0
+    The value of i is 3 (bronc)
+    The value of j is 4 (either)
+    x: 5 
+    y: 6 
+    z:  
+    The p-value is 0
+    The value of j is 5 (dysp)
+    x: 5 
+    y: 8 
+    z:  
+    The p-value is 0
+    The value of i is 4 (either)
+    The value of j is 5 (dysp)
+    x: 6 
+    y: 8 
+    z:  
+    The p-value is 0
+    The value of i is 5 (dysp)
+    The value of l is 1
+    The value of i is 0 (tub)
+    The value of j is 4 (either)
+    There are 4 neighbors.
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 7 (dysp)
+    x: 2 
+    y: 6 
+    z: 8 
+    The p-value is 0
+    tub is NOT separated from either by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 (lung)
+    x: 2 
+    y: 6 
+    z: 4 
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 2 (smoke)
+    x: 2 
+    y: 6 
+    z: 3 
+    The p-value is 0
+    tub is NOT separated from either by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 4 (bronc)
+    x: 2 
+    y: 6 
+    z: 5 
+    The p-value is 0
+    tub is NOT separated from either by node(s): bronc  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 5 (either)
+    x: 2 
+    y: 8 
+    z: 6 
+    The p-value is 0
+    tub is NOT separated from dysp by node(s): either  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 3 (lung)
+    x: 2 
+    y: 8 
+    z: 4 
+    The p-value is 0
+    tub is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 2 (smoke)
+    x: 2 
+    y: 8 
+    z: 3 
+    The p-value is 0
+    tub is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 4 (bronc)
+    x: 2 
+    y: 8 
+    z: 5 
+    The p-value is 0
+    tub is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    There are 3 neighbors.
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 7 (dysp)
+    x: 3 
+    y: 4 
+    z: 8 
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 (bronc)
+    x: 3 
+    y: 4 
+    z: 5 
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
+    x: 3 
+    y: 4 
+    z: 6 
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): either  (p-value<0.01)
+    The value of j is 3 (bronc)
+    There are 3 neighbors.
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 (lung)
+    x: 3 
+    y: 5 
+    z: 4 
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): lung  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 7 (dysp)
+    x: 3 
+    y: 5 
+    z: 8 
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 (either)
+    x: 3 
+    y: 5 
+    z: 6 
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): either  (p-value<0.01)
+    The value of j is 4 (either)
+    There are 4 neighbors.
+    Efficient Setup: 1 -> 2 | 4 -> 5 | k (True Vals): 3 (lung)
+    x: 3 
+    y: 6 
+    z: 4 
+    The p-value is 1
+    smoke is separated from either by node(s): lung  (p-value>0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 3 (lung)
+    x: 3 
+    y: 8 
+    z: 4 
+    The p-value is 0
+    smoke is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 4 (bronc)
+    x: 3 
+    y: 8 
+    z: 5 
+    The p-value is 0
+    smoke is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 5 (either)
+    x: 3 
+    y: 8 
+    z: 6 
+    The p-value is 0
+    smoke is NOT separated from dysp by node(s): either  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 1 (tub)
+    x: 3 
+    y: 8 
+    z: 2 
+    The p-value is 0
+    smoke is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    The value of i is 2 (lung)
+    The value of j is 3 (bronc)
+    There are 3 neighbors.
+    Efficient Setup: 2 -> 3 | 3 -> 4 | k (True Vals): 2 (smoke)
+    x: 4 
+    y: 5 
+    z: 3 
+    The p-value is 1
+    lung is separated from bronc by node(s): smoke  (p-value>0.01)
+    The value of j is 4 (either)
+    There are 4 neighbors.
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 (bronc)
+    x: 4 
+    y: 6 
+    z: 5 
+    The p-value is 0
+    lung is NOT separated from either by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
+    x: 4 
+    y: 6 
+    z: 2 
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 (smoke)
+    x: 4 
+    y: 6 
+    z: 3 
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 7 (dysp)
+    x: 4 
+    y: 6 
+    z: 8 
+    The p-value is 0
+    lung is NOT separated from either by node(s): dysp  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 4 (bronc)
+    x: 4 
+    y: 8 
+    z: 5 
+    The p-value is 0
+    lung is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 5 (either)
+    x: 4 
+    y: 8 
+    z: 6 
+    The p-value is 0
+    lung is NOT separated from dysp by node(s): either  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 1 (tub)
+    x: 4 
+    y: 8 
+    z: 2 
+    The p-value is 0
+    lung is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 2 (smoke)
+    x: 4 
+    y: 8 
+    z: 3 
+    The p-value is 0
+    lung is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    The value of i is 3 (bronc)
+    The value of j is 4 (either)
+    There are 4 neighbors.
+    Efficient Setup: 3 -> 4 | 4 -> 5 | k (True Vals): 1 (tub)
+    x: 5 
+    y: 6 
+    z: 2 
+    The p-value is 0
+    bronc is NOT separated from either by node(s): tub  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 4 -> 5 | k (True Vals): 2 (smoke)
+    x: 5 
+    y: 6 
+    z: 3 
+    The p-value is 1
+    bronc is separated from either by node(s): smoke  (p-value>0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 5 (either)
+    x: 5 
+    y: 8 
+    z: 6 
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): either  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 1 (tub)
+    x: 5 
+    y: 8 
+    z: 2 
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 (smoke)
+    x: 5 
+    y: 8 
+    z: 3 
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 3 (lung)
+    x: 5 
+    y: 8 
+    z: 4 
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    The value of i is 4 (either)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 3 (lung)
+    x: 6 
+    y: 8 
+    z: 4 
+    The p-value is 0
+    either is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 (tub)
+    x: 6 
+    y: 8 
+    z: 2 
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 2 (smoke)
+    x: 6 
+    y: 8 
+    z: 3 
+    The p-value is 0
+    either is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 4 (bronc)
+    x: 6 
+    y: 8 
+    z: 5 
+    The p-value is 0
+    either is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    The value of i is 5 (dysp)
+    The value of l is 2
+    The value of i is 0 (tub)
+    The value of j is 4 (either)
+    There are 2 neighbors.
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 7 (lung dysp)
+    x: 2 
+    y: 6 
+    z: 4, 8 
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung dysp  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 3 5 (lung either)
+    x: 2 
+    y: 8 
+    z: 4, 6 
+    The p-value is 1
+    tub is separated from dysp by node(s): lung either  (p-value>0.01)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    There are 3 neighbors.
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 7 (bronc dysp)
+    x: 3 
+    y: 4 
+    z: 5, 8 
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): bronc dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 7 (either dysp)
+    x: 3 
+    y: 4 
+    z: 6, 8 
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): either dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 5 (bronc either)
+    x: 3 
+    y: 4 
+    z: 5, 6 
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): bronc either  (p-value<0.01)
+    The value of j is 3 (bronc)
+    There are 2 neighbors.
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 7 (lung dysp)
+    x: 3 
+    y: 5 
+    z: 4, 8 
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): lung dysp  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 3 neighbors.
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 3 4 (lung bronc)
+    x: 3 
+    y: 8 
+    z: 4, 5 
+    The p-value is 1
+    smoke is separated from dysp by node(s): lung bronc  (p-value>0.01)
+    The value of i is 2 (lung)
+    The value of j is 4 (either)
+    There are 3 neighbors.
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 (tub smoke)
+    x: 4 
+    y: 6 
+    z: 2, 3 
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 7 (smoke dysp)
+    x: 4 
+    y: 6 
+    z: 3, 8 
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 7 (tub dysp)
+    x: 4 
+    y: 6 
+    z: 2, 8 
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub dysp  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 3 neighbors.
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 2 5 (smoke either)
+    x: 4 
+    y: 8 
+    z: 3, 6 
+    The p-value is 1
+    lung is separated from dysp by node(s): smoke either  (p-value>0.01)
+    The value of i is 3 (bronc)
+    The value of j is 5 (dysp)
+    There are 2 neighbors.
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 5 (smoke either)
+    x: 5 
+    y: 8 
+    z: 3, 6 
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): smoke either  (p-value<0.01)
+    The value of i is 4 (either)
+    The value of j is 5 (dysp)
+    There are 3 neighbors.
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 (tub lung)
+    x: 6 
+    y: 8 
+    z: 2, 4 
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub lung  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 4 (tub bronc)
+    x: 6 
+    y: 8 
+    z: 2, 5 
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub bronc  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 3 4 (lung bronc)
+    x: 6 
+    y: 8 
+    z: 4, 5 
+    The p-value is 0
+    either is NOT separated from dysp by node(s): lung bronc  (p-value<0.01)
+    The value of i is 5 (dysp)
+    The value of l is 3
+    The value of i is 0 (tub)
+    The value of j is 4 (either)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    The value of j is 3 (bronc)
+    The value of i is 2 (lung)
+    The value of j is 4 (either)
+    There are 3 neighbors.
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 7 (tub smoke dysp)
+    x: 4 
+    y: 6 
+    z: 2, 3, 8 
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke dysp  (p-value<0.01)
+    The value of i is 3 (bronc)
+    The value of j is 5 (dysp)
+    The value of i is 4 (either)
+    The value of j is 5 (dysp)
+    There are 3 neighbors.
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 4 (tub lung bronc)
+    x: 6 
+    y: 8 
+    z: 2, 4, 5 
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub lung bronc  (p-value<0.01)
+    The value of i is 5 (dysp)
+    
+    
+    Values after Total Skeleton Run
+    
+    p: 8
+    n: 0
+    N: 6
+    Number of Targets: 2
+    Node names: asia tub smoke lung bronc either xray dysp 
+    lmax: 3
+    verbose: 1
+    Nodes under consideration: 1 2 3 4 5 7
+    Ctilde:
+    Our Ctilde matrix is 6x6
+    0 0 0 0 1 0
+    0 0 1 1 0 0
+    0 1 0 0 1 0
+    0 1 0 0 0 1
+    1 0 1 0 0 1
+    0 0 0 1 1 0
+    Our DAG matrix is 
+    0 1 0 0 0 0 0 0
+    0 0 0 0 0 1 0 0
+    0 0 0 1 1 0 0 0
+    0 0 0 0 0 1 0 0
+    0 0 0 0 0 0 0 1
+    0 0 0 0 0 0 1 1
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+    Separating Set Values:
+    S[[1]][[1]] = nan S[[1]][[2]] = -1 S[[1]][[3]] = -1 S[[1]][[4]] = -1 S[[1]][[5]] = nan S[[1]][[7]] = 3 5 
+    S[[2]][[1]] = -1 S[[2]][[2]] = nan S[[2]][[3]] = nan S[[2]][[4]] = nan S[[2]][[5]] = 3 S[[2]][[7]] = 3 4 
+    S[[3]][[1]] = -1 S[[3]][[2]] = nan S[[3]][[3]] = nan S[[3]][[4]] = 2 S[[3]][[5]] = nan S[[3]][[7]] = 2 5 
+    S[[4]][[1]] = -1 S[[4]][[2]] = nan S[[4]][[3]] = 2 S[[4]][[4]] = nan S[[4]][[5]] = 2 S[[4]][[7]] = nan 
+    S[[5]][[1]] = nan S[[5]][[2]] = 3 S[[5]][[3]] = nan S[[5]][[4]] = 2 S[[5]][[5]] = nan S[[5]][[7]] = nan 
+    S[[7]][[1]] = 3 5 S[[7]][[2]] = 3 4 S[[7]][[3]] = 2 5 S[[7]][[4]] = nan S[[7]][[5]] = nan S[[7]][[7]] = nan 
 
 # Testing V-Structure function
 
-    There are 2 targets.
+    There is (are) 2 target(s).
     Targets: lung bronc
     Target: 3
     FUNCTION get_neighbors_from_dag. Node 3
@@ -553,7 +1375,7 @@
     Total Neighborhood:
     1, 2, 5, 7
     There are 8 nodes in the DAG.
-    There are 6 nodes in the neighborhood.
+    There are 6 nodes in the neighborhoods we are considering.
     All nodes being considered: 1 2 3 4 5 7
     Our starting matrix is 6x6.
     0 1 1 1 1 1
@@ -626,12 +1448,12 @@
     The value of i is 0 (tub)
     The value of j is 4 (either)
     There are 3 neighbors.
-    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 (lung)
-    The p-value is 9.35856e-14
-    tub is NOT separated from either by node(s): lung  (p-value<0.01)
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 7 (dysp)
     The p-value is 1.75872e-05
     tub is NOT separated from either by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 (lung)
+    The p-value is 9.35856e-14
+    tub is NOT separated from either by node(s): lung  (p-value<0.01)
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 2 (smoke)
     The p-value is 2.23369e-08
     tub is NOT separated from either by node(s): smoke  (p-value<0.01)
@@ -643,51 +1465,45 @@
     The value of i is 1 (smoke)
     The value of j is 2 (lung)
     There are 3 neighbors.
-    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
-    The p-value is 6.33935e-09
-    smoke is NOT separated from lung by node(s): either  (p-value<0.01)
-    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 (bronc)
-    The p-value is 1.73265e-10
-    smoke is NOT separated from lung by node(s): bronc  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 7 (dysp)
     The p-value is 1.85744e-19
     smoke is NOT separated from lung by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 (bronc)
+    The p-value is 1.73265e-10
+    smoke is NOT separated from lung by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
+    The p-value is 6.33935e-09
+    smoke is NOT separated from lung by node(s): either  (p-value<0.01)
     The value of j is 3 (bronc)
     There are 3 neighbors.
-    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 (either)
-    The p-value is 5.30428e-18
-    smoke is NOT separated from bronc by node(s): either  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 (lung)
     The p-value is 3.36192e-17
     smoke is NOT separated from bronc by node(s): lung  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 7 (dysp)
     The p-value is 1.40787e-17
     smoke is NOT separated from bronc by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 (either)
+    The p-value is 5.30428e-18
+    smoke is NOT separated from bronc by node(s): either  (p-value<0.01)
     The value of j is 4 (either)
     There are 4 neighbors.
-    Efficient Setup: 1 -> 2 | 4 -> 5 | k (True Vals): 7 (dysp)
-    The p-value is 9.84372e-13
-    smoke is NOT separated from either by node(s): dysp  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 4 -> 5 | k (True Vals): 3 (lung)
     The p-value is 0.0944292
     smoke is separated from either by node(s): lung  (p-value>0.01)
     The value of j is 5 (dysp)
     There are 3 neighbors.
-    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 5 (either)
-    The p-value is 2.3399e-12
-    smoke is NOT separated from dysp by node(s): either  (p-value<0.01)
-    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 4 (bronc)
-    The p-value is 0.0018733
-    smoke is NOT separated from dysp by node(s): bronc  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 3 (lung)
     The p-value is 4.7219e-12
     smoke is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 0.0018733
+    smoke is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 5 (either)
+    The p-value is 2.3399e-12
+    smoke is NOT separated from dysp by node(s): either  (p-value<0.01)
     The value of i is 2 (lung)
     The value of j is 3 (bronc)
     There are 3 neighbors.
-    Efficient Setup: 2 -> 3 | 3 -> 4 | k (True Vals): 7 (dysp)
-    The p-value is 9.74475e-37
-    lung is NOT separated from bronc by node(s): dysp  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 3 -> 4 | k (True Vals): 2 (smoke)
     The p-value is 0.868413
     lung is separated from bronc by node(s): smoke  (p-value>0.01)
@@ -696,20 +1512,23 @@
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 (bronc)
     The p-value is 7.07433e-108
     lung is NOT separated from either by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
+    The p-value is 3.10595e-117
+    lung is NOT separated from either by node(s): tub  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 (smoke)
     The p-value is 5.05153e-105
     lung is NOT separated from either by node(s): smoke  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 7 (dysp)
     The p-value is 1.21991e-94
     lung is NOT separated from either by node(s): dysp  (p-value<0.01)
-    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
-    The p-value is 3.10595e-117
-    lung is NOT separated from either by node(s): tub  (p-value<0.01)
     The value of j is 5 (dysp)
     There are 3 neighbors.
     Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 2 (smoke)
     The p-value is 4.8985e-21
     lung is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 3.01325e-48
+    lung is NOT separated from dysp by node(s): bronc  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 5 (either)
     The p-value is 0.0810771
     lung is separated from dysp by node(s): either  (p-value>0.01)
@@ -748,12 +1567,12 @@
     The value of i is 1 (smoke)
     The value of j is 2 (lung)
     There are 3 neighbors.
-    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 7 4 (dysp bronc)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 7 (bronc dysp)
     The p-value is 2.32256e-08
-    smoke is NOT separated from lung by node(s): dysp bronc  (p-value<0.01)
-    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 7 5 (dysp either)
+    smoke is NOT separated from lung by node(s): bronc dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 7 (either dysp)
     The p-value is 3.23618e-08
-    smoke is NOT separated from lung by node(s): dysp either  (p-value<0.01)
+    smoke is NOT separated from lung by node(s): either dysp  (p-value<0.01)
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 5 (bronc either)
     The p-value is 3.38235e-08
     smoke is NOT separated from lung by node(s): bronc either  (p-value<0.01)
@@ -773,12 +1592,12 @@
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 (tub smoke)
     The p-value is 4.9879e-111
     lung is NOT separated from either by node(s): tub smoke  (p-value<0.01)
-    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 7 (tub dysp)
-    The p-value is 2.39758e-102
-    lung is NOT separated from either by node(s): tub dysp  (p-value<0.01)
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 7 (smoke dysp)
     The p-value is 3.88973e-81
     lung is NOT separated from either by node(s): smoke dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 7 (tub dysp)
+    The p-value is 2.39758e-102
+    lung is NOT separated from either by node(s): tub dysp  (p-value<0.01)
     The value of i is 3 (bronc)
     The value of j is 5 (dysp)
     There are 2 neighbors.
@@ -855,20 +1674,11 @@
     S[[4]][[1]] = -1 S[[4]][[2]] = nan S[[4]][[3]] = 2 S[[4]][[4]] = nan S[[4]][[5]] = -1 S[[4]][[7]] = nan 
     S[[5]][[1]] = nan S[[5]][[2]] = 3 S[[5]][[3]] = nan S[[5]][[4]] = -1 S[[5]][[5]] = nan S[[5]][[7]] = nan 
     S[[7]][[1]] = 5 S[[7]][[2]] = 3 4 S[[7]][[3]] = 5 S[[7]][[4]] = nan S[[7]][[5]] = nan S[[7]][[7]] = nan 
+    First and last elements of the dataset: -0.641447 0.198884
     
     
     Finding skeleton for the neighborhood of target 3 (Efficient Number: 2)
     Neighborhood nodes under consideration: 1 2 4 | (smoke(2) lung(3) either(5))
-    The value of l is 0
-    The value of i is 1
-    The value of j is 2
-    The p-value is 3.57115e-12
-    l: 0 | i: 1 | j: 2 | k: nan | p-val: 3.57115e-12
-    The value of i is 2
-    The value of j is 4
-    The p-value is 2.97187e-109
-    l: 0 | i: 2 | j: 4 | k: nan | p-val: 2.97187e-109
-    The value of i is 4
     The value of l is 1
     The value of i is 1
     The value of j is 2
@@ -1130,16 +1940,6 @@
     
     Finding skeleton for the neighborhood of target 4 (Efficient Number: 3)
     Neighborhood nodes under consideration: 1 3 5 | (smoke(2) bronc(4) dysp(7))
-    The value of l is 0
-    The value of i is 1
-    The value of j is 3
-    The p-value is 6.44217e-19
-    l: 0 | i: 1 | j: 3 | k: nan | p-val: 6.44217e-19
-    The value of i is 3
-    The value of j is 5
-    The p-value is 6.74668e-84
-    l: 0 | i: 3 | j: 5 | k: nan | p-val: 6.74668e-84
-    The value of i is 5
     The value of l is 1
     The value of i is 1
     The value of j is 3

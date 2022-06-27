@@ -51,11 +51,11 @@ test_that("checking metric functions",{
   
   lfci_g <- empty.graph(colnames(asiaDAG))
   pc_g <- empty.graph(colnames(asiaDAG))
-  # amat(lfci_g) <- est$G
-  # amat(pc_g) <- pc_asia
-  # graphviz.plot(lfci_g)
-  # graphviz.plot(pc_g)
-  # graphviz.compare(lfci_g,pc_g)
+  amat(lfci_g) <- est$amat
+  amat(pc_g) <- pc_asia
+  graphviz.plot(lfci_g)
+  graphviz.plot(pc_g)
+  graphviz.compare(lfci_g,pc_g)
   expect_snapshot_output(all_metrics(est$amat,asiaDAG,pc_asia,t-1))
   
 })

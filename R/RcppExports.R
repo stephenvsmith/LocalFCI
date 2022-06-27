@@ -45,6 +45,10 @@ condIndTest <- function(C, i, j, k, n, signif_level) {
     .Call(`_LocalFCI_condIndTest`, C, i, j, k, n, signif_level)
 }
 
+condIndTestPop <- function(G, i, j, k) {
+    .Call(`_LocalFCI_condIndTestPop`, G, i, j, k)
+}
+
 combn_cpp <- function(x, l) {
     .Call(`_LocalFCI_combn_cpp`, x, l)
 }
@@ -101,8 +105,16 @@ initializeLocalFCI <- function(td, df, t, names) {
     invisible(.Call(`_LocalFCI_initializeLocalFCI`, td, df, t, names))
 }
 
+initializeLocalFCIPop <- function(td, t, names) {
+    invisible(.Call(`_LocalFCI_initializeLocalFCIPop`, td, t, names))
+}
+
 checkSkeletonTotal <- function(td, df, t, names) {
     .Call(`_LocalFCI_checkSkeletonTotal`, td, df, t, names)
+}
+
+checkSkeletonTotalPop <- function(td, t, names) {
+    .Call(`_LocalFCI_checkSkeletonTotalPop`, td, t, names)
 }
 
 checkSkeletonBoth <- function(td, df, t, names) {

@@ -39,7 +39,8 @@ localfci_cpp <- function(data=NULL,true_dag=NULL,targets,
   cpp_targets <- targets-1 
   if (verbose){
     cat("The node value for the C++ function is",
-        paste(cpp_targets,collapse = ","))
+        paste(cpp_targets,collapse = ","),
+        "\n")
   }
   
   results <- fci(true_dag,data,targets-1,node_names,lmax,tol,verbose)
@@ -59,3 +60,8 @@ localfci_cpp <- function(data=NULL,true_dag=NULL,targets,
     "data_cov"=data_cov)
   )
 }
+
+
+
+
+

@@ -13,6 +13,12 @@ test_that("Testing the LocalFCI object",{
   
 })
 
+test_that("Testing the LocalFCI object (Population)",{
+  
+  testthat::expect_snapshot_output(initializeLocalFCIPop(asiaDAG,3,node_names))
+  
+})
+
 test_that("Testing the total skeleton function (one target)",{
   
   testthat::expect_snapshot_output(result_amat <- checkSkeletonTotal(asiaDAG,asiadf,3,node_names))
@@ -26,6 +32,23 @@ test_that("Testing the total skeleton function (two targets)",{
 
   testthat::expect_snapshot_output(result_amat <- checkSkeletonTotal(asiaDAG,asiadf,c(3,4),node_names))
 
+  total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,4,5,7)+1])
+  amat(total_skel) <- result_amat
+  graphviz.plot(total_skel)
+})
+
+test_that("Testing the total skeleton function for population (one target)",{
+  
+  testthat::expect_snapshot_output(result_amat <- checkSkeletonTotalPop(asiaDAG,3,node_names))
+  total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,5)+1])
+  amat(total_skel) <- result_amat
+  graphviz.plot(total_skel)
+})
+
+test_that("Testing the total skeleton function for population (two targets)",{
+  
+  testthat::expect_snapshot_output(result_amat <- checkSkeletonTotalPop(asiaDAG,c(3,4),node_names))
+  
   total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,4,5,7)+1])
   amat(total_skel) <- result_amat
   graphviz.plot(total_skel)
@@ -67,12 +90,20 @@ test_that("Testing Adjacency Matrix Conversion",{
                         rep(0,11),
                         rep(0,11)),nrow = 11,byrow = TRUE)
   
-  result_amat <- checkAdjMatConversion(matrix(data = 0,nrow = 11,ncol = 11),asiadf,c(3,4),node_names,
+  result_amat <- checkAdjMatConversion(final_mat,asiadf,c(3,4),node_names,
                                        test_mat,c(1,3,4,6,8,10))
   expect_equal(result_amat,final_mat)
   conv_graph <- empty.graph(as.character(0:10))
   amat(conv_graph) <- result_amat
   graphviz.plot(conv_graph)
+  
+  asia_test <- matrix(c(
+    0,2,0,2,
+    2,0,1,2,
+    0,1,0,0,
+    1,1,0,0
+  ),byrow = TRUE,nrow = 4)
+  checkAdjMatConversion(asiaDAG,asiadf,c(4,5),node_names,asia_test,4:7)
 })
 
 

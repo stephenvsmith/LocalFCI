@@ -10,10 +10,25 @@ void initializeLocalFCI(NumericMatrix td,arma::mat df,NumericVector t,StringVect
 }
 
 // [[Rcpp::export]]
+void initializeLocalFCIPop(NumericMatrix td,NumericVector t,StringVector names){
+  LocalFCI lfci(td,t,names,3,true);
+  Rcout << "\n\n";
+  lfci.print_elements();
+}
+
+// [[Rcpp::export]]
 NumericMatrix checkSkeletonTotal(NumericMatrix td,arma::mat df,NumericVector t,StringVector names){
   LocalFCI lfci(td,df,t,names,3,0.01,true);
   Rcout << "\n\n";
-  lfci.get_skeleton_total();
+  lfci.getSkeletonTotal();
+  return lfci.getAmat();
+}
+
+// [[Rcpp::export]]
+NumericMatrix checkSkeletonTotalPop(NumericMatrix td,NumericVector t,StringVector names){
+  LocalFCI lfci(td,t,names,3,true);
+  Rcout << "\n\n";
+  lfci.getSkeletonTotal();
   return lfci.getAmat();
 }
 
@@ -21,9 +36,9 @@ NumericMatrix checkSkeletonTotal(NumericMatrix td,arma::mat df,NumericVector t,S
 NumericMatrix checkSkeletonBoth(NumericMatrix td,arma::mat df,NumericVector t,StringVector names){
   LocalFCI lfci(td,df,t,names,3,0.01,true);
   Rcout << "\n\n";
-  lfci.get_skeleton_total();
+  lfci.getSkeletonTotal();
   // Get the skeleton for each target node and its neighborhood
-  std::for_each(t.begin(),t.end(),[&lfci](int t){ lfci.get_skeleton_target(t); });
+  std::for_each(t.begin(),t.end(),[&lfci](int t){ lfci.getSkeletonTarget(t); });
   return lfci.getAmat();
 }
 
@@ -31,10 +46,10 @@ NumericMatrix checkSkeletonBoth(NumericMatrix td,arma::mat df,NumericVector t,St
 NumericMatrix checkVStruct(NumericMatrix td,arma::mat df,NumericVector t,StringVector names){
   LocalFCI lfci(td,df,t,names,3,0.01,true);
   Rcout << "\n\n";
-  lfci.get_skeleton_total();
+  lfci.getSkeletonTotal();
   // Get the skeleton for each target node and its neighborhood
-  std::for_each(t.begin(),t.end(),[&lfci](int t){ lfci.get_skeleton_target(t); });
-  lfci.get_v_structures_efficient();
+  std::for_each(t.begin(),t.end(),[&lfci](int t){ lfci.getSkeletonTarget(t); });
+  lfci.getVStructures();
   return lfci.getAmat();
 }
 
@@ -45,12 +60,10 @@ NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector 
   lfci.setAmat(m);
   lfci.setNeighbors(neighbors);
   lfci.convertMixedGraph();
-  //lfci.printAmat();
   Graph* C_new = new Graph(lfci.getSize());
   C_new -> emptyGraph();
   lfci.convertFinalGraph(C_new);
   C_new = nullptr;
-  //lfci.printAmat();
   
   Rcout << "Final\n";
   lfci.print_elements();

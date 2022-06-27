@@ -159,6 +159,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// condIndTestPop
+List condIndTestPop(NumericMatrix G, const int& i, const int& j, const arma::uvec& k);
+RcppExport SEXP _LocalFCI_condIndTestPop(SEXP GSEXP, SEXP iSEXP, SEXP jSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type G(GSEXP);
+    Rcpp::traits::input_parameter< const int& >::type i(iSEXP);
+    Rcpp::traits::input_parameter< const int& >::type j(jSEXP);
+    Rcpp::traits::input_parameter< const arma::uvec& >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(condIndTestPop(G, i, j, k));
+    return rcpp_result_gen;
+END_RCPP
+}
 // combn_cpp
 NumericMatrix combn_cpp(NumericVector x, int l);
 RcppExport SEXP _LocalFCI_combn_cpp(SEXP xSEXP, SEXP lSEXP) {
@@ -348,6 +362,18 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// initializeLocalFCIPop
+void initializeLocalFCIPop(NumericMatrix td, NumericVector t, StringVector names);
+RcppExport SEXP _LocalFCI_initializeLocalFCIPop(SEXP tdSEXP, SEXP tSEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    initializeLocalFCIPop(td, t, names);
+    return R_NilValue;
+END_RCPP
+}
 // checkSkeletonTotal
 NumericMatrix checkSkeletonTotal(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
 RcppExport SEXP _LocalFCI_checkSkeletonTotal(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
@@ -359,6 +385,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
     Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
     rcpp_result_gen = Rcpp::wrap(checkSkeletonTotal(td, df, t, names));
+    return rcpp_result_gen;
+END_RCPP
+}
+// checkSkeletonTotalPop
+NumericMatrix checkSkeletonTotalPop(NumericMatrix td, NumericVector t, StringVector names);
+RcppExport SEXP _LocalFCI_checkSkeletonTotalPop(SEXP tdSEXP, SEXP tSEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkSkeletonTotalPop(td, t, names));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -654,6 +693,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_get_partial_correlation", (DL_FUNC) &_LocalFCI_get_partial_correlation, 4},
     {"_LocalFCI_fisherZ", (DL_FUNC) &_LocalFCI_fisherZ, 3},
     {"_LocalFCI_condIndTest", (DL_FUNC) &_LocalFCI_condIndTest, 6},
+    {"_LocalFCI_condIndTestPop", (DL_FUNC) &_LocalFCI_condIndTestPop, 4},
     {"_LocalFCI_combn_cpp", (DL_FUNC) &_LocalFCI_combn_cpp, 2},
     {"_LocalFCI_testCondInd", (DL_FUNC) &_LocalFCI_testCondInd, 6},
     {"_LocalFCI_testArmaCor", (DL_FUNC) &_LocalFCI_testArmaCor, 1},
@@ -668,7 +708,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_check_adjacent_non_adjacent", (DL_FUNC) &_LocalFCI_check_adjacent_non_adjacent, 4},
     {"_LocalFCI_check_amat_setval", (DL_FUNC) &_LocalFCI_check_amat_setval, 6},
     {"_LocalFCI_initializeLocalFCI", (DL_FUNC) &_LocalFCI_initializeLocalFCI, 4},
+    {"_LocalFCI_initializeLocalFCIPop", (DL_FUNC) &_LocalFCI_initializeLocalFCIPop, 3},
     {"_LocalFCI_checkSkeletonTotal", (DL_FUNC) &_LocalFCI_checkSkeletonTotal, 4},
+    {"_LocalFCI_checkSkeletonTotalPop", (DL_FUNC) &_LocalFCI_checkSkeletonTotalPop, 3},
     {"_LocalFCI_checkSkeletonBoth", (DL_FUNC) &_LocalFCI_checkSkeletonBoth, 4},
     {"_LocalFCI_checkVStruct", (DL_FUNC) &_LocalFCI_checkVStruct, 4},
     {"_LocalFCI_checkAdjMatConversion", (DL_FUNC) &_LocalFCI_checkAdjMatConversion, 6},

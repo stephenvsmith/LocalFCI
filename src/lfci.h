@@ -1,19 +1,12 @@
 #ifndef LFCI_H
 #define LFCI_H
 
-#include <chrono>
-#include <algorithm>
-#include "DAG.h"
-#include "SepSetList.h"
-#include "pCorTest.h"
-#include "sharedFunctions.h"
-#include<RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
+#include "constrainedAlgo.h"
 
 using namespace std::chrono;
 using namespace Rcpp;
 
-class LocalFCI {
+class LocalFCI : public ConstrainedAlgo {
 public:
   LocalFCI(NumericMatrix true_dag,arma::mat df,
            NumericVector targets,
@@ -21,23 +14,17 @@ public:
            double signif_level,
            bool verbose);
   
-  ~LocalFCI(){delete C_tilde; delete true_DAG; delete S;};
+  LocalFCI(NumericMatrix true_dag, // population version
+           NumericVector targets,
+           StringVector names,int lmax,
+           bool verbose);
   
-  //Printing Functions
-  void print_elements();
-  void printAmat(){ C_tilde -> printAmat(); };
-  
-  // For debugging and algorithm analysis
-  bool verbose;
-  
-  int getSize(){ return p; }
-  
-  void checkSeparation(int l,int i,int j,NumericMatrix kvals);
-  
-  void get_skeleton_total();
-  void get_skeleton_target(int t);
-  
-  void get_v_structures_efficient();
+  // Accessors
+  void getSkeletonTotal();
+  void getSkeletonTarget(int t);
+  void getVStructures();
+  std::vector<double> getTargetSkeletonTimes() {return target_skeleton_times; };
+  double getTotalSkeletonTime() { return total_skeleton_time; };
   
   // Orientation Rules Helpers
   NumericVector minDiscPath(int a,int b,int c); // TODO: remove verbose
@@ -58,58 +45,15 @@ public:
   bool rule10(bool &track_changes);
   void allRules();
   
+  // Graph conversion
   void convertMixedGraph();
   void convertFinalGraph(Graph* g);
   
-  // Accessors
-  NumericVector getNeighborhood() { return neighborhood; }
-  NumericMatrix getAmat() { return C_tilde -> getAmat(); }
-  List getSepSetList() { return S -> getS(); };
-  int getNumTests() { return num_tests; };
-  std::vector<double> getTargetSkeletonTimes() {return target_skeleton_times; };
-  double getTotalSkeletonTime() { return total_skeleton_time; };
-  double getMostRecentPVal() { return p_vals.back(); };
-  NumericVector getAdjacent(int i) { return C_tilde -> getAdjacent(i); };
-  
-  // Setters (Useful for testing)
-  void setAmat(NumericMatrix m){
-    if (verbose){
-      Rcout << "We are manually changing the current adjacency matrix.\n";
-    }
-    C_tilde -> setAmat(m);
-    N = C_tilde -> size();
-    if (verbose){
-      C_tilde -> printAmat();
-    }
-  }
-  
-  void setS(int i,int j,NumericVector k){
-    S -> changeList(i,j,k);
-  }
-  
-  void setNeighbors(NumericVector neighbors){
-    neighborhood = neighbors;  
-  }
-  
 private:
-  int lmax;
-  int num_targets;
-  int p;
-  int n;
-  int N; // Tracks the size of the C_tilde matrix
-  double signif_level;
-  int num_tests=0;
-  NumericVector neighborhood;
-  StringVector names;
-  Graph* C_tilde;
-  DAG* true_DAG;
-  SepSetList* S;
-  NumericVector sep;
   std::map<int,int> node_numbering;
-  arma::mat R;
-  std::vector<double> p_vals;
   std::vector<double> target_skeleton_times;
   double total_skeleton_time;
+  // TODO: Add total time
 };
 
 #endif

@@ -73,3 +73,20 @@ List condIndTest(arma::mat &C,const int &i,const int &j,const arma::uvec &k,cons
     _["pval"]=pval
   );
 }
+
+// [[Rcpp::export]]
+List condIndTestPop(NumericMatrix G,const int &i,const int &j,const arma::uvec &k){
+  Function my_dsep("my_dsep");
+  NumericVector tmp = my_dsep(G,i,j,k);
+  double pval = tmp[0];
+  bool accept_H0 = static_cast<bool>(pval);  
+  // if (accept_H0){
+  //   Rcout << "We accept H_0 => Conditional independence established\n";
+  // } else {
+  //   Rcout << "We don't accept H_0 => Still dependent\n";
+  // }
+  return List::create(
+    _["result"]=accept_H0, // The null hypothesis is accepted (p-value large) => H_0: r = 0 => Conditional independence
+    _["pval"]=pval
+  );
+}

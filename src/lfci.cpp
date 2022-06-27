@@ -4,50 +4,9 @@ LocalFCI::LocalFCI(NumericMatrix true_dag,arma::mat df,
                    NumericVector targets,
                    StringVector names,int lmax,
                    double signif_level,
-                   bool verbose) : verbose(verbose),lmax(lmax),signif_level(signif_level),names(names){
-  
-  num_targets = targets.length();
-  if (verbose){
-    Rcout << "There are " << num_targets << " targets.\n";
-    print_vector_elements(targets,names,"Targets: ","\n");
-  }
-  p = true_dag.ncol();
-  R = arma::cor(df);
-  n = df.n_rows;
-  num_tests=0;
-  
-  // Set DAG object
-  true_DAG = new DAG(p,names,true_dag);
-  
-  // Find the neighborhood of the target nodes
-  neighborhood = true_DAG -> getNeighborsMultiTargets(targets,verbose); //tested
-  neighborhood = union_(neighborhood,targets); //tested
-  std::sort(neighborhood.begin(),neighborhood.end()); //tested
-  
-  N = neighborhood.size();
-  
-  if (verbose){
-    Rcout << "There are " << p << " nodes in the DAG.\n";
-    Rcout << "There are " << N << " nodes in the neighborhood.\n";
-    Rcout << "All nodes being considered: ";
-    print_vector_elements_nonames(neighborhood,"","\n");
-  }
-  
-  // Initial graph that will be modified through the process of the algorithm
-  C_tilde = new Graph(N);
-  
-  if (verbose){
-    Rcout << "Our starting matrix is " << C_tilde->getNRow() << "x" << C_tilde->getNCol() << ".\n";
-    C_tilde -> printAmat();
-    Rcout << "\n\n";
-  }
-  
-  // Create the list that will store separating sets
-  S = new SepSetList(neighborhood);
-  if (verbose){
-    Rcout << "\nOur initial separating sets:\n";
-    S -> printSepSetList();
-  }
+                   bool verbose) : 
+  ConstrainedAlgo(true_dag,df,targets,names,lmax,
+                  signif_level,verbose){
   
   // Make a map to relate efficient numbering to true numbering
   // Map: true numbering -> efficient numbering
@@ -63,100 +22,30 @@ LocalFCI::LocalFCI(NumericMatrix true_dag,arma::mat df,
   }
 }
 
-void LocalFCI::print_elements(){
-  Rcout << "p: " << p << std::endl;
-  Rcout << "n: " << n << std::endl;
-  Rcout << "N: " << N << std::endl;
-  Rcout << "Number of Targets: " << num_targets << std::endl;
-  Rcout << "Node names: ";
-  std::for_each(names.begin(),names.end(),[](String n) {Rcout << n.get_cstring() << " ";});
-  Rcout << std::endl;
-  Rcout << "lmax: " << lmax << std::endl;
-  Rcout << "verbose: " << verbose << std::endl;
-  Rcout << "Nodes under consideration: ";
-  print_vector_elements_nonames(neighborhood);
-  Rcout << std::endl << "Ctilde:\n";
-  Rcout << "Our Ctilde matrix is " << C_tilde->getNRow() << "x" << C_tilde->getNCol() << std::endl;
-  C_tilde->printAmat();
-  Rcout << "Our DAG matrix is " << std::endl;
-  true_DAG->printAmat();
-  Rcout << "Separating Set Values:\n";
-  S->printSepSetList();
-}
-
-void LocalFCI::checkSeparation(int l,int i,int j,NumericMatrix kvals){
-  int k;
-  int kp = kvals.cols();
-  bool keep_checking_k;
-  List test_result;
-  
-  // Initially assumes we are considering an empty set
-  arma::uvec sep_arma;
-  
-  if (l == 0){
-    sep = NA_REAL;
-    test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
-    ++num_tests;
-    p_vals.push_back(test_result["pval"]);
-    if (verbose){
-      Rcout << "The p-value is " << p_vals[p_vals.size()-1] << std::endl;
-    }
-    if (test_result["result"]){ // We have statistically significant evidence of conditional independence
-      if (verbose){
-        Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j));
-        Rcout << " (p-value>" << signif_level << ")"<< std::endl;
-        //Rcout << "i = " << i << " | j = " << j << " | N_i = " << neighborhood(i) << " | N_j = " << neighborhood(j) << std::endl;
-      }
-      S->changeList(i,j);
-      S->changeList(j,i);
-      
-      C_tilde->setAmatVal(i,j,0);
-      C_tilde->setAmatVal(j,i,0);
-    }
-  } else {
-    k = 0;
-    keep_checking_k = true;
-    while (keep_checking_k && (k<kp)){
-      sep = kvals( _ , k ); // sep is the vector of the true values of the potential separating nodes (i.e. not efficient numbering)
-      sep_arma = as<arma::uvec>(sep);
-      if (verbose){
-        Rcout << "Efficient Setup: " << i << " -> " << neighborhood(i);
-        Rcout << " | " << j << " -> " << neighborhood(j);
-        Rcout << " | k (True Vals): ";
-        print_vector_elements_nonames(sep,""," ("," ");
-        print_vector_elements(sep,names,"",")\n");
-      }
-      test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
-      ++num_tests;
-      p_vals.push_back(test_result["pval"]);
-      //pval = as<double>(get_pval(i,j,true_dag,names,sep));
-      if (verbose){
-        Rcout << "The p-value is " << p_vals[p_vals.size()-1] << std::endl;
-      }
-      if (test_result["result"]){
-        if (verbose){
-          Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j)) << " by node(s): ";
-          print_vector_elements(sep,names,""," ");
-          Rcout << " (p-value>" << signif_level << ")"<< std::endl;
-        }
-        S->changeList(i,j,sep);
-        S->changeList(j,i,sep);
-        C_tilde->setAmatVal(i,j,0);
-        C_tilde->setAmatVal(j,i,0);
-        keep_checking_k = false;
-      } else {
-        if (verbose){
-          Rcout << names(neighborhood(i)) << " is NOT separated from " << names(neighborhood(j)) << " by node(s): ";
-          print_vector_elements(sep,names,""," ");
-          Rcout << " (p-value<" << signif_level << ")"<< std::endl;
-        }
-      }
-      ++k; // Increment to obtain the next potential separating set
+LocalFCI::LocalFCI(NumericMatrix true_dag,
+                   NumericVector targets,
+                   StringVector names,int lmax,
+                   bool verbose) : 
+  ConstrainedAlgo(true_dag,targets,names,
+                  lmax,verbose){
+  pop = true;
+  if (verbose) Rcout << "Population Version\n";
+  // Make a map to relate efficient numbering to true numbering
+  // Map: true numbering -> efficient numbering
+  for (int i=0;i<N;++i){
+    node_numbering.insert(std::pair<int,int>(neighborhood(i),i));
+  }
+  if (verbose){
+    Rcout << "Element mapping for efficient ordering:\n";
+    for(auto it = node_numbering.cbegin(); it != node_numbering.cend(); ++it)
+    {
+      Rcout << it->first << " " << it->second  << "\n";
     }
   }
 }
 
-void LocalFCI::get_skeleton_total(){
+
+void LocalFCI::getSkeletonTotal(){
   auto total_skeleton_start = high_resolution_clock::now();
   NumericVector neighbors;
   NumericVector edges_i;
@@ -202,7 +91,7 @@ void LocalFCI::get_skeleton_total(){
             if (neighbors.length()>neighborhood.length()){
               stop("Invalid number of neighbors for nodes i and j.\n");
             }
-
+            
             std::for_each(neighbors.begin(),neighbors.end(),[this](int n){
               if (n>=N){
                 stop("Neighbor value %i is too large.",n);
@@ -229,10 +118,10 @@ void LocalFCI::get_skeleton_total(){
   total_skeleton_time = duration.count() / 1000000.;
 }
 
-void LocalFCI::get_skeleton_target(int t){
+void LocalFCI::getSkeletonTarget(int t){
   // TODO: Ensure that t is in targets
   auto target_skeleton_start = high_resolution_clock::now();
-  int l = -1;
+  int l = 0; // We should start with l=1 because we've already done l=0 previously
   int i;
   int j;
   NumericVector neighbors;
@@ -304,9 +193,9 @@ void LocalFCI::get_skeleton_target(int t){
             
             checkSeparation(l,i,j,kvals);
             
-            if (verbose){
-              iteration_print(l,i,j,sep,names,p_vals.back());
-            }
+            // if (verbose){
+            //   iteration_print(l,i,j,getSep(),names,p_vals.back());
+            // }
           }
         }
       }
@@ -323,14 +212,14 @@ void LocalFCI::get_skeleton_target(int t){
   auto target_skeleton_end = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(target_skeleton_end-target_skeleton_start);
   double total_time = duration.count() / 1000000.;
-
+  
   target_skeleton_times.push_back(total_time);
   
 }
 
 // We are trying to identify structures i -> k <- j
 // Where i and j are not adjacent, and k is not in the separating set of i and j
-void LocalFCI::get_v_structures_efficient() {
+void LocalFCI::getVStructures() {
   int j;
   int k;
   int k_eff;
@@ -346,7 +235,7 @@ void LocalFCI::get_v_structures_efficient() {
   
   List sublist_i;
   List sublist_j;
-
+  
   String node_i;
   String node_j;
   
@@ -417,13 +306,6 @@ void LocalFCI::get_v_structures_efficient() {
     }
   }
 }
-
-
-
-
-
-
-
 
 /*
  * 
@@ -767,7 +649,7 @@ bool LocalFCI::rule9(bool &track_changes){
   std::vector<int> beta_vals;
   int beta_current;
   NumericVector upd;
-
+  
   for (int alpha=0;alpha<N;++alpha){
     for (int gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(alpha,gamma)==2 && C_tilde->getAmatVal(gamma,alpha)==1){ // alpha o-> gamma
@@ -949,13 +831,18 @@ void LocalFCI::convertMixedGraph(){
   int G_ji;
   for (int i=0;i<N;++i){
     for (int j=0;j<N;++j){
+      // First check to see if i and j are in the same neighborhood (TODO: TEST)
+      if (!(true_DAG -> areNeighbors(neighborhood(i),neighborhood(j)))){
+        continue; // If i and j are not neighbors, then we should not change the orientations from the ancestral graph
+      }
+      
       G_ij = C_tilde -> getAmatVal(i,j);
       G_ji = C_tilde -> getAmatVal(j,i);
       if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==2){
         // Convert bidirected edge to undirected
         C_tilde->setAmatVal(i,j,1);
         C_tilde->setAmatVal(j,i,1);
-      } else if ((C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==2) || (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==1)){
+      } else if (C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==2){
         // Convert o-> to ->
         C_tilde->setAmatVal(i,j,G_ij-1);
         C_tilde->setAmatVal(j,i,G_ji-1);
@@ -976,8 +863,6 @@ void LocalFCI::convertMixedGraph(){
       }
     }
   }
-  //Rcout << std::endl << std::endl;
-  //C_tilde->printAmat();
 }
 
 void LocalFCI::convertFinalGraph(Graph* g){
@@ -992,7 +877,7 @@ void LocalFCI::convertFinalGraph(Graph* g){
       g -> setAmatVal(neighborhood(i),neighborhood(j),current_val);  
     }
   }
-
+  
   delete C_tilde;
   C_tilde = g;
   g = nullptr;

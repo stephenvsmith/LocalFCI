@@ -19,6 +19,14 @@ public:
   // Fills the adjacency matrix with zeros
   void emptyGraph();
   
+  // Tested in graphtests.cpp and test_Graph.R
+  void printAmat();
+  
+  // Determines if two nodes are neighbors TODO: TEST
+  bool areNeighbors(int i,int j){
+    return amat(i,j)!=0 || amat(j,i)!=0;
+  }
+  
   // Accessors
   int size() {
     return p;
@@ -69,8 +77,6 @@ public:
   int getNRow(){
     return amat.nrow();
   }
-  // Tested in graphtests.cpp and test_Graph.R
-  void printAmat();
   
   // Tested in graphtests.cpp and test_Graph.R
   NumericVector getAdjacent(int i);
