@@ -349,6 +349,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// checkIfNeighbors
+bool checkIfNeighbors(int nodes, StringVector node_names, NumericMatrix adj, int i, int j);
+RcppExport SEXP _LocalFCI_checkIfNeighbors(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkIfNeighbors(nodes, node_names, adj, i, j));
+    return rcpp_result_gen;
+END_RCPP
+}
 // initializeLocalFCI
 void initializeLocalFCI(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
 RcppExport SEXP _LocalFCI_initializeLocalFCI(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
@@ -460,6 +475,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type l(lSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type nodes_to_skip(nodes_to_skipSEXP);
     rcpp_result_gen = Rcpp::wrap(checkSeparationTest(td, df, t, names, i, j, l, nodes_to_skip));
+    return rcpp_result_gen;
+END_RCPP
+}
+// checkInitializeLocalPC
+int checkInitializeLocalPC(NumericMatrix td, arma::mat df, NumericVector t, StringVector names);
+RcppExport SEXP _LocalFCI_checkInitializeLocalPC(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP namesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkInitializeLocalPC(td, df, t, names));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -707,6 +736,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_check_amat_col_retrieval", (DL_FUNC) &_LocalFCI_check_amat_col_retrieval, 4},
     {"_LocalFCI_check_adjacent_non_adjacent", (DL_FUNC) &_LocalFCI_check_adjacent_non_adjacent, 4},
     {"_LocalFCI_check_amat_setval", (DL_FUNC) &_LocalFCI_check_amat_setval, 6},
+    {"_LocalFCI_checkIfNeighbors", (DL_FUNC) &_LocalFCI_checkIfNeighbors, 5},
     {"_LocalFCI_initializeLocalFCI", (DL_FUNC) &_LocalFCI_initializeLocalFCI, 4},
     {"_LocalFCI_initializeLocalFCIPop", (DL_FUNC) &_LocalFCI_initializeLocalFCIPop, 3},
     {"_LocalFCI_checkSkeletonTotal", (DL_FUNC) &_LocalFCI_checkSkeletonTotal, 4},
@@ -715,6 +745,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_checkVStruct", (DL_FUNC) &_LocalFCI_checkVStruct, 4},
     {"_LocalFCI_checkAdjMatConversion", (DL_FUNC) &_LocalFCI_checkAdjMatConversion, 6},
     {"_LocalFCI_checkSeparationTest", (DL_FUNC) &_LocalFCI_checkSeparationTest, 8},
+    {"_LocalFCI_checkInitializeLocalPC", (DL_FUNC) &_LocalFCI_checkInitializeLocalPC, 4},
     {"_LocalFCI_testRule1", (DL_FUNC) &_LocalFCI_testRule1, 5},
     {"_LocalFCI_testRule2", (DL_FUNC) &_LocalFCI_testRule2, 5},
     {"_LocalFCI_testRule3", (DL_FUNC) &_LocalFCI_testRule3, 5},

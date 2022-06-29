@@ -7,17 +7,17 @@ using namespace Rcpp;
 
 class SepSetList {
 public:
-  SepSetList(NumericVector &neighbors);
+  SepSetList(NumericVector &neighbors); // Tested
 
   void changeList(int i,int j,NumericVector sep); // Tested
   void changeList(int i,int j); // Tested
 
-  NumericVector getSepSet(int i,int j); // tested
+  NumericVector getSepSet(int i,int j); // Tested
 
-  bool isPotentialVStruct(int i, int j,int k);
-  bool isSeparated(int i,int j,int k);
+  bool isPotentialVStruct(int i, int j,int k); // Tested
+  bool isSeparated(int i,int j,int k); // Tested
   
-  void printSepSetList(); // tested
+  void printSepSetList(); // Tested
   
   List getS() { return S; };
 private:

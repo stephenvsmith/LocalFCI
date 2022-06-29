@@ -2,8 +2,6 @@
 #define GRAPH_H
 
 #include "sharedFunctions.h"
-#include<RcppArmadillo.h>
-// [[Rcpp::depends(RcppArmadillo)]]
 
 using namespace Rcpp;
 
@@ -22,7 +20,8 @@ public:
   // Tested in graphtests.cpp and test_Graph.R
   void printAmat();
   
-  // Determines if two nodes are neighbors TODO: TEST
+  // Tested
+  // Determines if two nodes are neighbors
   bool areNeighbors(int i,int j){
     return amat(i,j)!=0 || amat(j,i)!=0;
   }
@@ -99,6 +98,7 @@ public:
   int operator ()(unsigned i,unsigned j) const    {return amat(i,j);}
   double & operator ()(unsigned i, unsigned j) {return amat(i,j);}
   
+  // Tested
   void setAmatVal(int i,int j,int val){
     amat(i,j) = val;
   }

@@ -80,7 +80,11 @@ int check_amat_setval(int nodes,StringVector node_names,NumericMatrix adj,int i,
   return g.getAmatVal(i,j);
 }
 
-
+// [[Rcpp::export]]
+bool checkIfNeighbors(int nodes,StringVector node_names,NumericMatrix adj,int i,int j){
+  Graph g(nodes,node_names,adj);
+  return g.areNeighbors(i,j);
+}
 
 
 

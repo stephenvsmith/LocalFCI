@@ -101,6 +101,10 @@ check_amat_setval <- function(nodes, node_names, adj, i, j, val) {
     .Call(`_LocalFCI_check_amat_setval`, nodes, node_names, adj, i, j, val)
 }
 
+checkIfNeighbors <- function(nodes, node_names, adj, i, j) {
+    .Call(`_LocalFCI_checkIfNeighbors`, nodes, node_names, adj, i, j)
+}
+
 initializeLocalFCI <- function(td, df, t, names) {
     invisible(.Call(`_LocalFCI_initializeLocalFCI`, td, df, t, names))
 }
@@ -131,6 +135,10 @@ checkAdjMatConversion <- function(td, df, t, names, m, neighbors) {
 
 checkSeparationTest <- function(td, df, t, names, i, j, l, nodes_to_skip) {
     .Call(`_LocalFCI_checkSeparationTest`, td, df, t, names, i, j, l, nodes_to_skip)
+}
+
+checkInitializeLocalPC <- function(td, df, t, names) {
+    .Call(`_LocalFCI_checkInitializeLocalPC`, td, df, t, names)
 }
 
 testRule1 <- function(td, dummy_df, dummy_t, names, m) {

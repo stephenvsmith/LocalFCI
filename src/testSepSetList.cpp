@@ -62,7 +62,7 @@ NumericVector setListTrue(NumericVector neighbors,int i,int j,NumericVector kval
 bool checkSeparationFunc(NumericVector neighbors,int i,int j,NumericVector sep,int val_to_check){
   SepSetList *S = new SepSetList(neighbors);
   S -> changeList(i,j,sep);
-  NumericVector results = S -> isPotentialVStruct(i,j,val_to_check);
+  bool results = S -> isSeparated(i,j,val_to_check);
   delete S;
   return results;
 }

@@ -35,11 +35,9 @@ test_that("Get correct neighbors and check separating set update",{
   cat('\n\n')
   expect_equal(setListEfficient(neighbors,j,i,kvals),kvals)
   cat('\n\n')
-  # expect_equal(setListTrue(neighbors,i,j,kvals),neighbors[kvals+1])
-  # cat('\n\n')
-  # expect_equal(setListTrue(neighbors,j,i,kvals),neighbors[kvals+1])
-  # cat('\n\n')
   
+  # Checking if nodes 0 and 1 are separated by node 2 when S_{0,1}={4,5}
+  expect_false(checkSeparationFunc(neighbors,i,j,kvals,2))
+  expect_true(checkSeparationFunc(neighbors,i,j,kvals,5))
   
-
 })

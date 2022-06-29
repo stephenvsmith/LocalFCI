@@ -1,23 +1,46 @@
 #include "lpc.h"
 
-void separateNeighborhoods(DAG* true_DAG,Graph* C_tilde,NumericVector &targets,std::map<int,int> &node_numbering,const int &N,bool verbose){
+void fillTargetNeighborhood(Graph* C_tilde,
+                            std::map<int,int> node_numbering,
+                            NumericVector nbhd_t){
+  int i_eff; int j_eff;
+  for (auto it=nbhd_t.begin();it<nbhd_t.end()-1;++it){
+    i_eff = node_numbering.find(*it)->second;
+    auto it2 = it+1;
+    for (;it2<nbhd_t.end();++it2){
+      j_eff = node_numbering.find(*it2)->second;
+      C_tilde -> setAmatVal(i_eff,j_eff,1);
+      C_tilde -> setAmatVal(j_eff,i_eff,1);
+    }
+  }
+}
+
+void createInitialAmat(DAG* true_DAG,Graph* C_tilde,
+                       std::map<int,int> node_numbering,
+                           NumericVector &targets,
+                           NumericVector &neighborhood,
+                           const int &N,bool verbose){
+  if (verbose){
+    Rcout << "FUNCTION createInitialAmat\n";
+  }
+  
+  C_tilde -> emptyGraph();
+  
   NumericVector nbhd_t;
-  NumericVector nbhd_t_efficient;
-  int j;
-  for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
+  int i; // tracks the current target (true number)
+  int j; // tracks the current neighbor (true number)
+  int i_eff; // tracks the current target (efficient number)
+  int j_eff; // tracks the current neighbor (efficient number)
+  // Loop through each of the targets
+  for (auto it=targets.begin();it<targets.end();++it){
+    // Find the target's neighbors
+    if (verbose){
+      Rcout << "Target: " << *it << std::endl;
+    }
     nbhd_t = true_DAG -> getNeighbors(*it,verbose);
     nbhd_t.push_back(*it);
-    for (int i=0;i<N;++i){
-      j = node_numbering.find(*it)->second; // Obtain the true value
-      if (!(true_DAG -> areNeighbors(*it,j))){
-        // Remove edges between Ne(target) and j
-        for (NumericVector::iterator it2=nbhd_t.begin();it2<nbhd_t.end();++i){
-          C_tilde -> setAmatVal(*it2,j,0);
-          C_tilde -> setAmatVal(j,*it2,0);
-        }
-      }
-      
-    }
+    // Fill the target neighborhood
+    fillTargetNeighborhood(C_tilde,node_numbering,nbhd_t);
   }
 }
 
@@ -43,7 +66,9 @@ LocalPC::LocalPC(NumericMatrix true_dag,arma::mat df,
   }
   
   // Separate elements not belonging to the same neighborhood
-  separateNeighborhoods(true_DAG,C_tilde,targets,node_numbering,N,verbose);
+  if (targets.length() > 1) {
+    createInitialAmat(true_DAG,C_tilde,node_numbering,targets,neighborhood,N,verbose);
+  }
 }
 
 LocalPC::LocalPC(NumericMatrix true_dag,
@@ -68,14 +93,14 @@ LocalPC::LocalPC(NumericMatrix true_dag,
   }
   
   // Separate elements not belonging to the same neighborhood
-  separateNeighborhoods(true_DAG,C_tilde,targets,node_numbering,N,verbose);
+  createInitialAmat(true_DAG,C_tilde,node_numbering,targets,neighborhood,N,verbose);
 }
 
 void LocalPC::check(){
   Rcout << getSize() << std::endl;
 }
 
-
+void LocalPC::getSkeletonTarget(int t){}
 
 
 

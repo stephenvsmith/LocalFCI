@@ -4,7 +4,6 @@
 #include "constrainedAlgo.h"
 
 using namespace std::chrono;
-using namespace Rcpp;
 
 class LocalPC : public ConstrainedAlgo {
 public:
@@ -19,9 +18,10 @@ public:
            StringVector names,int lmax,
            bool verbose);
   
-  void get_skeleton_target(int t);
+  void getSkeletonTarget(int t);
   
-  void get_v_structures();
+  using ConstrainedAlgo::getVStructures;
+  //void getVStructures();
   
   void convertFinalGraph(Graph* g);
   

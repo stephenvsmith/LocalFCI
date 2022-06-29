@@ -11,13 +11,16 @@ test_that("Checking to make sure the Graph class works",{
   
   # Check to make sure that the adjacency matrix is properly saved
   expect_equal(check_amat_works(nodes,n_names,adj),adj)
+  
   # Should give us a complete graph if we only supply the nodes
   complete_graph <- matrix(1,nrow = nodes,ncol = nodes)
   diag(complete_graph) <- 0
   # Check that the one parameter constructor works and creates a complete graph on the vertex set
   expect_equal(check_amat_works_onepar(nodes),complete_graph) #TODO: ADD A VERBOSE ARGUMENT
+  
   # Check that the node names are correctly specified
   expect_equal(check_names_works(nodes,n_names,adj),n_names)
+  
   # Check to make sure neighbor detection functions work
   expect_equal(check_dag_object(nodes,n_names,adj),list("OneNeighbor"=c(0,1,2),"TwoNeighbors"=c(1,3)))
   
@@ -59,4 +62,10 @@ test_that("Testing Graph and DAG classes using asia data",{
   
   # Neighbors of "either" should be "bronc" (spouse), "dysp" and "xray" (children), and "lung" and "tub" (parents)
   # expect_equal(sort(nodes[get_neighbors_from_dag(which(nodes=="either")-1,p,asiaDAG,verbose=FALSE)+1]),c("bronc","dysp","lung","tub","xray"))
+  
+  # Check if adjacent nodes are properly detected
+  expect_false(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="asia")-1,which(nodes=="dysp")-1))
+  expect_true(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="asia")-1,which(nodes=="tub")-1))
+  expect_false(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="bronc")-1,which(nodes=="lung")-1))
+  expect_true(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="bronc")-1,which(nodes=="smoke")-1))
 })
