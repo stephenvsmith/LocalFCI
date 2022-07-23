@@ -194,6 +194,7 @@ spouseRecovery <- function(g,target){
 }
 
 mbRecoveryTarget <- function(ref,est,target){
+
   # Obtain all children and parents from Reference and Target Graphs
   ref_nodes <- getConnections(ref,target)
   est_nodes <- getConnections(est,target)

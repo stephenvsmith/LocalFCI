@@ -86,5 +86,18 @@ bool checkIfNeighbors(int nodes,StringVector node_names,NumericMatrix adj,int i,
   return g.areNeighbors(i,j);
 }
 
+// [[Rcpp::export]]
+NumericMatrix checkEmptyGraph(int p){
+  Graph g(p);
+  g.printAmat();
+  g.emptyGraph();
+  return g.getAmat();
+}
+
+// [[Rcpp::export]]
+bool checkAcyclicity(int nodes,StringVector node_names,NumericMatrix adj){
+  DAG g(nodes,node_names,adj);
+  return g.isAcyclic();
+}
 
 

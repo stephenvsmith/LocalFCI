@@ -1,12 +1,11 @@
-localfci <- function(data=NULL,true_dag=NULL,targets,
-                         node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,
-                         method="MMPC",test="testIndFisher",verbose = TRUE){
-  
+localpc <- function(data=NULL,true_dag=NULL,targets,
+                          node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,
+                          method="MMPC",test="testIndFisher",verbose = TRUE){
   p <- ifelse(is.null(data),ncol(true_dag),ncol(data))
   if (is.null(node_names)){
     node_names <- paste0("V",0:(p-1))
   }
-  
+
   data_means <- NA
   data_cov <- NA
   if (!is.null(data)){
@@ -27,7 +26,7 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     
     # Create adjacency matrix based on Markov Blankets (mbEst.R)
     true_dag <- getEstInitialDAG(mbList,ncol(data),verbose)
-
+    
   } else {
     mbList <- list()
   }
@@ -49,9 +48,9 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     if (verbose){
       cat("Population Version:\n")
     }
-    results <- localfci_cpp_pop(true_dag,cpp_targets,node_names,lmax,verbose)
+    results <- localpc_cpp_pop(true_dag,cpp_targets,node_names,lmax,verbose)
   } else {
-    results <- localfci_cpp(true_dag,data,cpp_targets,node_names,lmax,tol,verbose)
+    results <- localpc_cpp(true_dag,data,cpp_targets,node_names,lmax,tol,verbose)
   }
   
   # We change the target to target - 1 in order to accommodate change to C++
@@ -60,7 +59,6 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     "S"=results$S,
     "NumTests"=results$NumTests,
     "Nodes"=results$allNodes+1, # to convert to R numbering
-    "totalSkeletonTime"=results$totalSkeletonTime,
     "targetSkeletonTimes"=results$targetSkeletonTimes,
     "totalTime"=results$totalTime,
     "referenceDAG"=true_dag,
@@ -69,8 +67,3 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     "data_cov"=data_cov)
   )
 }
-
-
-
-
-

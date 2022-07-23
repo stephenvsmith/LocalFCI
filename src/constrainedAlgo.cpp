@@ -6,7 +6,7 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
                                  StringVector names,int lmax,
                                  double signif_level,
                                  bool verbose) : targets(targets),verbose(verbose),
-                                 names(names),lmax(lmax),df(df),signif_level(signif_level){
+                                 lmax(lmax),df(df),signif_level(signif_level),names(names){
   num_targets = targets.length();
   if (verbose){
     Rcout << "There is (are) " << num_targets << " target(s).\n";
@@ -55,10 +55,11 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
 ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,
                                  NumericVector targets,
                                  StringVector names,int lmax,
-                                 bool verbose) : targets(targets),verbose(verbose),
-                                 names(names),lmax(lmax) {
+                                 bool verbose) : verbose(verbose),targets(targets),
+                                 lmax(lmax),names(names) {
   num_targets = targets.length();
   if (verbose){
+    Rcout << "Population Version\n";
     Rcout << "There are " << num_targets << " targets.\n";
     print_vector_elements(targets,names,"Targets: ","\n");
   }
@@ -125,6 +126,8 @@ void ConstrainedAlgo::print_elements(){
   }
 }
 
+// i and j are efficient values and must be transformed to true values
+// kvals are true values and do not need to be transformed
 void ConstrainedAlgo::checkSeparation(int l,int i,int j,NumericMatrix kvals){
   int k;
   int kp = kvals.cols();
@@ -133,11 +136,11 @@ void ConstrainedAlgo::checkSeparation(int l,int i,int j,NumericMatrix kvals){
   
   // Initially assumes we are considering an empty set
   arma::uvec sep_arma;
-  
   if (l == 0){
     sep = NA_REAL;
     if (pop){
-      test_result = condIndTestPop(true_DAG->getAmat(),neighborhood(i),neighborhood(j),sep_arma);
+      NumericMatrix g = true_DAG -> getAmat();
+      test_result = condIndTestPop(g,neighborhood(i),neighborhood(j),sep_arma);
     } else {
       test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
     }
@@ -222,12 +225,6 @@ void ConstrainedAlgo::getVStructures() {
   NumericVector j_vals;
   NumericVector k_vals;
   
-  List sublist_i;
-  List sublist_j;
-  
-  String node_i;
-  String node_j;
-  
   NumericVector sepset_ij;
   NumericVector sepset_ji;
   
@@ -252,9 +249,12 @@ void ConstrainedAlgo::getVStructures() {
         // Node j has no children,
         // j is parent to i, 
         // or we are repeating an analysis and this j should not be considered
+        // or if i and j are from separate neighborhoods
         placeholder = C_tilde->getAmatRow(j);
         j_invalid = (all(placeholder==0)).is_true();
-        j_invalid = j_invalid || C_tilde->getAmatVal(j,i)!= 0 || j <= i;
+        j_invalid = j_invalid || (C_tilde->getAmatVal(j,i)!= 0) ||  j <= i;
+        // j must be in the neighborhood of i for it to make a v-structure with it 
+        j_invalid = j_invalid || !(true_DAG->inNeighborhood(neighborhood(i),neighborhood(j)));
         if (!j_invalid){
           if (verbose){
             Rcout << "j: " << j << " (" << names(neighborhood(j)) << ")"<< std::endl;
@@ -279,7 +279,7 @@ void ConstrainedAlgo::getVStructures() {
               // Verify if k is in separating set for i and j
               k_eff = k;
               k = neighborhood(k); // Switch k to true numbering
-              if (S->isPotentialVStruct(i,j,k)){ // TODO: SHOULD RENAME
+              if (S->isPotentialVStruct(i,j,k)){ 
                 if (verbose){
                   Rcout << "Separation Set: ";
                   print_vector_elements_nonames(sepset_ij);
@@ -287,6 +287,8 @@ void ConstrainedAlgo::getVStructures() {
                 }
                 C_tilde->setAmatVal(i,k_eff,1);
                 C_tilde->setAmatVal(j,k_eff,1);
+                C_tilde->setAmatVal(k_eff,i,0);
+                C_tilde->setAmatVal(k_eff,j,0);
               }
             }
           }

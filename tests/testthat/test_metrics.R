@@ -1,7 +1,6 @@
-library(testthat)
-library(tidyverse,quietly = TRUE)
-library(pcalg,quietly = TRUE)
-library(bnlearn)
+library(tidyverse,quietly = TRUE,verbose = FALSE)
+library(pcalg,quietly = TRUE,verbose = FALSE)
+library(bnlearn,verbose = FALSE)
 
 test_that("checking metric functions",{
   true_amat <- matrix(c(0,1,0,0,
@@ -41,7 +40,7 @@ test_that("checking metric functions",{
   t <- c(1,6,7,8)
   data("asiaDAG")
   data("asiadf")
-  est <- localfci_cpp(data=asiadf,true_dag = asiaDAG,targets = t,verbose = FALSE)
+  est <- localfci(data=asiadf,true_dag = asiaDAG,targets = t,verbose = FALSE)
 
   pc.fit <- as(pcalg::pc(suffStat = list(C = cor(asiadf), n = nrow(asiadf)),
                   indepTest = gaussCItest, ## indep.test: partial correlations
@@ -69,6 +68,10 @@ true_amat <- matrix(c(
   0,0,0,0,0,0,0,
   0,0,1,0,1,1,0
 ),byrow = TRUE,nrow = 7)
+
+a <- empty.graph(as.character(1:7))
+amat(a) <- true_amat
+graphviz.plot(a)
 
 test_that("Checking MB metric functions (Specific)",{
   
@@ -108,7 +111,7 @@ test_that("Checking MB metric functions (Specific)",{
                  "fn"=1,
                  "fp"=1)
   )
-  # 4,5,8 are correct, but 1 is added
+  # 4,5,7 are correct, but 1 is added
   expect_equal(calcParentRecovery(true_amat,test_amat,6),
                c("tp"=3,
                  "fn"=0,
@@ -126,7 +129,7 @@ test_that("Checking MB metric functions (Specific)",{
                  "fn"=0,
                  "fp"=2)
   )
-  # We've added 4,5,8 as spouses and are missing 2
+  # We've added 4,5,7 as spouses and are missing 2
   expect_equal(calcSpouseRecovery(true_amat,test_amat,1),
                c("tp"=0,
                  "fn"=1,
@@ -147,24 +150,27 @@ test_that("Test MB Recovery (General) Function",{
     ),
     nrow = 7,byrow = TRUE
   )
+  b <- empty.graph(as.character(1:7))
+  amat(b) <- test_amat
+  graphviz.compare(b,a)
   # 1 is connected to 3, but loses 2 as spouse
   expect_equal(mbRecovery(true_amat,test_amat,1),
-             c("tp"=1,"fn"=1,"fp"=0)
+             c("mb_tp"=1,"mb_fn"=1,"mb_fp"=0)
   )
   # 2 loses 3 and 1 (spouse), adds 7 [At this stage we are double counting]
   expect_equal(mbRecovery(true_amat,test_amat,c(1,2)),
-             c("tp"=1,"fn"=3,"fp"=1)
+             c("mb_tp"=1,"mb_fn"=3,"mb_fp"=1)
   )
   # 6 has perfect recovery (4,5,7)
   expect_equal(mbRecovery(true_amat,test_amat,6),
-             c("tp"=3,"fn"=0,"fp"=0)
+             c("mb_tp"=3,"mb_fn"=0,"mb_fp"=0)
   )
   expect_equal(mbRecovery(true_amat,test_amat,c(1,2,6)),
-               c("tp"=4,"fn"=3,"fp"=1)
+               c("mb_tp"=4,"mb_fn"=3,"mb_fp"=1)
   )
   # 7 keeps 6,5,3 but loses 4 (spouse) and adds 2
   expect_equal(mbRecovery(true_amat,test_amat,7),
-               c("tp"=3,"fn"=1,"fp"=1)
+               c("mb_tp"=3,"mb_fn"=1,"mb_fp"=1)
   )
 })
 

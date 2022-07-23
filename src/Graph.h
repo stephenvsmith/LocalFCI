@@ -15,9 +15,9 @@ public:
   p(nodes),names(node_names),amat(adj) {}; // Tested
   
   // Fills the adjacency matrix with zeros
-  void emptyGraph();
+  void emptyGraph(); // Tested
   
-  // Tested in graphtests.cpp and test_Graph.R
+  // Tested in testGraph.cpp and test_Graph.R
   void printAmat();
   
   // Tested
@@ -27,6 +27,7 @@ public:
   }
   
   // Accessors
+  
   int size() {
     return p;
   }

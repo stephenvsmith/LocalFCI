@@ -10,6 +10,71 @@ DAG::DAG(int nodes) :
   Graph::Graph(nodes)
   {}
 
+void DAG::getNonIncidentNodes(std::vector<int> &v){
+  int p = size();
+  for (int j=0;j<p;++j){
+    // print_vector_elements_nonames(getAmatCol(j));
+    // Rcout << std::endl;
+    if (is_true(all(getAmatCol(j)==0))){
+      //Rcout << "Adding " << j << " to S." << std::endl;
+      v.push_back(j);
+    }
+  }
+}
+
+bool checkAllZeroes(NumericMatrix &A){
+  int p = A.nrow();
+  for (int i=0;i<p;++i){
+    for (int j=0;j<p;++j){
+      if (A(i,j)==1){
+        //Rcout << "There is still an edge between " << i << " and " << j << std::endl;
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// Kahn's algorithm for a topological sort
+// If the graph has a topological sort, then there are no cycles
+// Otherwise, the graph has at least one cycle.
+bool DAG::isAcyclic(){
+  int p = size();
+  int n;
+  if (p==0){
+    return true;
+  }
+  NumericMatrix tmp = clone(getAmat());
+  std::vector<int> L;
+  std::vector<int> S;
+  
+  //Rcout << "Size of S = " << S.size() << std::endl;
+  getNonIncidentNodes(S);
+  //Rcout << "Size of S = " << S.size() << std::endl;
+  
+  while (!S.empty()){
+    n = S.back();
+    S.pop_back();
+    L.push_back(n);
+    //Rcout << "n = " << n << std::endl;
+    for (int i=0;i<p;++i){
+      if (tmp(n,i)==1){
+        //Rcout << "Removing edge between " << n << " and " << i << std::endl;
+        tmp(n,i)=0;
+        // if i has no other incoming edges, insert into S
+        //print_vector_elements_nonames(tmp(_,i));
+        //Rcout << std::endl;
+        if (is_true(all(tmp(_,i)==0))){
+          //Rcout << "Adding " << i << " to S\n";
+          S.push_back(i);
+        }
+      }
+    }
+  }
+  
+  return checkAllZeroes(tmp);
+}
+
 NumericVector DAG::getNeighbors(const int &i,bool &verbose){
   NumericVector neighbors;
   NumericVector parents;
@@ -87,3 +152,26 @@ NumericVector DAG::getNeighborsMultiTargets(const NumericVector &targets,bool &v
   
   return neighbors;
 }
+
+bool DAG::inNeighborhood(int i,int j){
+  if (Graph::areNeighbors(i,j)){
+    return true;
+  }
+  // Find children of both nodes
+  int p = Graph::size();
+  if (p<Graph::getNCol()){
+    Rcout << "WARNING: iteration stop value is less than the number of columns in the adj. matrix.\n"; 
+  }
+  // Determining if i and j are spouses
+  for (int k = 0;k<p;++k){
+    if (Graph::getAmatVal(i,k)==1 && Graph::getAmatVal(j,k)==1){
+      if (Graph::getAmatVal(k,i)==0 && Graph::getAmatVal(k,j)==0){
+        return true;
+      }
+    }
+  }
+  return false;
+}
+  
+  
+  

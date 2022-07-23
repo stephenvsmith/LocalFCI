@@ -2,7 +2,7 @@
 #define SepSetList_H
 
 #include "sharedFunctions.h"
-#include <algorithm>
+
 using namespace Rcpp;
 
 class SepSetList {
@@ -15,7 +15,7 @@ public:
   NumericVector getSepSet(int i,int j); // Tested
 
   bool isPotentialVStruct(int i, int j,int k); // Tested
-  bool isSeparated(int i,int j,int k); // Tested
+  bool isSepSetMember(int i,int j,int k); // Tested
   
   void printSepSetList(); // Tested
   

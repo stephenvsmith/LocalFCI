@@ -23,11 +23,11 @@ public:
   void getSkeletonTotal();
   void getSkeletonTarget(int t);
   void getVStructures();
-  std::vector<double> getTargetSkeletonTimes() {return target_skeleton_times; };
+  std::vector<double> getTargetSkeletonTimes() { return target_skeleton_times; };
   double getTotalSkeletonTime() { return total_skeleton_time; };
   
   // Orientation Rules Helpers
-  NumericVector minDiscPath(int a,int b,int c); // TODO: remove verbose
+  NumericVector minDiscPath(int a,int b,int c);
   NumericVector minUncovPdPath(int alpha,int beta,int gamma);
   
   // Orientation Rules
@@ -45,15 +45,17 @@ public:
   bool rule10(bool &track_changes);
   void allRules();
   
+  // Function to run the algorithm
+  void run();
+  
   // Graph conversion
   void convertMixedGraph();
-  void convertFinalGraph(Graph* g);
+  void convertFinalGraph();
   
 private:
   std::map<int,int> node_numbering;
   std::vector<double> target_skeleton_times;
   double total_skeleton_time;
-  // TODO: Add total time
 };
 
 #endif

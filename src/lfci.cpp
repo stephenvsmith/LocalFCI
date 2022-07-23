@@ -119,7 +119,6 @@ void LocalFCI::getSkeletonTotal(){
 }
 
 void LocalFCI::getSkeletonTarget(int t){
-  // TODO: Ensure that t is in targets
   auto target_skeleton_start = high_resolution_clock::now();
   int l = 0; // We should start with l=1 because we've already done l=0 previously
   int i;
@@ -128,11 +127,14 @@ void LocalFCI::getSkeletonTarget(int t){
   NumericVector edges_i;
   NumericMatrix kvals;
   
-  // Making an adjustment to target based on efficient numbering
+  // Making an adjustment to target based on efficient numbering 
   int target_efficient = node_numbering.find(t)->second;
   // Find neighborhood just surrounding the target node
-  NumericVector target_neighborhood = C_tilde->getAdjacent(target_efficient);
-  target_neighborhood.push_back(target_efficient);
+  NumericVector target_neighborhood = true_DAG->getNeighbors(t,verbose);
+  target_neighborhood.push_back(t);
+  std::transform(target_neighborhood.begin(),target_neighborhood.end(),
+                 target_neighborhood.begin(),
+                 [this](int a) { return node_numbering.find(a)->second; });
   std::sort(target_neighborhood.begin(),target_neighborhood.end());
   
   if (verbose){
@@ -164,7 +166,6 @@ void LocalFCI::getSkeletonTarget(int t){
       // Work through potential neighbors with separating set of size l
       // These potential neighbors are those currently connected to node i in the current iteration's estimated graph
       // We do not want to separate the connections between two different cliques
-      // TODO: explain why we need this line in more detail
       edges_i = intersect(C_tilde->getAdjacent(i),target_neighborhood);
       for (NumericVector::iterator it2 = edges_i.begin(); it2 != edges_i.end(); ++it2){
         j = *it2;
@@ -290,7 +291,7 @@ void LocalFCI::getVStructures() {
               // Verify if k is in separating set for i and j
               k_eff = k;
               k = neighborhood(k); // Switch k to true numbering
-              if (S->isPotentialVStruct(i,j,k)){ // TODO: SHOULD RENAME
+              if (S->isPotentialVStruct(i,j,k)){ 
                 if (verbose){
                   Rcout << "Separation Set: ";
                   print_vector_elements_nonames(sepset_ij);
@@ -530,7 +531,7 @@ bool LocalFCI::check_sep_r4(int beta,NumericVector md_path){
   int gamma = md_path(n-1);
   
   if (verbose) Rcout << " of " << theta << " and " << gamma << " by " << neighborhood(beta);
-  bool cond1 = S->isSeparated(theta,gamma,neighborhood(beta));
+  bool cond1 = S->isSepSetMember(theta,gamma,neighborhood(beta));
   if (verbose) Rcout << "...finished\n";
   return (cond1);
 }
@@ -829,35 +830,37 @@ void LocalFCI::allRules(){
 void LocalFCI::convertMixedGraph(){
   int G_ij;
   int G_ji;
+  bool sep_nbhd;
   for (int i=0;i<N;++i){
     for (int j=0;j<N;++j){
-      // First check to see if i and j are in the same neighborhood (TODO: TEST)
+      sep_nbhd = false;
+      // First check to see if i and j are in the same neighborhood
       if (!(true_DAG -> areNeighbors(neighborhood(i),neighborhood(j)))){
-        continue; // If i and j are not neighbors, then we should not change the orientations from the ancestral graph
+        sep_nbhd = true; // If i and j are not neighbors, then we should not change the orientations from the ancestral graph
       }
       
       G_ij = C_tilde -> getAmatVal(i,j);
       G_ji = C_tilde -> getAmatVal(j,i);
-      if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==2){
+      if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==2 && !sep_nbhd){
         // Convert bidirected edge to undirected
         C_tilde->setAmatVal(i,j,1);
         C_tilde->setAmatVal(j,i,1);
-      } else if (C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==2){
+      } else if (C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==2 && !sep_nbhd){ 
         // Convert o-> to ->
         C_tilde->setAmatVal(i,j,G_ij-1);
         C_tilde->setAmatVal(j,i,G_ji-1);
-      } else if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==3){
+      } else if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==3){ // change no matter what
         // Convert -> [3,2] to -> [0,1]
         C_tilde->setAmatVal(i,j,G_ij-1);
         C_tilde->setAmatVal(j,i,0);
-      } else if (C_tilde->getAmatVal(j,i)==2 && C_tilde->getAmatVal(i,j)==3){
+      } else if (C_tilde->getAmatVal(j,i)==2 && C_tilde->getAmatVal(i,j)==3){ // change no matter what
         // Convert <- [2,3] to <- [1,0]  
         C_tilde->setAmatVal(j,i,1);
         C_tilde->setAmatVal(i,j,0);
-      } else if (C_tilde->getAmatVal(i,j)==3 && C_tilde->getAmatVal(j,i)==1){
+      } else if (C_tilde->getAmatVal(i,j)==3 && C_tilde->getAmatVal(j,i)==1 && !sep_nbhd){
         // Convert -o [3,1] to -> [0,1]
         C_tilde->setAmatVal(i,j,0);
-      } else if (C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==3){
+      } else if (C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==3 && !sep_nbhd){
         // Convert o- [1,3] to <- [1,0]
         C_tilde->setAmatVal(j,i,0);  
       }
@@ -865,9 +868,11 @@ void LocalFCI::convertMixedGraph(){
   }
 }
 
-void LocalFCI::convertFinalGraph(Graph* g){
+void LocalFCI::convertFinalGraph(){
+  Graph* g = new Graph(p);
+  g -> emptyGraph();
   int current_val = 0;
-  int nrow = C_tilde ->getNRow();
+  int nrow = C_tilde -> getNRow();
   int ncol = C_tilde -> getNCol();
   for (int i=0;i<nrow;++i){
     for (int j=0;j<ncol;++j){
@@ -1036,7 +1041,6 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
   if (cond1 && cond2 && cond3){
     final_path = NumericVector::create(alpha,beta,gamma);
     done = true;
-    // TODO: Add print statement here
   }
   
   // Check for paths of 4 or more (what we are interested in for rule 9)
@@ -1083,7 +1087,6 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
               break;
             }
           }
-          // TODO: add a print statement here
           if (uncov){
             final_path = path;
             if (verbose) print_vector_elements_nonames(final_path,"Final Path: ","\n");
@@ -1119,5 +1122,37 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
   }
 }
 
-
+void LocalFCI::run(){
+  if (verbose){
+    Rcout << "Beginning the";
+    if (pop){
+      Rcout << " population";
+    }
+    Rcout << " Local FCI algorithm over all neighborhoods.\n";
+  }
+  getSkeletonTotal(); // Finding the skeleton for the complete undirected graph on X_T U N_T
+  
+  if (verbose){
+    Rcout << "Beginning algorithm over each individual neighborhood.\n";
+  }
+  // Get the skeleton for each target node and its neighborhood
+  std::for_each(targets.begin(),
+                targets.end(),
+                [this](int t){ getSkeletonTarget(t); });
+  
+  // Rule 0: Obtain V Structures
+  getVStructures();
+  
+  // Remaining FCI Rules
+  allRules();
+  
+  convertMixedGraph();
+  
+  convertFinalGraph();
+  
+  total_time = total_skeleton_time;
+  total_time += std::accumulate(target_skeleton_times.begin(),
+                                target_skeleton_times.end(),0);
+  
+}
 

@@ -27,7 +27,7 @@ test_that("Neighborhood Estimation",{
   for (i in 1:length(targets)){
     times[i] <- mbList[[i]][["time"]]
   }
-  expect_equal(getTotalMBTime(mbList),sum(times),tolerance = 1e-02)
+  expect_equal(getTotalMBTime(mbList),sum(times),tolerance = 1e-01)
 })
 
 

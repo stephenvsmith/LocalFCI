@@ -1,3 +1,7 @@
+data("asiaDAG")
+nodes <- colnames(asiaDAG)
+p <- ncol(asiaDAG)
+
 test_that("Checking to make sure the Graph class works",{
   # Create an arbitrary graph
   set.seed(123)
@@ -16,7 +20,7 @@ test_that("Checking to make sure the Graph class works",{
   complete_graph <- matrix(1,nrow = nodes,ncol = nodes)
   diag(complete_graph) <- 0
   # Check that the one parameter constructor works and creates a complete graph on the vertex set
-  expect_equal(check_amat_works_onepar(nodes),complete_graph) #TODO: ADD A VERBOSE ARGUMENT
+  expect_equal(check_amat_works_onepar(nodes),complete_graph)
   
   # Check that the node names are correctly specified
   expect_equal(check_names_works(nodes,n_names,adj),n_names)
@@ -51,10 +55,6 @@ test_that("Checking to make sure the Graph class works",{
 })
 
 test_that("Testing Graph and DAG classes using asia data",{
-  data("asiaDAG")
-  nodes <- colnames(asiaDAG)
-  p <- ncol(asiaDAG)
-  
   # Neighbor of "asia" should be "tub"
   target <- which(nodes=="asia")-1
   result <- which(nodes=="tub")-1
@@ -68,4 +68,21 @@ test_that("Testing Graph and DAG classes using asia data",{
   expect_true(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="asia")-1,which(nodes=="tub")-1))
   expect_false(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="bronc")-1,which(nodes=="lung")-1))
   expect_true(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="bronc")-1,which(nodes=="smoke")-1))
+})
+
+test_that("Testing miscellaneous graph functions",{
+  expect_equal(checkEmptyGraph(10),matrix(0,ncol = 10,nrow = 10))
+})
+
+test_that("Testing acyclicity",{
+  expect_true(checkAcyclicity(p,nodes,asiaDAG))
+  
+  amat <- matrix(c(
+    0,1,0,0,1,
+    0,0,1,0,0,
+    0,0,0,1,1,
+    0,0,0,0,0,
+    0,1,0,0,0
+  ),nrow = 5,ncol=5,byrow = TRUE)
+  expect_false(checkAcyclicity(5,LETTERS[1:5],amat))
 })

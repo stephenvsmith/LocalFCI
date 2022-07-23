@@ -1,16 +1,14 @@
 #ifndef CONSTRAINEDALGO_H
 #define CONSTRAINEDALGO_H
 
-#include <chrono> // TODO: see if this can be moved to another file
 #include <algorithm> // Needed for sort
 #include "DAG.h" // Needed for true_DAG
 #include "SepSetList.h" // Needed for S
 #include "pCorTest.h" // Needed for checkSeparation
-#include "sharedFunctions.h" // Needed for printing elements
-#include <RcppArmadillo.h>
+#include "sharedFunctions.h" // Needed for printing elements and combn
+#include <RcppArmadillo.h> // Needed for dataframe
 // [[Rcpp::depends(RcppArmadillo)]]
 
-using namespace std::chrono; // TODO: See if this can be moved to another file
 using namespace Rcpp;
 
 class ConstrainedAlgo {
@@ -26,7 +24,7 @@ public:
                   StringVector names,int lmax,
                   bool verbose);
   
-  ~ConstrainedAlgo(){delete C_tilde; delete true_DAG; delete S;}; // TODO: Make sure this is happening
+  ~ConstrainedAlgo(){delete C_tilde; delete true_DAG; delete S;};
   
   //Printing Functions
   void print_elements();
@@ -49,8 +47,9 @@ public:
   List getSepSetList() { return S -> getS(); };
   int getNumTests() { return num_tests; };
   NumericVector getAdjacent(int i) { return C_tilde -> getAdjacent(i); };
-  NumericVector getNeighborhood() {return neighborhood; };
+  NumericVector getNeighborhood() { return neighborhood; };
   double getMostRecentPVal() { return p_vals[p_vals.size()-1];};
+  double getTotalTime() { return total_time; };
   
   // Setters (Useful for testing)
   void setAmat(NumericMatrix m){
@@ -79,6 +78,7 @@ protected:
   int n=0;
   int N; // Tracks the size of the C_tilde matrix
   int num_tests=0;
+  double total_time;
   NumericVector targets;
   NumericVector neighborhood;
   StringVector names;

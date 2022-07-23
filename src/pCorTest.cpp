@@ -4,7 +4,7 @@ using namespace Rcpp;
 
 // Here, we are treating C as the correlation matrix
 // [[Rcpp::export]]
-double get_partial_correlation(arma::mat C,int i,int j,arma::uvec k){
+double getPartialCorrelation(arma::mat C,int i,int j,arma::uvec k){
   if (i == j){
     return(1.0);
   }
@@ -30,7 +30,7 @@ double get_partial_correlation(arma::mat C,int i,int j,arma::uvec k){
   return pc;
 }
 
-double log_part(double r){
+double logPart(double r){
   double result;
   if (r == 1){ // Perfect correlation means this value will approach infinity
     result = 1000;
@@ -42,7 +42,7 @@ double log_part(double r){
 
 // [[Rcpp::export]]
 double fisherZ(double pc,int n,int k_size){
-  return sqrt(n - k_size - 3) * 0.5 * log_part(pc);
+  return sqrt(n - k_size - 3) * 0.5 * logPart(pc);
 }
 
 void printListVals(List l){
@@ -55,18 +55,15 @@ void printListVals(List l){
 
 // [[Rcpp::export]]
 List condIndTest(arma::mat &C,const int &i,const int &j,const arma::uvec &k,const int &n,const double &signif_level){
-  double pc = get_partial_correlation(C,i,j,k);
+  double pc = getPartialCorrelation(C,i,j,k);
   double pc_transformed = fisherZ(pc,n,k.size());
 
   bool lower = pc_transformed < 0;
   
   double cutoff = R::qnorm(1-signif_level/2,0.0,1.0,true,false);
-  // Rcpp::Rcout << "Value = " << pc_transformed << " | Cutoff = " << cutoff << " | Result = " << std::abs(pc_transformed) - cutoff << std::endl;
-  // Rcpp::Rcout << "Results: " << (std::abs(pc_transformed) <= cutoff) << " | " << 2*R::pnorm(pc_transformed,0.0,1.0,lower,false) << std::endl;
   
   bool accept_H0 = std::abs(pc_transformed) <= cutoff;
   double pval=2*R::pnorm(pc_transformed,0.0,1.0,lower,false);
-  //printListVals(res);
   
   return List::create(
     _["result"]=accept_H0, // The null hypothesis is accepted (p-value large) => H_0: r = 0 => Conditional independence
@@ -85,6 +82,7 @@ List condIndTestPop(NumericMatrix G,const int &i,const int &j,const arma::uvec &
   // } else {
   //   Rcout << "We don't accept H_0 => Still dependent\n";
   // }
+
   return List::create(
     _["result"]=accept_H0, // The null hypothesis is accepted (p-value large) => H_0: r = 0 => Conditional independence
     _["pval"]=pval

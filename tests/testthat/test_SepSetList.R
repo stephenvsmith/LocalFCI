@@ -38,6 +38,11 @@ test_that("Get correct neighbors and check separating set update",{
   
   # Checking if nodes 0 and 1 are separated by node 2 when S_{0,1}={4,5}
   expect_false(checkSeparationFunc(neighbors,i,j,kvals,2))
-  expect_true(checkSeparationFunc(neighbors,i,j,kvals,5))
+  # Checking if nodes 0 and 1 are separated by node 5 when S_{0,1}={4,5}
+  # Should produce warning and should be false because both separation sets not
+  # correctly defined
+  expect_false(checkSeparationFunc(neighbors,i,j,kvals,5)) 
+  # Corrected Version
+  expect_true(checkSeparationFuncCorrected(neighbors,i,j,kvals,5)) 
   
 })

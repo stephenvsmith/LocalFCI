@@ -61,27 +61,30 @@ bool isMember(NumericVector x,int i){
   return false;
 }
 
- // True just refers to numbering
-bool SepSetList::isPotentialVStruct(int i,int j,int k) {
+// k is assumed to be according to the true Graph numbering
+bool SepSetList::isSepSetMember(int i,int j,int k){
   NumericVector sepset_ji;
   NumericVector sepset_ij;
-  bool valid_v_struct;
-  bool valid_v_struct_check;
-  int node_k;
+  bool is_member;
+  bool is_member_check;
+
   
   sepset_ji = getSepSet(j,i);
   sepset_ij = getSepSet(i,j);
   // Verify if k is in separating set for i and j
-  node_k = k; // We are assuming the input of the true value of node k
-  valid_v_struct = !isMember(sepset_ij,node_k);
+  is_member = isMember(sepset_ij,k);
   // Check other way just in case
-  valid_v_struct_check = !isMember(sepset_ji,node_k);
-  // TODO error message if these are not the same
-  return valid_v_struct && valid_v_struct_check;
+  is_member_check = isMember(sepset_ji,k);
+  
+  if (is_member != is_member_check){
+    warning("Warning: separation sets for %i and %i disagree",i,j);
+  }
+  
+  return is_member && is_member_check;
 }
 
-bool SepSetList::isSeparated(int i,int j,int k){
-  return !isPotentialVStruct(i,j,k); // Result should be true if k is a member of S_ij or S_ji in this case
+bool SepSetList::isPotentialVStruct(int i,int j,int k) {
+  return !isSepSetMember(i,j,k);
 }
 
 void SepSetList::printSepSetList(){
@@ -90,7 +93,7 @@ void SepSetList::printSepSetList(){
   for (int i=0;i<S.length();++i){
     sublist = S[i]; 
     for (int j=0;j<S.length();++j){
-      Rcout << "S[[" << nodes(i) << "]][[" << nodes(j) << "]] = ";
+      Rcout << "S_{" << nodes(i) << "," << nodes(j) << "} = ";
       sepLabels = sublist[j];
       // if (!(is_na(efficientLabels)[0])){
       //   if (efficientLabels[0]!=-1){

@@ -12,13 +12,17 @@ public:
   DAG(int nodes);
   DAG(int nodes,StringVector node_names,NumericMatrix adj);
   
+  void getNonIncidentNodes(std::vector<int> &v);
+  bool isAcyclic();
+  
   // Tested in graphtests.cpp and test_Graph.R
   NumericVector getNeighbors(const int &i,bool &verbose);
   
   // Tested in graphtests.cpp and test_Graph.R
   NumericVector getNeighborsMultiTargets(const NumericVector &targets,bool &verbose);
   
-  // TODO: CHECK ACYCLICITY
+  bool inNeighborhood(int i,int j);
+
 };
 
 #endif

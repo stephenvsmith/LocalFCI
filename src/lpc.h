@@ -21,14 +21,15 @@ public:
   void getSkeletonTarget(int t);
   
   using ConstrainedAlgo::getVStructures;
-  //void getVStructures();
   
-  void convertFinalGraph(Graph* g);
+  void convertFinalGraph();
+  
+  void run();
   
   void check();
   
   // Accessors
-  std::vector<double> getTargetSkeletonTimes() {return target_skeleton_times; };
+  std::vector<double> getTargetSkeletonTimes() { return target_skeleton_times; };
   
 private:
   std::map<int,int> node_numbering;
