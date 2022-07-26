@@ -2,6 +2,9 @@ library(tidyverse,quietly = TRUE,verbose = FALSE)
 library(pcalg,quietly = TRUE,verbose = FALSE)
 library(bnlearn,verbose = FALSE)
 
+data("asiaDAG")
+data("asiadf")
+
 test_that("checking metric functions",{
   true_amat <- matrix(c(0,1,0,0,
                         1,0,1,1,
@@ -38,8 +41,6 @@ test_that("checking metric functions",{
   testthat::expect_equal(compare_v_structures(false_amat,true_amat,FALSE),list("missing"=1,"added"=2,"correct"=2))
   
   t <- c(1,6,7,8)
-  data("asiaDAG")
-  data("asiadf")
   est <- localfci(data=asiadf,true_dag = asiaDAG,targets = t,verbose = FALSE)
 
   pc.fit <- as(pcalg::pc(suffStat = list(C = cor(asiadf), n = nrow(asiadf)),
@@ -174,9 +175,12 @@ test_that("Test MB Recovery (General) Function",{
   )
 })
 
-
-
-
+interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,0)
+interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,c(0,7))
+res <- localfci(true_dag = asiaDAG,targets=c(1,8),node_names = nodes,verbose = FALSE)
+interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(0,7))
+res <- localfci(true_dag = asiaDAG,targets=c(3,7),node_names = nodes,verbose = FALSE)
+interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(2,6))
 
 
 

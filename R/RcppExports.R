@@ -37,6 +37,10 @@ convert_pc_amat <- function(G) {
     .Call(`_LocalFCI_convert_pc_amat`, G)
 }
 
+interNeighborhoodEdgeMetrics <- function(est, reference, targets) {
+    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, targets)
+}
+
 all_metrics <- function(est, true_cpdag, est_cpdag, targets, verbose = FALSE) {
     .Call(`_LocalFCI_all_metrics`, est, true_cpdag, est_cpdag, targets, verbose)
 }
@@ -119,6 +123,10 @@ checkEmptyGraph <- function(p) {
 
 checkAcyclicity <- function(nodes, node_names, adj) {
     .Call(`_LocalFCI_checkAcyclicity`, nodes, node_names, adj)
+}
+
+checkIsAncestor <- function(nodes, node_names, adj, desc, anc) {
+    .Call(`_LocalFCI_checkIsAncestor`, nodes, node_names, adj, desc, anc)
 }
 
 initializeLocalFCI <- function(td, df, t, names) {

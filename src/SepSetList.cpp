@@ -46,21 +46,6 @@ NumericVector SepSetList::getSepSet(int i,int j){
   return sublist_i[j];
 }
 
-// Determines whether or not i is in vector x
-bool isMember(NumericVector x,int i){
-  NumericVector::iterator it = x.begin();
-  int j;
-  
-  for (;it!=x.end();++it){
-    j = *it;
-    if (i == j){
-      return true;
-    }
-  }
-  
-  return false;
-}
-
 // k is assumed to be according to the true Graph numbering
 bool SepSetList::isSepSetMember(int i,int j,int k){
   NumericVector sepset_ji;

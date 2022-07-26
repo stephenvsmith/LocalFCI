@@ -172,6 +172,35 @@ bool DAG::inNeighborhood(int i,int j){
   }
   return false;
 }
+
+NumericVector DAG::getParents(int i){
+  int p = Graph::size();
+  NumericVector parents;
+  for (int j=0;j<p;++j){
+    if (getAmatVal(j,i)==1){
+      parents.push_back(j);
+    }
+  }
+  return parents;
+}
+
+bool DAG::isAncestor(int desc,int anc){
+  NumericVector current_ancestors;
+  NumericVector next_level_ancestors;
+  current_ancestors = getParents(desc);
   
+  while (current_ancestors.size()>0){
+    if (isMember(current_ancestors,anc)){
+      return true;
+    }
+    std::for_each(current_ancestors.begin(),current_ancestors.end(),
+                  [&next_level_ancestors,this](int node){
+                      next_level_ancestors = union_(next_level_ancestors,getParents(node));
+                    });
+    current_ancestors = next_level_ancestors;
+    next_level_ancestors = NumericVector::create();
+  }
+  return false;
+}
   
   

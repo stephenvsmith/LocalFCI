@@ -16,4 +16,6 @@ void print_matrix(NumericMatrix m);
 
 void iteration_print(const int &l,const int &i,const int &j,const NumericVector &sep,const StringVector &names,const double &pval);
 
+bool isMember(NumericVector x,int i);
+
 #endif

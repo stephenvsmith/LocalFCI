@@ -2,6 +2,8 @@
 #define DAG_H
 
 #include "Graph.h"
+#include "sharedFunctions.h"
+#include <algorithm>
 
 using namespace Rcpp;
 
@@ -22,6 +24,9 @@ public:
   NumericVector getNeighborsMultiTargets(const NumericVector &targets,bool &verbose);
   
   bool inNeighborhood(int i,int j);
+  
+  NumericVector getParents(int i);
+  bool isAncestor(int desc,int anc);
 
 };
 

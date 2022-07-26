@@ -97,3 +97,18 @@ void iteration_print(const int &l,const int &i,const int &j,const NumericVector 
   Rcout << " | p-val: " << pval;
   Rcout << std::endl;
 }
+
+// Determines whether or not i is in vector x
+bool isMember(NumericVector x,int i){
+  NumericVector::iterator it = x.begin();
+  int j;
+  
+  for (;it!=x.end();++it){
+    j = *it;
+    if (i == j){
+      return true;
+    }
+  }
+  
+  return false;
+}

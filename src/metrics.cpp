@@ -1,5 +1,5 @@
-#include <Rcpp.h>
 #include <algorithm>
+#include "DAG.h"
 using namespace Rcpp;
 
 /*
@@ -101,37 +101,37 @@ List compare_v_structures(NumericMatrix est,NumericMatrix truth,bool verbose){
   
   for (int i=0;i<p-2;++i){
     for (int j=i+1;j<p-1;++j){
-        for (int k=j+1;k<p;++k){
-          if (verbose){
-            Rcout << "Estimated Graph:\n";
-          }
-          triple_check = check_triple(est,i,j,k,verbose);
-          if (triple_check["result"]){
-            if (check_other_triple(truth,triple_check["order"],verbose)){
-              continue_checking=false; // We don't need to check the true graph since v-structure was correctly identified
-              ++num_correct;
-            }
-            else
-              ++num_added; // there could be a missing v-structure
-          }
-          
-          // Now, we check if we missed any v-structures
-          if (continue_checking)
-          {
-            if (verbose) {
-              Rcout << "True Graph:\n";
-            }
-            triple_check = check_triple(truth,i,j,k,verbose);
-            if (triple_check["result"])
-            {
-              if (verbose){
-                Rcout << " | v-structure *not* present in estimated graph\n";
-              }
-              ++num_missing;
-            }
-          } else
-            continue_checking=true;
+      for (int k=j+1;k<p;++k){
+        if (verbose){
+          Rcout << "Estimated Graph:\n";
         }
+        triple_check = check_triple(est,i,j,k,verbose);
+        if (triple_check["result"]){
+          if (check_other_triple(truth,triple_check["order"],verbose)){
+            continue_checking=false; // We don't need to check the true graph since v-structure was correctly identified
+            ++num_correct;
+          }
+          else
+            ++num_added; // there could be a missing v-structure
+        }
+        
+        // Now, we check if we missed any v-structures
+        if (continue_checking)
+        {
+          if (verbose) {
+            Rcout << "True Graph:\n";
+          }
+          triple_check = check_triple(truth,i,j,k,verbose);
+          if (triple_check["result"])
+          {
+            if (verbose){
+              Rcout << " | v-structure *not* present in estimated graph\n";
+            }
+            ++num_missing;
+          }
+        } else
+          continue_checking=true;
+      }
     }  
   }
   
@@ -170,29 +170,29 @@ void update_edge_values(NumericMatrix est,NumericMatrix truth,const int &i,const
 }
 
 /*
-// [[Rcpp::export]]
-List compare_directed_edges(NumericMatrix est,NumericMatrix truth){
-  int num_correct=0;
-  int num_missing=0;
-  int num_added=0;
-  
-  int p = est.nrow();
-  
-  for (int i=0;i<p-1;++i){
-    for (int j=i+1;j<p;++j){
-      update_edge_values(est,truth,i,j,num_correct,num_missing,num_added);
-      update_edge_values(est,truth,j,i,num_correct,num_missing,num_added);
-    }  
-  }
-  
-  return List::create(
-    _["missing_par"]=num_missing,
-    _["added_par"]=num_added,
-    _["correct_par"]=num_correct
-  );
-}
-*/
+ // [[Rcpp::export]]
+ List compare_directed_edges(NumericMatrix est,NumericMatrix truth){
+ int num_correct=0;
+ int num_missing=0;
+ int num_added=0;
  
+ int p = est.nrow();
+ 
+ for (int i=0;i<p-1;++i){
+ for (int j=i+1;j<p;++j){
+ update_edge_values(est,truth,i,j,num_correct,num_missing,num_added);
+ update_edge_values(est,truth,j,i,num_correct,num_missing,num_added);
+ }  
+ }
+ 
+ return List::create(
+ _["missing_par"]=num_missing,
+ _["added_par"]=num_added,
+ _["correct_par"]=num_correct
+ );
+ }
+ */
+
 void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,
                    int &correct,int &missing,int &added,int &potential,
                    bool verbose){
@@ -351,8 +351,151 @@ int get_edge_number(NumericMatrix G){
   return total_edges;
 }
 
+bool sharedNeighborhood(NumericMatrix reference,NumericVector targets,
+                        int i,int j){
+  int p = reference.nrow();
+  StringVector node_names;
+  for (int i=0;i<p;++i){
+    String node("V");
+    node += i;
+    node_names.push_back(node);
+  }
+  
+  DAG g_ref(p,node_names,reference);
+  for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
+    // Check if i and j share a neighborhood with a particular target
+    if (g_ref.areNeighbors(*it,i) && g_ref.areNeighbors(*it,j)){
+      return true;
+    }
+  }
+  // Otherwise, return false
+  return false;
+}
+
+bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
+                          int i){
+  int p = reference.nrow();
+  StringVector node_names;
+  for (int i=0;i<p;++i){
+    String node("V");
+    node += i;
+    node_names.push_back(node);
+  }
+  
+  DAG g_ref(p,node_names,reference);
+  for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
+    // Check if i is in target neighborhood
+    if (g_ref.areNeighbors(*it,i)){
+      return true;
+    }
+  }
+  // Otherwise, return false
+  return false;
+}
+
+bool idAncestors(NumericMatrix reference,int i,int j){
+  int p = reference.nrow();
+  StringVector node_names;
+  for (int i=0;i<p;++i){
+    String node("V");
+    node += i;
+    node_names.push_back(node);
+  }
+  
+  DAG g_ref(p,node_names,reference);
+  return g_ref.isAncestor(i,j);
+}
+
 // [[Rcpp::export]]
-DataFrame all_metrics(NumericMatrix est,NumericMatrix true_cpdag,NumericMatrix est_cpdag,NumericVector targets,bool verbose=false){
+List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
+                                  NumericVector targets){
+  int p = est.nrow();
+
+  int true_ancestor = 0;
+  int missing_ancestor = 0;
+  int missing_orientation = 0;
+  int reverse_orientation = 0;
+  int added_connection = 0;
+  int false_positive_arrow = 0;
+  
+  bool connected; // tracks whether two nodes are connected in estimated graph
+  bool is_i_ancestor_j; // tracks whether i is an ancestor of j
+  bool is_j_ancestor_i; // tracks whether j is an ancestor of i
+  bool i_arrow_j;
+  bool j_arrow_i;
+  bool undirected;
+  bool bidirected;
+  
+  for (int i=0;i<p-1;++i){
+    for (int j=i+1;j<p;++j){
+      // check to see if i and j mutually belong to a target neighborhood and both belong to at least one target neighborhood
+      if (!sharedNeighborhood(reference,targets,i,j) && 
+          inTargetNeighborhood(reference,targets,i) && 
+          inTargetNeighborhood(reference,targets,j)){
+        
+        //Rcout << "Looking at nodes " << i << " and " << j << std::endl;
+        
+        // Check if i is connected to j in estimated graph
+        connected = est(i,j) != 0 || est(j,i) != 0;
+        if (est(i,j)==3 && est(j,i)==3){
+          warning("Adjacency matrix entries for %i and %i are both 3.",i,j);
+        } 
+        is_i_ancestor_j = idAncestors(reference,j,i);
+        is_j_ancestor_i = idAncestors(reference,i,j);
+        if (!connected){
+          if (is_j_ancestor_i || is_i_ancestor_j){
+            //Rcout << "Missing ancestral relationship\n";
+            ++missing_ancestor;
+          }
+        } else { // i and j are connected in estimated graph
+          i_arrow_j = (est(i,j)==2 && est(j,i)!=2) || (est(i,j)==1 && est(j,i)==0);
+          j_arrow_i = (est(j,i)==2 && est(i,j)!=2) || (est(i,j)==1 && est(j,i)==0);
+          undirected = est(i,j)==1 && est(j,i)==1;
+          bidirected = est(i,j)==2 && est(j,i)==2;
+          if (is_i_ancestor_j && i_arrow_j){
+            //Rcout << "True ancestral relationship (i->j)\n";
+            ++true_ancestor;
+          } else if (is_j_ancestor_i && j_arrow_i){
+            //Rcout << "True ancestral relationship (j->i)\n";
+            ++true_ancestor;
+          } else if (is_i_ancestor_j && (undirected || bidirected)){
+            //Rcout << "Missing orientation of ancestral relationship (i->j)\n";
+            ++missing_orientation;
+          } else if (is_j_ancestor_i && (undirected || bidirected)){
+            //Rcout << "Missing orientation of ancestral relationship (j->i)\n";
+            ++missing_orientation;
+          } else if (is_i_ancestor_j && j_arrow_i){
+            //Rcout << "Orientation Reversed: j->i instead of i->j\n";
+            ++reverse_orientation;
+          } else if (is_j_ancestor_i && i_arrow_j){
+            //Rcout << "Orientation Reversed: i->j instead of j->i\n";
+            ++reverse_orientation;
+          } else if ((i_arrow_j || j_arrow_i) && !(is_i_ancestor_j || is_j_ancestor_i)){
+            //Rcout << "False positive ancestral relationship\n";
+            ++false_positive_arrow;
+          } else {
+            //Rcout << "Connection without identified ancestral relationship\n";
+            ++added_connection;
+          }
+        }
+      }
+    }
+  }
+  return List::create(
+    _["CorrectAncestors"]=true_ancestor,
+    _["MissingAncestors"]=missing_ancestor,
+    _["MissingOrientation"]=missing_orientation,
+    _["ReverseOrientation"]=reverse_orientation,
+    _["FalsePositiveOrientedEdge"]=false_positive_arrow,
+    _["AddedConnection"]=added_connection
+  );
+}
+
+
+// [[Rcpp::export]]
+DataFrame all_metrics(NumericMatrix est,NumericMatrix true_cpdag,
+                      NumericMatrix est_cpdag,NumericVector targets,
+                      bool verbose=false){
   
   // Get all cpdag results first
   List cpdag_skeleton = compare_skeletons(est_cpdag,true_cpdag,verbose);

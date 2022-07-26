@@ -137,6 +137,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// interNeighborhoodEdgeMetrics
+List interNeighborhoodEdgeMetrics(NumericMatrix est, NumericMatrix reference, NumericVector targets);
+RcppExport SEXP _LocalFCI_interNeighborhoodEdgeMetrics(SEXP estSEXP, SEXP referenceSEXP, SEXP targetsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type reference(referenceSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type targets(targetsSEXP);
+    rcpp_result_gen = Rcpp::wrap(interNeighborhoodEdgeMetrics(est, reference, targets));
+    return rcpp_result_gen;
+END_RCPP
+}
 // all_metrics
 DataFrame all_metrics(NumericMatrix est, NumericMatrix true_cpdag, NumericMatrix est_cpdag, NumericVector targets, bool verbose);
 RcppExport SEXP _LocalFCI_all_metrics(SEXP estSEXP, SEXP true_cpdagSEXP, SEXP est_cpdagSEXP, SEXP targetsSEXP, SEXP verboseSEXP) {
@@ -416,6 +429,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
     rcpp_result_gen = Rcpp::wrap(checkAcyclicity(nodes, node_names, adj));
+    return rcpp_result_gen;
+END_RCPP
+}
+// checkIsAncestor
+bool checkIsAncestor(int nodes, StringVector node_names, NumericMatrix adj, int desc, int anc);
+RcppExport SEXP _LocalFCI_checkIsAncestor(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP descSEXP, SEXP ancSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type desc(descSEXP);
+    Rcpp::traits::input_parameter< int >::type anc(ancSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkIsAncestor(nodes, node_names, adj, desc, anc));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1061,6 +1089,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_parent_recovery_accuracy", (DL_FUNC) &_LocalFCI_parent_recovery_accuracy, 4},
     {"_LocalFCI_convert_true_dag", (DL_FUNC) &_LocalFCI_convert_true_dag, 1},
     {"_LocalFCI_convert_pc_amat", (DL_FUNC) &_LocalFCI_convert_pc_amat, 1},
+    {"_LocalFCI_interNeighborhoodEdgeMetrics", (DL_FUNC) &_LocalFCI_interNeighborhoodEdgeMetrics, 3},
     {"_LocalFCI_all_metrics", (DL_FUNC) &_LocalFCI_all_metrics, 5},
     {"_LocalFCI_neighborhood_metrics", (DL_FUNC) &_LocalFCI_neighborhood_metrics, 1},
     {"_LocalFCI_getPartialCorrelation", (DL_FUNC) &_LocalFCI_getPartialCorrelation, 4},
@@ -1082,6 +1111,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_checkIfNeighbors", (DL_FUNC) &_LocalFCI_checkIfNeighbors, 5},
     {"_LocalFCI_checkEmptyGraph", (DL_FUNC) &_LocalFCI_checkEmptyGraph, 1},
     {"_LocalFCI_checkAcyclicity", (DL_FUNC) &_LocalFCI_checkAcyclicity, 3},
+    {"_LocalFCI_checkIsAncestor", (DL_FUNC) &_LocalFCI_checkIsAncestor, 5},
     {"_LocalFCI_initializeLocalFCI", (DL_FUNC) &_LocalFCI_initializeLocalFCI, 4},
     {"_LocalFCI_initializeLocalFCIPop", (DL_FUNC) &_LocalFCI_initializeLocalFCIPop, 3},
     {"_LocalFCI_checkSkeletonTotal", (DL_FUNC) &_LocalFCI_checkSkeletonTotal, 4},

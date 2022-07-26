@@ -86,3 +86,19 @@ test_that("Testing acyclicity",{
   ),nrow = 5,ncol=5,byrow = TRUE)
   expect_false(checkAcyclicity(5,LETTERS[1:5],amat))
 })
+
+test_that("Test for identifying ancestors",{
+  g <- empty.graph(nodes)
+  amat(g) <- asiaDAG
+  for (i in 1:p){
+    for (j in 1:p){
+      if (i!=j){ # TODO: add a condition to the function for when i=j
+        # cat("i =",i,"(",nodes[i],")","| j =",j,"(",nodes[j],")","\n")
+        # cat("My version:",checkIsAncestor(p,nodes,asiaDAG,i-1,j-1),"\n")
+        # cat("Truth:",nodes[j] %in% bnlearn::ancestors(g,nodes[i]),"\n")
+        expect_equal(checkIsAncestor(p,nodes,asiaDAG,i-1,j-1),
+                     nodes[j] %in% bnlearn::ancestors(g,nodes[i]))
+      }
+    }
+  }
+})

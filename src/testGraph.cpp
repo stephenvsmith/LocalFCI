@@ -100,4 +100,9 @@ bool checkAcyclicity(int nodes,StringVector node_names,NumericMatrix adj){
   return g.isAcyclic();
 }
 
+// [[Rcpp::export]]
+bool checkIsAncestor(int nodes,StringVector node_names,NumericMatrix adj,int desc,int anc){
+  DAG g(nodes,node_names,adj);
+  return g.isAncestor(desc,anc);
+}
 
