@@ -394,6 +394,7 @@ bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
 }
 
 bool idAncestors(NumericMatrix reference,int i,int j){
+  //Rcout << "Identifying if " << i << " is an ancestor of " << j << "\n";
   int p = reference.nrow();
   StringVector node_names;
   for (int i=0;i<p;++i){

@@ -554,11 +554,10 @@ bool LocalFCI::rule4(bool &track_changes){
             //Rcout << std::endl;
             //C_tilde -> printAmat();
             done = false;
-            while(C_tilde->getAmatVal(gamma,beta)==1){
+            if(C_tilde->getAmatVal(gamma,beta)==1){ // Not sure about this: TODO: COULD BE A WHILE LOOP BUT IT DOESN'T MAKE SENSE
               while(!done && C_tilde->getAmatVal(alpha,beta)!=0 && C_tilde->getAmatVal(alpha,gamma)!=0 && C_tilde->getAmatVal(beta,gamma)!=0){
-                //Rcout << "# of Nodes: " << G.ncol() << std::endl;
                 md_path = minDiscPath(alpha,beta,gamma);
-                if (NumericVector::is_na(md_path(0))){
+                if (md_path(0)==-1){
                   done = true; // We are done with this triangle  
                 } else {
                   if(check_sep_r4(beta,md_path)){
@@ -1000,22 +999,28 @@ NumericVector LocalFCI::minDiscPath(int a,int b,int c){
         if (verbose) print_vector_elements_nonames(minDiscPath,"Minimum Discriminating Path: ","\n");
         return minDiscPath;
       } // End If
+
       pred = mpath(m-2);
+
       ++counter;
       
       // d is connected to c, so we search iteratively
       if (C_tilde->getAmatVal(d,c)==2 && C_tilde->getAmatVal(c,d)==3 && C_tilde->getAmatVal(pred,d)==2){
         visited(d) = true;
         // Find all neighbors of d not visited yet
+
         NumericVector r_vals = get_r_vals(C_tilde,d,visited);
+        
         if (r_vals.length()>0){
+        
           path_list = updatePathList(mpath,r_vals,path_list,verbose);
+        
         }
       }
       list_length = path_list.length();
     }
   }
-  return NA_REAL;
+  return NumericVector::create(-1);
 }
 
 
