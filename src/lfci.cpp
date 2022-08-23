@@ -645,7 +645,9 @@ bool LocalFCI::rule9(bool &track_changes){
   for (int alpha=0;alpha<N;++alpha){
     for (int gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(alpha,gamma)==2 && C_tilde->getAmatVal(gamma,alpha)==1){ // alpha o-> gamma
-        //Rcout << "Potential alpha: " << alpha << " | Potential gamma: " << gamma << std::endl;
+        if (verbose){
+          Rcout << "Potential alpha: " << alpha << " | Potential gamma: " << gamma << std::endl;
+        }
         beta_vals.clear();
         // Find all beta such that alpha (o-)-(o>) beta, and beta and gamma are not connected
         for (int beta=0;beta<N;++beta){
@@ -655,7 +657,9 @@ bool LocalFCI::rule9(bool &track_changes){
           cond4 = beta != gamma;
           cond_final = cond1 && cond2 && cond3 && cond4;
           if (cond_final){
-            //Rcout << "Potential beta: " << beta << std::endl;
+            if (verbose) {
+              Rcout << "Potential beta: " << beta << std::endl; 
+            }
             beta_vals.push_back(beta);
           }
         }

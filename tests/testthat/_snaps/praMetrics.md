@@ -94,12 +94,17 @@
     3 and 4 are in the neighborhood of target 4
     3 and 5 are in the neighborhood of target 4
     4 and 5 are in the neighborhood of target 4
+    Edge between 0 and 2 appears in true graph but not in the estimated graph. FN=1
+    Edge between 1 and 4 match. TP=1
+    Edge between 2 and 3 appears in true graph but not in the estimated graph. FN=2
+    Edge between 3 and 4 appears in true graph but not in the estimated graph. FN=3
+    Edge between 4 and 5 appears in true graph but not in the estimated graph. FN=4
       lfci_skel_fp lfci_skel_fn lfci_skel_tp lfci_v_fn lfci_v_fp lfci_v_tp
     1            0            0            5         1         1         0
       lfci_pra_fn lfci_pra_fp lfci_pra_tp lfci_pra_potential lfci_ancestors_correct
     1           2           1           1                  2                      0
       lfci_ancestors_missing lfci_ancestors_fn_orient lfci_ancestors_reverse
     1                      0                        0                      0
-      lfci_ancestors_fp_oriented lfci_ancestors_fp_connect
-    1                          1                         0
+      lfci_ancestors_fp_oriented lfci_ancestors_fp_connect lfci_overall_f1
+    1                          1                         0       0.3333333
 

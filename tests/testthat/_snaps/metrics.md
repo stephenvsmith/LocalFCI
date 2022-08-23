@@ -6,8 +6,8 @@
     1           1           0           4                  1                      0
       lfci_ancestors_missing lfci_ancestors_fn_orient lfci_ancestors_reverse
     1                      0                        0                      0
-      lfci_ancestors_fp_oriented lfci_ancestors_fp_connect
-    1                          0                         0
+      lfci_ancestors_fp_oriented lfci_ancestors_fp_connect lfci_overall_f1
+    1                          0                         0       0.9090909
 
 ---
 
@@ -17,8 +17,8 @@
     1         0                0                    0                    0
       pc_ancestors_fn_orient pc_ancestors_reverse pc_ancestors_fp_oriented
     1                      0                    0                        0
-      pc_ancestors_fp_connect
-    1                       0
+      pc_ancestors_fp_connect pc_overall_f1
+    1                       0             0
 
 # Ancestral Relations
 

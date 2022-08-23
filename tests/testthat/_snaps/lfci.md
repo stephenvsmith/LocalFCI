@@ -63,6 +63,7 @@
     S_{2,1} = nan S_{2,2} = nan S_{2,3} = nan S_{2,5} = nan 
     S_{3,1} = nan S_{3,2} = nan S_{3,3} = nan S_{3,5} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,5} = nan 
+    Number of tests so far: 0
     First and last elements of the dataset: -0.641447 0.198884
 
 # Testing the LocalFCI object (Population)
@@ -131,6 +132,7 @@
     S_{2,1} = nan S_{2,2} = nan S_{2,3} = nan S_{2,5} = nan 
     S_{3,1} = nan S_{3,2} = nan S_{3,3} = nan S_{3,5} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,5} = nan 
+    Number of tests so far: 0
 
 # Testing the total skeleton function (one target)
 
@@ -271,6 +273,7 @@
     S_{2,1} = -1 S_{2,2} = nan S_{2,3} = nan S_{2,5} = 3 
     S_{3,1} = -1 S_{3,2} = nan S_{3,3} = nan S_{3,5} = nan 
     S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,5} = nan 
+    Number of tests so far: 13
     First and last elements of the dataset: -0.641447 0.198884
 
 # Testing the total skeleton function (two targets)
@@ -595,6 +598,7 @@
     S_{4,1} = -1 S_{4,2} = nan S_{4,3} = 2 S_{4,4} = nan S_{4,5} = -1 S_{4,7} = nan 
     S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,4} = -1 S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = 5 S_{7,2} = 3 4 S_{7,3} = 5 S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
+    Number of tests so far: 58
     First and last elements of the dataset: -0.641447 0.198884
 
 # Testing the total skeleton function for population (one target)
@@ -737,6 +741,7 @@
     S_{2,1} = -1 S_{2,2} = nan S_{2,3} = nan S_{2,5} = 3 
     S_{3,1} = -1 S_{3,2} = nan S_{3,3} = nan S_{3,5} = nan 
     S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,5} = nan 
+    Number of tests so far: 13
 
 # Testing the total skeleton function for population (two targets)
 
@@ -1102,6 +1107,7 @@
     S_{4,1} = -1 S_{4,2} = nan S_{4,3} = 2 S_{4,4} = nan S_{4,5} = 2 S_{4,7} = nan 
     S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,4} = 2 S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = 3 5 S_{7,2} = 3 4 S_{7,3} = 2 5 S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
+    Number of tests so far: 70
 
 # Testing Skeleton Target function and V-Structure function (sample)
 
@@ -1425,6 +1431,7 @@
     S_{4,1} = -1 S_{4,2} = nan S_{4,3} = 2 S_{4,4} = nan S_{4,5} = -1 S_{4,7} = nan 
     S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,4} = -1 S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = 5 S_{7,2} = 3 4 S_{7,3} = 5 S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
+    Number of tests so far: 58
     First and last elements of the dataset: -0.641447 0.198884
     FUNCTION get_neighbors_from_dag. Node 3
     Call from get_neighbors_from_dag. Node 2 is a parent.
@@ -1440,27 +1447,6 @@
     The value of l is 1
     The value of i is 0
     The value of j is 4
-    Target: 1
-    FUNCTION get_neighbors_from_dag. Node 1
-    Call from get_neighbors_from_dag. Node 0 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
-    Neighbors of node 1: 0, 3, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    0, 3, 4, 6, 7
     Potential separating nodes: 0 3 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 (asia)
@@ -1480,24 +1466,6 @@
     tub is NOT separated from either by node(s): dysp  (p-value<0.01)
     The value of i is 1
     The value of j is 2
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Total Neighborhood:
-    1, 4, 5
     Potential separating nodes: 1 4 5
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 (tub)
@@ -1511,27 +1479,6 @@
     smoke is NOT separated from lung by node(s): either  (p-value<0.01)
     The value of i is 2
     The value of j is 4
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    1, 2, 4, 6, 7
     Potential separating nodes: 1 2 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
@@ -1553,27 +1500,6 @@
     The value of l is 2
     The value of i is 0
     The value of j is 4
-    Target: 1
-    FUNCTION get_neighbors_from_dag. Node 1
-    Call from get_neighbors_from_dag. Node 0 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
-    Neighbors of node 1: 0, 3, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    0, 3, 4, 6, 7
     Potential separating nodes: 0 3 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 3 (asia lung)
@@ -1608,24 +1534,6 @@
     tub is NOT separated from either by node(s): xray dysp  (p-value<0.01)
     The value of i is 1
     The value of j is 2
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Total Neighborhood:
-    1, 4, 5
     Potential separating nodes: 1 4 5
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 4 (tub bronc)
@@ -1639,27 +1547,6 @@
     smoke is NOT separated from lung by node(s): bronc either  (p-value<0.01)
     The value of i is 2
     The value of j is 4
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    1, 2, 4, 6, 7
     Potential separating nodes: 1 2 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 (tub smoke)
@@ -1696,27 +1583,6 @@
     The value of l is 3
     The value of i is 0
     The value of j is 4
-    Target: 1
-    FUNCTION get_neighbors_from_dag. Node 1
-    Call from get_neighbors_from_dag. Node 0 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
-    Neighbors of node 1: 0, 3, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    0, 3, 4, 6, 7
     Potential separating nodes: 0 3 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 3 4 (asia lung bronc)
@@ -1751,24 +1617,6 @@
     tub is NOT separated from either by node(s): bronc xray dysp  (p-value<0.01)
     The value of i is 1
     The value of j is 2
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Total Neighborhood:
-    1, 4, 5
     Potential separating nodes: 1 4 5
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 4 5 (tub bronc either)
@@ -1776,27 +1624,6 @@
     smoke is NOT separated from lung by node(s): tub bronc either  (p-value<0.01)
     The value of i is 2
     The value of j is 4
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    1, 2, 4, 6, 7
     Potential separating nodes: 1 2 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 4 (tub smoke bronc)
@@ -1852,24 +1679,6 @@
     The value of l is 1
     The value of i is 1
     The value of j is 3
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Total Neighborhood:
-    3, 5, 7
     Potential separating nodes: 3 5 7
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 (lung)
@@ -1883,22 +1692,6 @@
     smoke is NOT separated from bronc by node(s): dysp  (p-value<0.01)
     The value of i is 3
     The value of j is 5
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    2, 5
     Potential separating nodes: 2 5
     There are 2 neighbor(s).
     Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 (smoke)
@@ -1909,25 +1702,6 @@
     bronc is NOT separated from dysp by node(s): either  (p-value<0.01)
     The value of i is 4
     The value of j is 5
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    1, 3, 4, 6
     Potential separating nodes: 1 3 4 6
     There are 4 neighbor(s).
     Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 (tub)
@@ -1946,24 +1720,6 @@
     The value of l is 2
     The value of i is 1
     The value of j is 3
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Total Neighborhood:
-    3, 5, 7
     Potential separating nodes: 3 5 7
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 5 (lung either)
@@ -1977,22 +1733,6 @@
     smoke is NOT separated from bronc by node(s): either dysp  (p-value<0.01)
     The value of i is 3
     The value of j is 5
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    2, 5
     Potential separating nodes: 2 5
     There are 2 neighbor(s).
     Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 5 (smoke either)
@@ -2000,25 +1740,6 @@
     bronc is NOT separated from dysp by node(s): smoke either  (p-value<0.01)
     The value of i is 4
     The value of j is 5
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    1, 3, 4, 6
     Potential separating nodes: 1 3 4 6
     There are 4 neighbor(s).
     Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 (tub lung)
@@ -2043,24 +1764,6 @@
     The value of l is 3
     The value of i is 1
     The value of j is 3
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Total Neighborhood:
-    3, 5, 7
     Potential separating nodes: 3 5 7
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 5 7 (lung either dysp)
@@ -2068,44 +1771,9 @@
     smoke is NOT separated from bronc by node(s): lung either dysp  (p-value<0.01)
     The value of i is 3
     The value of j is 5
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    2, 5
     Potential separating nodes: 2 5
     The value of i is 4
     The value of j is 5
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    1, 3, 4, 6
     Potential separating nodes: 1 3 4 6
     There are 4 neighbor(s).
     Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 4 (tub lung bronc)
@@ -2526,6 +2194,7 @@
     S_{4,1} = -1 S_{4,2} = nan S_{4,3} = 2 S_{4,4} = nan S_{4,5} = 2 S_{4,7} = nan 
     S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,4} = 2 S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = 3 5 S_{7,2} = 3 4 S_{7,3} = 2 5 S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
+    Number of tests so far: 70
     FUNCTION get_neighbors_from_dag. Node 3
     Call from get_neighbors_from_dag. Node 2 is a parent.
     Call from get_neighbors_from_dag. Node 5 is a child.
@@ -2540,27 +2209,6 @@
     The value of l is 1
     The value of i is 0
     The value of j is 4
-    Target: 1
-    FUNCTION get_neighbors_from_dag. Node 1
-    Call from get_neighbors_from_dag. Node 0 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
-    Neighbors of node 1: 0, 3, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    0, 3, 4, 6, 7
     Potential separating nodes: 0 3 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 (asia)
@@ -2580,24 +2228,6 @@
     tub is NOT separated from either by node(s): dysp  (p-value<0.01)
     The value of i is 1
     The value of j is 2
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Total Neighborhood:
-    1, 4, 5
     Potential separating nodes: 1 4 5
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 (tub)
@@ -2611,27 +2241,6 @@
     smoke is NOT separated from lung by node(s): either  (p-value<0.01)
     The value of i is 2
     The value of j is 4
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    1, 2, 4, 6, 7
     Potential separating nodes: 1 2 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
@@ -2653,27 +2262,6 @@
     The value of l is 2
     The value of i is 0
     The value of j is 4
-    Target: 1
-    FUNCTION get_neighbors_from_dag. Node 1
-    Call from get_neighbors_from_dag. Node 0 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
-    Neighbors of node 1: 0, 3, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    0, 3, 4, 6, 7
     Potential separating nodes: 0 3 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 3 (asia lung)
@@ -2708,24 +2296,6 @@
     tub is NOT separated from either by node(s): xray dysp  (p-value<0.01)
     The value of i is 1
     The value of j is 2
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Total Neighborhood:
-    1, 4, 5
     Potential separating nodes: 1 4 5
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 4 (tub bronc)
@@ -2739,27 +2309,6 @@
     smoke is NOT separated from lung by node(s): bronc either  (p-value<0.01)
     The value of i is 2
     The value of j is 4
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    1, 2, 4, 6, 7
     Potential separating nodes: 1 2 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 (tub smoke)
@@ -2796,27 +2345,6 @@
     The value of l is 3
     The value of i is 0
     The value of j is 4
-    Target: 1
-    FUNCTION get_neighbors_from_dag. Node 1
-    Call from get_neighbors_from_dag. Node 0 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
-    Neighbors of node 1: 0, 3, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    0, 3, 4, 6, 7
     Potential separating nodes: 0 3 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 3 4 (asia lung bronc)
@@ -2851,24 +2379,6 @@
     tub is NOT separated from either by node(s): bronc xray dysp  (p-value<0.01)
     The value of i is 1
     The value of j is 2
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Total Neighborhood:
-    1, 4, 5
     Potential separating nodes: 1 4 5
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 4 5 (tub bronc either)
@@ -2876,27 +2386,6 @@
     smoke is NOT separated from lung by node(s): tub bronc either  (p-value<0.01)
     The value of i is 2
     The value of j is 4
-    Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
-    Neighbors of node 3: 1, 2, 5
-    
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Total Neighborhood:
-    1, 2, 4, 6, 7
     Potential separating nodes: 1 2 4 6 7
     There are 5 neighbor(s).
     Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 4 (tub smoke bronc)
@@ -2952,24 +2441,6 @@
     The value of l is 1
     The value of i is 1
     The value of j is 3
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Total Neighborhood:
-    3, 5, 7
     Potential separating nodes: 3 5 7
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 (lung)
@@ -2983,22 +2454,6 @@
     smoke is NOT separated from bronc by node(s): dysp  (p-value<0.01)
     The value of i is 3
     The value of j is 5
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    2, 5
     Potential separating nodes: 2 5
     There are 2 neighbor(s).
     Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 (smoke)
@@ -3009,25 +2464,6 @@
     bronc is NOT separated from dysp by node(s): either  (p-value<0.01)
     The value of i is 4
     The value of j is 5
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    1, 3, 4, 6
     Potential separating nodes: 1 3 4 6
     There are 4 neighbor(s).
     Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 (tub)
@@ -3046,24 +2482,6 @@
     The value of l is 2
     The value of i is 1
     The value of j is 3
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Total Neighborhood:
-    3, 5, 7
     Potential separating nodes: 3 5 7
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 5 (lung either)
@@ -3077,22 +2495,6 @@
     smoke is NOT separated from bronc by node(s): either dysp  (p-value<0.01)
     The value of i is 3
     The value of j is 5
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    2, 5
     Potential separating nodes: 2 5
     There are 2 neighbor(s).
     Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 5 (smoke either)
@@ -3100,25 +2502,6 @@
     bronc is NOT separated from dysp by node(s): smoke either  (p-value<0.01)
     The value of i is 4
     The value of j is 5
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    1, 3, 4, 6
     Potential separating nodes: 1 3 4 6
     There are 4 neighbor(s).
     Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 (tub lung)
@@ -3143,24 +2526,6 @@
     The value of l is 3
     The value of i is 1
     The value of j is 3
-    Target: 2
-    FUNCTION get_neighbors_from_dag. Node 2
-    Call from get_neighbors_from_dag. Node 3 is a child.
-    Call from get_neighbors_from_dag. Node 4 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 3
-    Call from get_neighbors_from_dag. We are evaluating the following child: 4
-    Neighbors of node 2: 3, 4
-    
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Total Neighborhood:
-    3, 5, 7
     Potential separating nodes: 3 5 7
     There are 3 neighbor(s).
     Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 5 7 (lung either dysp)
@@ -3168,44 +2533,9 @@
     smoke is NOT separated from bronc by node(s): lung either dysp  (p-value<0.01)
     The value of i is 3
     The value of j is 5
-    Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
-    Neighbors of node 4: 2, 5, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    2, 5
     Potential separating nodes: 2 5
     The value of i is 4
     The value of j is 5
-    Target: 5
-    FUNCTION get_neighbors_from_dag. Node 5
-    Call from get_neighbors_from_dag. Node 1 is a parent.
-    Call from get_neighbors_from_dag. Node 3 is a parent.
-    Call from get_neighbors_from_dag. Node 6 is a child.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 6
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
-    Neighbors of node 5: 1, 3, 4, 6, 7
-    
-    Target: 7
-    FUNCTION get_neighbors_from_dag. Node 7
-    Call from get_neighbors_from_dag. Node 4 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a parent.
-    Neighbors of node 7: 4, 5
-    
-    Total Neighborhood:
-    1, 3, 4, 6
     Potential separating nodes: 1 3 4 6
     There are 4 neighbor(s).
     Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 4 (tub lung bronc)
