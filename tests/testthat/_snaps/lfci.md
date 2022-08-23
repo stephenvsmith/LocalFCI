@@ -28,7 +28,7 @@
     S_{2,1} = nan S_{2,2} = nan S_{2,3} = nan S_{2,5} = nan 
     S_{3,1} = nan S_{3,2} = nan S_{3,3} = nan S_{3,5} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,5} = nan 
-    Element mapping for efficient ordering:
+    Element mapping for efficient ordering (True -> Efficient):
     1 0
     2 1
     3 2
@@ -67,7 +67,7 @@
 
 # Testing the LocalFCI object (Population)
 
-    Population Version
+    Population Version (C++):
     There are 1 targets.
     Targets: lung
     Target: 3
@@ -96,7 +96,6 @@
     S_{2,1} = nan S_{2,2} = nan S_{2,3} = nan S_{2,5} = nan 
     S_{3,1} = nan S_{3,2} = nan S_{3,3} = nan S_{3,5} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,5} = nan 
-    Population Version
     Element mapping for efficient ordering:
     1 0
     2 1
@@ -163,7 +162,7 @@
     S_{2,1} = nan S_{2,2} = nan S_{2,3} = nan S_{2,5} = nan 
     S_{3,1} = nan S_{3,2} = nan S_{3,3} = nan S_{3,5} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,5} = nan 
-    Element mapping for efficient ordering:
+    Element mapping for efficient ordering (True -> Efficient):
     1 0
     2 1
     3 2
@@ -316,7 +315,7 @@
     S_{4,1} = nan S_{4,2} = nan S_{4,3} = nan S_{4,4} = nan S_{4,5} = nan S_{4,7} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,4} = nan S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = nan S_{7,2} = nan S_{7,3} = nan S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
-    Element mapping for efficient ordering:
+    Element mapping for efficient ordering (True -> Efficient):
     1 0
     2 1
     3 2
@@ -600,7 +599,7 @@
 
 # Testing the total skeleton function for population (one target)
 
-    Population Version
+    Population Version (C++):
     There are 1 targets.
     Targets: lung
     Target: 3
@@ -629,7 +628,6 @@
     S_{2,1} = nan S_{2,2} = nan S_{2,3} = nan S_{2,5} = nan 
     S_{3,1} = nan S_{3,2} = nan S_{3,3} = nan S_{3,5} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,5} = nan 
-    Population Version
     Element mapping for efficient ordering:
     1 0
     2 1
@@ -742,7 +740,7 @@
 
 # Testing the total skeleton function for population (two targets)
 
-    Population Version
+    Population Version (C++):
     There are 2 targets.
     Targets: lung bronc
     Target: 3
@@ -783,7 +781,6 @@
     S_{4,1} = nan S_{4,2} = nan S_{4,3} = nan S_{4,4} = nan S_{4,5} = nan S_{4,7} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,4} = nan S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = nan S_{7,2} = nan S_{7,3} = nan S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
-    Population Version
     Element mapping for efficient ordering:
     1 0
     2 1
@@ -1106,7 +1103,7 @@
     S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,4} = 2 S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = 3 5 S_{7,2} = 3 4 S_{7,3} = 2 5 S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
 
-# Testing Skeleton Target function and V-Structure function
+# Testing Skeleton Target function and V-Structure function (sample)
 
     There is (are) 2 target(s).
     Targets: lung bronc
@@ -1148,7 +1145,7 @@
     S_{4,1} = nan S_{4,2} = nan S_{4,3} = nan S_{4,4} = nan S_{4,5} = nan S_{4,7} = nan 
     S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,4} = nan S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = nan S_{7,2} = nan S_{7,3} = nan S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
-    Element mapping for efficient ordering:
+    Element mapping for efficient ordering (True -> Efficient):
     1 0
     2 1
     3 2
@@ -2165,78 +2162,1163 @@
     i: 4 (either)
     i: 5 (dysp)
 
-# Local FCI (Putting it all together)
+# Testing Skeleton Target function and V-Structure function (population)
 
-    Code
-      amat(sample_g)
-    Output
-             asia tub smoke lung bronc either xray dysp
-      asia      0   1     0    0     0      0    0    0
-      tub       0   0     0    0     0      1    0    0
-      smoke     0   0     0    0     0      0    0    0
-      lung      0   0     0    0     0      1    0    0
-      bronc     0   0     0    0     0      0    0    1
-      either    0   1     0    0     0      0    1    1
-      xray      0   0     0    0     0      0    0    0
-      dysp      0   0     0    0     0      0    0    0
+    Population Version (C++):
+    There are 2 targets.
+    Targets: lung bronc
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Target: 4
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    Total Neighborhood:
+    1, 2, 5, 7
+    There are 8 nodes in the DAG.
+    There are 6 nodes in the neighborhood.
+    All nodes being considered: 1 2 3 4 5 7
+    Our starting matrix is 6x6.
+    0 1 1 1 1 1
+    1 0 1 1 1 1
+    1 1 0 1 1 1
+    1 1 1 0 1 1
+    1 1 1 1 0 1
+    1 1 1 1 1 0
+    
+    
+    
+    Our initial separating sets:
+    S_{1,1} = nan S_{1,2} = nan S_{1,3} = nan S_{1,4} = nan S_{1,5} = nan S_{1,7} = nan 
+    S_{2,1} = nan S_{2,2} = nan S_{2,3} = nan S_{2,4} = nan S_{2,5} = nan S_{2,7} = nan 
+    S_{3,1} = nan S_{3,2} = nan S_{3,3} = nan S_{3,4} = nan S_{3,5} = nan S_{3,7} = nan 
+    S_{4,1} = nan S_{4,2} = nan S_{4,3} = nan S_{4,4} = nan S_{4,5} = nan S_{4,7} = nan 
+    S_{5,1} = nan S_{5,2} = nan S_{5,3} = nan S_{5,4} = nan S_{5,5} = nan S_{5,7} = nan 
+    S_{7,1} = nan S_{7,2} = nan S_{7,3} = nan S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
+    Element mapping for efficient ordering:
+    1 0
+    2 1
+    3 2
+    4 3
+    5 4
+    7 5
+    
+    
+    The value of l is 0
+    The value of i is 0 (tub)
+    The value of j is 1 (smoke)
+    The p-value is 1
+    tub is separated from smoke (p-value>0.01)
+    The value of j is 2 (lung)
+    The p-value is 1
+    tub is separated from lung (p-value>0.01)
+    The value of j is 3 (bronc)
+    The p-value is 1
+    tub is separated from bronc (p-value>0.01)
+    The value of j is 4 (either)
+    The p-value is 0
+    The value of j is 5 (dysp)
+    The p-value is 0
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    The p-value is 0
+    The value of j is 3 (bronc)
+    The p-value is 0
+    The value of j is 4 (either)
+    The p-value is 0
+    The value of j is 5 (dysp)
+    The p-value is 0
+    The value of i is 2 (lung)
+    The value of j is 3 (bronc)
+    The p-value is 0
+    The value of j is 4 (either)
+    The p-value is 0
+    The value of j is 5 (dysp)
+    The p-value is 0
+    The value of i is 3 (bronc)
+    The value of j is 4 (either)
+    The p-value is 0
+    The value of j is 5 (dysp)
+    The p-value is 0
+    The value of i is 4 (either)
+    The value of j is 5 (dysp)
+    The p-value is 0
+    The value of i is 5 (dysp)
+    The value of l is 1
+    The value of i is 0 (tub)
+    The value of j is 4 (either)
+    There are 4 neighbors.
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 7 (dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 (lung)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 2 (smoke)
+    The p-value is 0
+    tub is NOT separated from either by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    tub is NOT separated from either by node(s): bronc  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 5 (either)
+    The p-value is 0
+    tub is NOT separated from dysp by node(s): either  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 3 (lung)
+    The p-value is 0
+    tub is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 2 (smoke)
+    The p-value is 0
+    tub is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    tub is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    There are 3 neighbors.
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 7 (dysp)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): either  (p-value<0.01)
+    The value of j is 3 (bronc)
+    There are 3 neighbors.
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 (lung)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): lung  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 7 (dysp)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 (either)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): either  (p-value<0.01)
+    The value of j is 4 (either)
+    There are 4 neighbors.
+    Efficient Setup: 1 -> 2 | 4 -> 5 | k (True Vals): 3 (lung)
+    The p-value is 1
+    smoke is separated from either by node(s): lung  (p-value>0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 3 (lung)
+    The p-value is 0
+    smoke is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    smoke is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 5 (either)
+    The p-value is 0
+    smoke is NOT separated from dysp by node(s): either  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 1 (tub)
+    The p-value is 0
+    smoke is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    The value of i is 2 (lung)
+    The value of j is 3 (bronc)
+    There are 3 neighbors.
+    Efficient Setup: 2 -> 3 | 3 -> 4 | k (True Vals): 2 (smoke)
+    The p-value is 1
+    lung is separated from bronc by node(s): smoke  (p-value>0.01)
+    The value of j is 4 (either)
+    There are 4 neighbors.
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    lung is NOT separated from either by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 (smoke)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 7 (dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): dysp  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    lung is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 5 (either)
+    The p-value is 0
+    lung is NOT separated from dysp by node(s): either  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 1 (tub)
+    The p-value is 0
+    lung is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 2 (smoke)
+    The p-value is 0
+    lung is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    The value of i is 3 (bronc)
+    The value of j is 4 (either)
+    There are 4 neighbors.
+    Efficient Setup: 3 -> 4 | 4 -> 5 | k (True Vals): 1 (tub)
+    The p-value is 0
+    bronc is NOT separated from either by node(s): tub  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 4 -> 5 | k (True Vals): 2 (smoke)
+    The p-value is 1
+    bronc is separated from either by node(s): smoke  (p-value>0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 5 (either)
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): either  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 1 (tub)
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 (smoke)
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 3 (lung)
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    The value of i is 4 (either)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 3 (lung)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 (tub)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 2 (smoke)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    The value of i is 5 (dysp)
+    The value of l is 2
+    The value of i is 0 (tub)
+    The value of j is 4 (either)
+    There are 2 neighbors.
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 7 (lung dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung dysp  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 4 neighbors.
+    Efficient Setup: 0 -> 1 | 5 -> 7 | k (True Vals): 3 5 (lung either)
+    The p-value is 1
+    tub is separated from dysp by node(s): lung either  (p-value>0.01)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    There are 3 neighbors.
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 7 (bronc dysp)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): bronc dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 7 (either dysp)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): either dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 5 (bronc either)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): bronc either  (p-value<0.01)
+    The value of j is 3 (bronc)
+    There are 2 neighbors.
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 7 (lung dysp)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): lung dysp  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 3 neighbors.
+    Efficient Setup: 1 -> 2 | 5 -> 7 | k (True Vals): 3 4 (lung bronc)
+    The p-value is 1
+    smoke is separated from dysp by node(s): lung bronc  (p-value>0.01)
+    The value of i is 2 (lung)
+    The value of j is 4 (either)
+    There are 3 neighbors.
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 (tub smoke)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 7 (smoke dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 7 (tub dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub dysp  (p-value<0.01)
+    The value of j is 5 (dysp)
+    There are 3 neighbors.
+    Efficient Setup: 2 -> 3 | 5 -> 7 | k (True Vals): 2 5 (smoke either)
+    The p-value is 1
+    lung is separated from dysp by node(s): smoke either  (p-value>0.01)
+    The value of i is 3 (bronc)
+    The value of j is 5 (dysp)
+    There are 2 neighbors.
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 5 (smoke either)
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): smoke either  (p-value<0.01)
+    The value of i is 4 (either)
+    The value of j is 5 (dysp)
+    There are 3 neighbors.
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 (tub lung)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub lung  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 4 (tub bronc)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub bronc  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 3 4 (lung bronc)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): lung bronc  (p-value<0.01)
+    The value of i is 5 (dysp)
+    The value of l is 3
+    The value of i is 0 (tub)
+    The value of j is 4 (either)
+    The value of i is 1 (smoke)
+    The value of j is 2 (lung)
+    The value of j is 3 (bronc)
+    The value of i is 2 (lung)
+    The value of j is 4 (either)
+    There are 3 neighbors.
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 7 (tub smoke dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke dysp  (p-value<0.01)
+    The value of i is 3 (bronc)
+    The value of j is 5 (dysp)
+    The value of i is 4 (either)
+    The value of j is 5 (dysp)
+    There are 3 neighbors.
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 4 (tub lung bronc)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub lung bronc  (p-value<0.01)
+    The value of i is 5 (dysp)
+    
+    
+    Values after Total Skeleton Run
+    
+    p: 8
+    n: 0
+    N: 6
+    Number of Targets: 2
+    Node names: asia tub smoke lung bronc either xray dysp 
+    lmax: 3
+    verbose: 1
+    Nodes under consideration: 1 2 3 4 5 7
+    Ctilde:
+    Our Ctilde matrix is 6x6
+    0 0 0 0 1 0
+    0 0 1 1 0 0
+    0 1 0 0 1 0
+    0 1 0 0 0 1
+    1 0 1 0 0 1
+    0 0 0 1 1 0
+    Our DAG matrix is 
+    0 1 0 0 0 0 0 0
+    0 0 0 0 0 1 0 0
+    0 0 0 1 1 0 0 0
+    0 0 0 0 0 1 0 0
+    0 0 0 0 0 0 0 1
+    0 0 0 0 0 0 1 1
+    0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0
+    Separating Set Values:
+    S_{1,1} = nan S_{1,2} = -1 S_{1,3} = -1 S_{1,4} = -1 S_{1,5} = nan S_{1,7} = 3 5 
+    S_{2,1} = -1 S_{2,2} = nan S_{2,3} = nan S_{2,4} = nan S_{2,5} = 3 S_{2,7} = 3 4 
+    S_{3,1} = -1 S_{3,2} = nan S_{3,3} = nan S_{3,4} = 2 S_{3,5} = nan S_{3,7} = 2 5 
+    S_{4,1} = -1 S_{4,2} = nan S_{4,3} = 2 S_{4,4} = nan S_{4,5} = 2 S_{4,7} = nan 
+    S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,4} = 2 S_{5,5} = nan S_{5,7} = nan 
+    S_{7,1} = 3 5 S_{7,2} = 3 4 S_{7,3} = 2 5 S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    
+    
+    Finding skeleton for the neighborhood of target 3 (Efficient Number: 2)
+    Neighborhood nodes under consideration: 0 1 2 4 | (tub(1) smoke(2) lung(3) either(5))
+    The value of l is 1
+    The value of i is 0
+    The value of j is 4
+    Target: 1
+    FUNCTION get_neighbors_from_dag. Node 1
+    Call from get_neighbors_from_dag. Node 0 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
+    Neighbors of node 1: 0, 3, 5
+    
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Total Neighborhood:
+    0, 3, 4, 6, 7
+    Potential separating nodes: 0 3 4 6 7
+    There are 5 neighbor(s).
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 (asia)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 (lung)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    tub is NOT separated from either by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 6 (xray)
+    The p-value is 0
+    tub is NOT separated from either by node(s): xray  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 7 (dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): dysp  (p-value<0.01)
+    The value of i is 1
+    The value of j is 2
+    Target: 2
+    FUNCTION get_neighbors_from_dag. Node 2
+    Call from get_neighbors_from_dag. Node 3 is a child.
+    Call from get_neighbors_from_dag. Node 4 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 3
+    Call from get_neighbors_from_dag. We are evaluating the following child: 4
+    Neighbors of node 2: 3, 4
+    
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Total Neighborhood:
+    1, 4, 5
+    Potential separating nodes: 1 4 5
+    There are 3 neighbor(s).
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 (tub)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): tub  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 5 (either)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): either  (p-value<0.01)
+    The value of i is 2
+    The value of j is 4
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Total Neighborhood:
+    1, 2, 4, 6, 7
+    Potential separating nodes: 1 2 4 6 7
+    There are 5 neighbor(s).
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 (tub)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 (smoke)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    lung is NOT separated from either by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 6 (xray)
+    The p-value is 0
+    lung is NOT separated from either by node(s): xray  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 7 (dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): dysp  (p-value<0.01)
+    The value of i is 4
+    The value of l is 2
+    The value of i is 0
+    The value of j is 4
+    Target: 1
+    FUNCTION get_neighbors_from_dag. Node 1
+    Call from get_neighbors_from_dag. Node 0 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
+    Neighbors of node 1: 0, 3, 5
+    
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Total Neighborhood:
+    0, 3, 4, 6, 7
+    Potential separating nodes: 0 3 4 6 7
+    There are 5 neighbor(s).
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 3 (asia lung)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia lung  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 4 (asia bronc)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia bronc  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 6 (asia xray)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia xray  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 7 (asia dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 4 (lung bronc)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung bronc  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 6 (lung xray)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung xray  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 7 (lung dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 4 6 (bronc xray)
+    The p-value is 0
+    tub is NOT separated from either by node(s): bronc xray  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 4 7 (bronc dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): bronc dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 6 7 (xray dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): xray dysp  (p-value<0.01)
+    The value of i is 1
+    The value of j is 2
+    Target: 2
+    FUNCTION get_neighbors_from_dag. Node 2
+    Call from get_neighbors_from_dag. Node 3 is a child.
+    Call from get_neighbors_from_dag. Node 4 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 3
+    Call from get_neighbors_from_dag. We are evaluating the following child: 4
+    Neighbors of node 2: 3, 4
+    
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Total Neighborhood:
+    1, 4, 5
+    Potential separating nodes: 1 4 5
+    There are 3 neighbor(s).
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 4 (tub bronc)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): tub bronc  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 5 (tub either)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): tub either  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 4 5 (bronc either)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): bronc either  (p-value<0.01)
+    The value of i is 2
+    The value of j is 4
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Total Neighborhood:
+    1, 2, 4, 6, 7
+    Potential separating nodes: 1 2 4 6 7
+    There are 5 neighbor(s).
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 (tub smoke)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 4 (tub bronc)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 6 (tub xray)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub xray  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 7 (tub dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 4 (smoke bronc)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 6 (smoke xray)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke xray  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 7 (smoke dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 6 (bronc xray)
+    The p-value is 0
+    lung is NOT separated from either by node(s): bronc xray  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 7 (bronc dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): bronc dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 6 7 (xray dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): xray dysp  (p-value<0.01)
+    The value of i is 4
+    The value of l is 3
+    The value of i is 0
+    The value of j is 4
+    Target: 1
+    FUNCTION get_neighbors_from_dag. Node 1
+    Call from get_neighbors_from_dag. Node 0 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
+    Neighbors of node 1: 0, 3, 5
+    
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Total Neighborhood:
+    0, 3, 4, 6, 7
+    Potential separating nodes: 0 3 4 6 7
+    There are 5 neighbor(s).
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 3 4 (asia lung bronc)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia lung bronc  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 3 6 (asia lung xray)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia lung xray  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 3 7 (asia lung dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia lung dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 4 6 (asia bronc xray)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia bronc xray  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 4 7 (asia bronc dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia bronc dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 0 6 7 (asia xray dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): asia xray dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 4 6 (lung bronc xray)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung bronc xray  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 4 7 (lung bronc dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung bronc dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 3 6 7 (lung xray dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): lung xray dysp  (p-value<0.01)
+    Efficient Setup: 0 -> 1 | 4 -> 5 | k (True Vals): 4 6 7 (bronc xray dysp)
+    The p-value is 0
+    tub is NOT separated from either by node(s): bronc xray dysp  (p-value<0.01)
+    The value of i is 1
+    The value of j is 2
+    Target: 2
+    FUNCTION get_neighbors_from_dag. Node 2
+    Call from get_neighbors_from_dag. Node 3 is a child.
+    Call from get_neighbors_from_dag. Node 4 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 3
+    Call from get_neighbors_from_dag. We are evaluating the following child: 4
+    Neighbors of node 2: 3, 4
+    
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Total Neighborhood:
+    1, 4, 5
+    Potential separating nodes: 1 4 5
+    There are 3 neighbor(s).
+    Efficient Setup: 1 -> 2 | 2 -> 3 | k (True Vals): 1 4 5 (tub bronc either)
+    The p-value is 0
+    smoke is NOT separated from lung by node(s): tub bronc either  (p-value<0.01)
+    The value of i is 2
+    The value of j is 4
+    Target: 3
+    FUNCTION get_neighbors_from_dag. Node 3
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 5
+    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    Neighbors of node 3: 1, 2, 5
+    
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Total Neighborhood:
+    1, 2, 4, 6, 7
+    Potential separating nodes: 1 2 4 6 7
+    There are 5 neighbor(s).
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 4 (tub smoke bronc)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke bronc  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 6 (tub smoke xray)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke xray  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 2 7 (tub smoke dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub smoke dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 4 6 (tub bronc xray)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub bronc xray  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 4 7 (tub bronc dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub bronc dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 1 6 7 (tub xray dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): tub xray dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 4 6 (smoke bronc xray)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke bronc xray  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 4 7 (smoke bronc dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke bronc dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 2 6 7 (smoke xray dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): smoke xray dysp  (p-value<0.01)
+    Efficient Setup: 2 -> 3 | 4 -> 5 | k (True Vals): 4 6 7 (bronc xray dysp)
+    The p-value is 0
+    lung is NOT separated from either by node(s): bronc xray dysp  (p-value<0.01)
+    The value of i is 4
+    The final C matrix:
+    0 0 0 0 1 0
+    0 0 1 1 0 0
+    0 1 0 0 1 0
+    0 1 0 0 0 1
+    1 0 1 0 0 1
+    0 0 0 1 1 0
+    Conclusion of algorithm.
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    
+    
+    Finding skeleton for the neighborhood of target 4 (Efficient Number: 3)
+    Neighborhood nodes under consideration: 1 3 4 5 | (smoke(2) bronc(4) either(5) dysp(7))
+    The value of l is 1
+    The value of i is 1
+    The value of j is 3
+    Target: 2
+    FUNCTION get_neighbors_from_dag. Node 2
+    Call from get_neighbors_from_dag. Node 3 is a child.
+    Call from get_neighbors_from_dag. Node 4 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 3
+    Call from get_neighbors_from_dag. We are evaluating the following child: 4
+    Neighbors of node 2: 3, 4
+    
+    Target: 4
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    Total Neighborhood:
+    3, 5, 7
+    Potential separating nodes: 3 5 7
+    There are 3 neighbor(s).
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 (lung)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): lung  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 (either)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): either  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 7 (dysp)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): dysp  (p-value<0.01)
+    The value of i is 3
+    The value of j is 5
+    Target: 4
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    Target: 7
+    FUNCTION get_neighbors_from_dag. Node 7
+    Call from get_neighbors_from_dag. Node 4 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a parent.
+    Neighbors of node 7: 4, 5
+    
+    Total Neighborhood:
+    2, 5
+    Potential separating nodes: 2 5
+    There are 2 neighbor(s).
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 (smoke)
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): smoke  (p-value<0.01)
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 5 (either)
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): either  (p-value<0.01)
+    The value of i is 4
+    The value of j is 5
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Target: 7
+    FUNCTION get_neighbors_from_dag. Node 7
+    Call from get_neighbors_from_dag. Node 4 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a parent.
+    Neighbors of node 7: 4, 5
+    
+    Total Neighborhood:
+    1, 3, 4, 6
+    Potential separating nodes: 1 3 4 6
+    There are 4 neighbor(s).
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 (tub)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 3 (lung)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): lung  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 4 (bronc)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): bronc  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 6 (xray)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): xray  (p-value<0.01)
+    The value of i is 5
+    The value of l is 2
+    The value of i is 1
+    The value of j is 3
+    Target: 2
+    FUNCTION get_neighbors_from_dag. Node 2
+    Call from get_neighbors_from_dag. Node 3 is a child.
+    Call from get_neighbors_from_dag. Node 4 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 3
+    Call from get_neighbors_from_dag. We are evaluating the following child: 4
+    Neighbors of node 2: 3, 4
+    
+    Target: 4
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    Total Neighborhood:
+    3, 5, 7
+    Potential separating nodes: 3 5 7
+    There are 3 neighbor(s).
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 5 (lung either)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): lung either  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 7 (lung dysp)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): lung dysp  (p-value<0.01)
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 5 7 (either dysp)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): either dysp  (p-value<0.01)
+    The value of i is 3
+    The value of j is 5
+    Target: 4
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    Target: 7
+    FUNCTION get_neighbors_from_dag. Node 7
+    Call from get_neighbors_from_dag. Node 4 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a parent.
+    Neighbors of node 7: 4, 5
+    
+    Total Neighborhood:
+    2, 5
+    Potential separating nodes: 2 5
+    There are 2 neighbor(s).
+    Efficient Setup: 3 -> 4 | 5 -> 7 | k (True Vals): 2 5 (smoke either)
+    The p-value is 0
+    bronc is NOT separated from dysp by node(s): smoke either  (p-value<0.01)
+    The value of i is 4
+    The value of j is 5
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Target: 7
+    FUNCTION get_neighbors_from_dag. Node 7
+    Call from get_neighbors_from_dag. Node 4 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a parent.
+    Neighbors of node 7: 4, 5
+    
+    Total Neighborhood:
+    1, 3, 4, 6
+    Potential separating nodes: 1 3 4 6
+    There are 4 neighbor(s).
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 (tub lung)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub lung  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 4 (tub bronc)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub bronc  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 6 (tub xray)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub xray  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 3 4 (lung bronc)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): lung bronc  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 3 6 (lung xray)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): lung xray  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 4 6 (bronc xray)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): bronc xray  (p-value<0.01)
+    The value of i is 5
+    The value of l is 3
+    The value of i is 1
+    The value of j is 3
+    Target: 2
+    FUNCTION get_neighbors_from_dag. Node 2
+    Call from get_neighbors_from_dag. Node 3 is a child.
+    Call from get_neighbors_from_dag. Node 4 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 3
+    Call from get_neighbors_from_dag. We are evaluating the following child: 4
+    Neighbors of node 2: 3, 4
+    
+    Target: 4
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    Total Neighborhood:
+    3, 5, 7
+    Potential separating nodes: 3 5 7
+    There are 3 neighbor(s).
+    Efficient Setup: 1 -> 2 | 3 -> 4 | k (True Vals): 3 5 7 (lung either dysp)
+    The p-value is 0
+    smoke is NOT separated from bronc by node(s): lung either dysp  (p-value<0.01)
+    The value of i is 3
+    The value of j is 5
+    Target: 4
+    FUNCTION get_neighbors_from_dag. Node 4
+    Call from get_neighbors_from_dag. Node 2 is a parent.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    Neighbors of node 4: 2, 5, 7
+    
+    Target: 7
+    FUNCTION get_neighbors_from_dag. Node 7
+    Call from get_neighbors_from_dag. Node 4 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a parent.
+    Neighbors of node 7: 4, 5
+    
+    Total Neighborhood:
+    2, 5
+    Potential separating nodes: 2 5
+    The value of i is 4
+    The value of j is 5
+    Target: 5
+    FUNCTION get_neighbors_from_dag. Node 5
+    Call from get_neighbors_from_dag. Node 1 is a parent.
+    Call from get_neighbors_from_dag. Node 3 is a parent.
+    Call from get_neighbors_from_dag. Node 6 is a child.
+    Call from get_neighbors_from_dag. Node 7 is a child.
+    Call from get_neighbors_from_dag. We are evaluating the following child: 6
+    Call from get_neighbors_from_dag. We are evaluating the following child: 7
+    Call from get_neighbors_from_dag. Node 4 is a potential spouse of node 5.
+    Neighbors of node 5: 1, 3, 4, 6, 7
+    
+    Target: 7
+    FUNCTION get_neighbors_from_dag. Node 7
+    Call from get_neighbors_from_dag. Node 4 is a parent.
+    Call from get_neighbors_from_dag. Node 5 is a parent.
+    Neighbors of node 7: 4, 5
+    
+    Total Neighborhood:
+    1, 3, 4, 6
+    Potential separating nodes: 1 3 4 6
+    There are 4 neighbor(s).
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 4 (tub lung bronc)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub lung bronc  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 3 6 (tub lung xray)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub lung xray  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 1 4 6 (tub bronc xray)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): tub bronc xray  (p-value<0.01)
+    Efficient Setup: 4 -> 5 | 5 -> 7 | k (True Vals): 3 4 6 (lung bronc xray)
+    The p-value is 0
+    either is NOT separated from dysp by node(s): lung bronc xray  (p-value<0.01)
+    The value of i is 5
+    The final C matrix:
+    0 0 0 0 1 0
+    0 0 1 1 0 0
+    0 1 0 0 1 0
+    0 1 0 0 0 1
+    1 0 1 0 0 1
+    0 0 0 1 1 0
+    Conclusion of algorithm.
+    Beginning loops to find v-structures.
+    i: 0 (tub)
+    j: 1 (smoke)
+    j: 2 (lung)
+    Potential k values: either
+    k: 4 (either)
+    Separation Set: -1 | V-Structure (True Numbering): 1*->5<-*3
+    j: 3 (bronc)
+    j: 5 (dysp)
+    Potential k values: either
+    k: 4 (either)
+    i: 1 (smoke)
+    j: 4 (either)
+    Potential k values: lung
+    k: 2 (lung)
+    j: 5 (dysp)
+    Potential k values: bronc
+    k: 3 (bronc)
+    i: 2 (lung)
+    j: 3 (bronc)
+    Potential k values: smoke
+    k: 1 (smoke)
+    j: 5 (dysp)
+    Potential k values: either
+    k: 4 (either)
+    i: 3 (bronc)
+    j: 4 (either)
+    Potential k values: dysp
+    k: 5 (dysp)
+    Separation Set: 2 | V-Structure (True Numbering): 4*->7<-*5
+    i: 4 (either)
+    i: 5 (dysp)
+
+# Local FCI (Putting it all together, sample)
+
+           asia tub smoke lung bronc either xray dysp
+    asia      0   1     0    0     0      0    0    0
+    tub       0   0     0    0     0      1    0    0
+    smoke     0   0     0    0     0      0    0    0
+    lung      0   0     0    0     0      1    0    0
+    bronc     0   0     0    0     0      0    0    1
+    either    0   1     0    0     0      0    1    1
+    xray      0   0     0    0     0      0    0    0
+    dysp      0   0     0    0     0      0    0    0
+
+# Local FCI (Putting it all together, population
+
+           asia tub smoke lung bronc either xray dysp
+    asia      0   1     0    0     0      0    0    0
+    tub       1   0     0    0     0      1    0    0
+    smoke     0   0     0    0     0      0    0    0
+    lung      0   0     0    0     0      1    0    0
+    bronc     0   0     0    0     0      0    0    1
+    either    0   0     0    0     0      0    1    1
+    xray      0   0     0    0     0      0    0    0
+    dysp      0   0     0    0     0      0    0    0
 
 ---
 
-    Code
-      amat(pop_g)
-    Output
-             asia tub smoke lung bronc either xray dysp
-      asia      0   1     0    0     0      0    0    0
-      tub       1   0     0    0     0      1    0    0
-      smoke     0   0     0    0     0      0    0    0
-      lung      0   0     0    0     0      1    0    0
-      bronc     0   0     0    0     0      0    0    1
-      either    0   0     0    0     0      0    1    1
-      xray      0   0     0    0     0      0    0    0
-      dysp      0   0     0    0     0      0    0    0
+           asia tub smoke lung bronc either xray dysp
+    asia      0   0     0    0     0      0    0    0
+    tub       0   0     0    0     0      0    0    0
+    smoke     0   0     0    1     1      0    0    0
+    lung      0   0     1    0     0      1    0    0
+    bronc     0   0     1    0     0      0    0    1
+    either    0   0     0    1     0      0    0    1
+    xray      0   0     0    0     0      0    0    0
+    dysp      0   0     0    0     0      0    0    0
 
 ---
 
-    Code
-      amat(pop_g)
-    Output
-             asia tub smoke lung bronc either xray dysp
-      asia      0   0     0    0     0      0    0    0
-      tub       0   0     0    0     0      0    0    0
-      smoke     0   0     0    1     1      0    0    0
-      lung      0   0     1    0     0      1    0    0
-      bronc     0   0     1    0     0      0    0    1
-      either    0   0     0    1     0      0    0    1
-      xray      0   0     0    0     0      0    0    0
-      dysp      0   0     0    0     0      0    0    0
+           asia tub smoke lung bronc either xray dysp
+    asia      0   1     0    0     0      0    0    0
+    tub       1   0     0    0     0      1    0    0
+    smoke     0   0     0    1     1      0    0    0
+    lung      0   0     1    0     0      1    0    0
+    bronc     0   0     1    0     0      0    0    1
+    either    0   0     0    0     0      0    0    1
+    xray      0   0     0    0     0      0    0    0
+    dysp      0   0     0    0     0      0    0    0
 
 ---
 
-    Code
-      amat(pop_g)
-    Output
-             asia tub smoke lung bronc either xray dysp
-      asia      0   1     0    0     0      0    0    0
-      tub       1   0     0    0     0      1    0    0
-      smoke     0   0     0    1     1      0    0    0
-      lung      0   0     1    0     0      1    0    0
-      bronc     0   0     1    0     0      0    0    1
-      either    0   0     0    0     0      0    0    1
-      xray      0   0     0    0     0      0    0    0
-      dysp      0   0     0    0     0      0    0    0
-
----
-
-    Code
-      amat(pop_g)
-    Output
-             asia tub smoke lung bronc either xray dysp
-      asia      0   1     0    0     0      0    0    0
-      tub       1   0     0    0     0      1    0    0
-      smoke     0   0     0    0     0      0    0    0
-      lung      0   0     0    0     0      0    0    0
-      bronc     0   0     0    0     0      0    0    0
-      either    0   1     0    0     0      0    1    0
-      xray      0   0     0    0     0      1    0    0
-      dysp      0   0     0    0     0      0    0    0
+           asia tub smoke lung bronc either xray dysp
+    asia      0   1     0    0     0      0    0    0
+    tub       1   0     0    0     0      1    0    0
+    smoke     0   0     0    0     0      0    0    0
+    lung      0   0     0    0     0      0    0    0
+    bronc     0   0     0    0     0      0    0    0
+    either    0   1     0    0     0      0    1    0
+    xray      0   0     0    0     0      1    0    0
+    dysp      0   0     0    0     0      0    0    0
 

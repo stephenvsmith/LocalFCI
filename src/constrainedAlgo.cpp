@@ -5,8 +5,8 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
                                  NumericVector targets,
                                  StringVector names,int lmax,
                                  double signif_level,
-                                 bool verbose) : targets(targets),verbose(verbose),
-                                 lmax(lmax),df(df),signif_level(signif_level),names(names){
+                                 bool verbose) : verbose(verbose),targets(targets),
+                                 names(names),lmax(lmax),df(df),signif_level(signif_level){
   num_targets = targets.length();
   if (verbose){
     Rcout << "There is (are) " << num_targets << " target(s).\n";
@@ -59,7 +59,7 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,
                                  lmax(lmax),names(names) {
   num_targets = targets.length();
   if (verbose){
-    Rcout << "Population Version\n";
+    Rcout << "Population Version (C++):\n";
     Rcout << "There are " << num_targets << " targets.\n";
     print_vector_elements(targets,names,"Targets: ","\n");
   }
@@ -120,6 +120,7 @@ void ConstrainedAlgo::print_elements(){
   true_DAG->printAmat();
   Rcout << "Separating Set Values:\n";
   S->printSepSetList();
+  Rcout << "Number of tests so far: " << num_tests << std::endl;
   if (n>0){
     Rcout << "First and last elements of the dataset: ";
     Rcout << df(0,0) << " " << df(df.n_rows-1,df.n_cols-1) << std::endl;

@@ -76,7 +76,7 @@ NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector 
 // [[Rcpp::export]]
 double checkSeparationTest(NumericMatrix td,arma::mat df,NumericVector t,StringVector names,
                            int i,int j,int l,NumericVector nodes_to_skip){ //
-  LocalFCI lfci(td,df,t,names,3,0.01,false);
+  LocalFCI lfci(td,df,t,names,3,0.01,true);
   NumericVector edges_i = lfci.getAdjacent(i);
   // Find neighbors of i and j from the current graph C
   NumericVector neighbors = setdiff(union_(edges_i,lfci.getAdjacent(j)),NumericVector::create(i,j));
@@ -130,17 +130,17 @@ NumericMatrix checkLocalFCISummaryPop(NumericMatrix td,
   std::for_each(targets.begin(),
                 targets.end(),
                 [&lfci](int t){ lfci.getSkeletonTarget(t); });
-  
+
   // Rule 0: Obtain V Structures
   lfci.getVStructures();
-  
+
   // Remaining FCI Rules
   lfci.allRules();
-  
+
   lfci.convertMixedGraph();
-  
+
   lfci.convertFinalGraph();
   lfci.print_elements();
-  
+
   return lfci.getAmat();
 }

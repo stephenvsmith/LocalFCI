@@ -60,7 +60,7 @@ LocalPC::LocalPC(NumericMatrix true_dag,
     node_numbering.insert(std::pair<int,int>(neighborhood(i),i));
   }
   if (verbose){
-    Rcout << "Element mapping for efficient ordering:\n";
+    Rcout << "Element mapping for efficient ordering (True -> Efficient):\n";
     for(auto it = node_numbering.cbegin(); it != node_numbering.cend(); ++it)
     {
       Rcout << it->first << " " << it->second  << "\n";

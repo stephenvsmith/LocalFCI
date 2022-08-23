@@ -1,3 +1,12 @@
+#' Local PC Algorithm
+#' 
+#' `localpc()` applies the Local PC algorithm to a vector of target nodes in a
+#' network structure and returns an estimated PDAG 
+#' 
+#' @inheritParams localfci
+#' 
+#' @export
+
 localpc <- function(data=NULL,true_dag=NULL,targets,
                           node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,
                           method="MMPC",test="testIndFisher",verbose = TRUE){
@@ -26,9 +35,10 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
     
     # Create adjacency matrix based on Markov Blankets (mbEst.R)
     true_dag <- getEstInitialDAG(mbList,ncol(data),verbose)
-    
+    semi_sample_version <- FALSE
   } else {
     mbList <- list()
+    semi_sample_version <- TRUE
   }
   
   # Convert any data frame to a matrix
@@ -50,6 +60,11 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
     }
     results <- localpc_cpp_pop(true_dag,cpp_targets,node_names,lmax,verbose)
   } else {
+    if (semi_sample_version & verbose){
+      cat("Semi-Sample Version:\n")
+    } else {
+      if (verbose) cat("Sample Version:\n")
+    }
     results <- localpc_cpp(true_dag,data,cpp_targets,node_names,lmax,tol,verbose)
   }
   

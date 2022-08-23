@@ -1,6 +1,7 @@
 library(bnlearn)
 
 data("asiadf")
+asiadf_mat <- asiadf
 data("asiaDAG")
 node_names <- colnames(asiaDAG)
 asiaDAG <- matrix(asiaDAG,nrow = ncol(asiadf),ncol = ncol(asiadf))
@@ -27,6 +28,9 @@ test_that("Testing Separation Test Function",{
   
   # Check if either and smoke are separated by lung (removing tub)
   expect_true(checkSeparationTest(asiaDAG,asiadf,3,node_names,1,3,1,0)>0.05)
+  
+  # Check if either and smoke are separated by any neighbor or set of neighbors
+  expect_true(checkSeparationTest(asiaDAG,asiadf,5,node_names,1,3,2,vector(mode = "double"))<0.01)
 })
 
 test_that("Testing the total skeleton function (one target)",{
@@ -64,7 +68,7 @@ test_that("Testing the total skeleton function for population (two targets)",{
   graphviz.plot(total_skel)
 })
 
-test_that("Testing Skeleton Target function and V-Structure function",{
+test_that("Testing Skeleton Target function and V-Structure function (sample)",{
   testthat::expect_snapshot_output(result_amat <- checkVStruct(asiaDAG,asiadf,c(3,4),node_names))
   
   # Convert to PDAG numbering
@@ -102,7 +106,7 @@ test_that("Testing Skeleton Target function and V-Structure function",{
   graphviz.plot(pop_graph,highlight = list("nodes"=c("lung","bronc")))
   
   modified_asia_dag <- asiaDAG
-  # Remove asia and xray from consideration
+  # Remove asia and xray from consideration to match sample version
   modified_asia_dag[1,] <- 0
   modified_asia_dag[,7] <- 0
   # smoke - lung
@@ -111,6 +115,30 @@ test_that("Testing Skeleton Target function and V-Structure function",{
   modified_asia_dag[5,3] <- 1
   
   expect_equal(result_amat,modified_asia_dag)
+})
+
+test_that("Testing Skeleton Target function and V-Structure function (population)",{
+  testthat::expect_snapshot_output(result_amat <- checkVStructPop(asiaDAG,c(3,4),node_names))
+  
+  total_skel <- bnlearn::empty.graph(node_names)
+  amat(total_skel) <- result_amat
+  graphviz.plot(total_skel)
+  # Check v-structure with tub -> either <- lung
+  expect_equal(result_amat[2,6],1)
+  expect_equal(result_amat[6,2],0)
+  expect_equal(result_amat[4,6],1)
+  expect_equal(result_amat[6,4],0)
+  expect_equal(result_amat[2,4],0)
+  expect_equal(result_amat[4,2],0)
+  
+  # Check v-structure either -> dysp <- bronc
+  expect_equal(result_amat[6,8],1)
+  expect_equal(result_amat[8,6],0)
+  expect_equal(result_amat[5,8],1)
+  expect_equal(result_amat[8,5],0)
+  expect_equal(result_amat[5,6],0)
+  expect_equal(result_amat[6,5],0)
+  
 })
 
 test_that("Testing Adjacency Matrix Conversion",{
@@ -150,32 +178,41 @@ test_that("Testing Adjacency Matrix Conversion",{
 
 })
 
-test_that("Local FCI (Putting it all together)",{
+test_that("Local FCI (Putting it all together, sample)",{
   sample_g <- empty.graph(node_names)
   amat(sample_g) <- checkLocalFCISummary(asiaDAG,asiadf,c(0,5),node_names)
-  expect_snapshot(amat(sample_g))
+  expect_snapshot_output(amat(sample_g))
   graphviz.plot(sample_g)
   
+})
+
+test_that("Local FCI (Putting it all together, population",{
   pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(0,5),node_names)
-  expect_snapshot(amat(pop_g))
+  expect_snapshot_output(amat(pop_g))
   graphviz.plot(pop_g)
   
   pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(2,7),node_names)
-  expect_snapshot(amat(pop_g))
+  expect_snapshot_output(amat(pop_g))
   graphviz.plot(pop_g)
   
   pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(1,3,7),node_names)
-  expect_snapshot(amat(pop_g))
+  expect_snapshot_output(amat(pop_g))
   graphviz.plot(pop_g)
   
   pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(0,6),node_names)
-  expect_snapshot(amat(pop_g))
+  expect_snapshot_output(amat(pop_g))
   graphviz.plot(pop_g)
 })
 
-
+test_that("Testing object conversion",{
+  expect_equal(class(asiadf_mat),"data.frame")
+  expect_error(localfci(data = asiadf_mat,targets = 1),NA)
+  asiadag_df <- data.frame(asiaDAG)
+  expect_equal(class(asiadag_df),"data.frame")
+  expect_error(localfci(true_dag = asiadag_df,targets = 1),NA)
+})
 

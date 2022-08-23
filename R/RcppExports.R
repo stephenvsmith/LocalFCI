@@ -17,32 +17,36 @@ localpc_cpp_pop <- function(true_dag, targets, names, lmax = 3L, verbose = TRUE)
     .Call(`_LocalFCI_localpc_cpp_pop`, true_dag, targets, names, lmax, verbose)
 }
 
-compare_skeletons <- function(est, truth, verbose) {
-    .Call(`_LocalFCI_compare_skeletons`, est, truth, verbose)
+sharedNeighborhood <- function(reference, targets, i, j, verbose = FALSE) {
+    .Call(`_LocalFCI_sharedNeighborhood`, reference, targets, i, j, verbose)
 }
 
-compare_v_structures <- function(est, truth, verbose) {
-    .Call(`_LocalFCI_compare_v_structures`, est, truth, verbose)
+inTargetNeighborhood <- function(reference, targets, i, verbose = FALSE) {
+    .Call(`_LocalFCI_inTargetNeighborhood`, reference, targets, i, verbose)
 }
 
-parent_recovery_accuracy <- function(est, truth, targets, verbose) {
+compare_skeletons <- function(est, truth, targets) {
+    .Call(`_LocalFCI_compare_skeletons`, est, truth, targets)
+}
+
+compare_v_structures <- function(est, truth, targets) {
+    .Call(`_LocalFCI_compare_v_structures`, est, truth, targets)
+}
+
+parent_recovery_accuracy <- function(est, truth, targets, verbose = FALSE) {
     .Call(`_LocalFCI_parent_recovery_accuracy`, est, truth, targets, verbose)
 }
 
-convert_true_dag <- function(G) {
-    .Call(`_LocalFCI_convert_true_dag`, G)
+interNeighborhoodEdgeMetrics <- function(est, reference, targets, verbose = TRUE) {
+    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, targets, verbose)
 }
 
-convert_pc_amat <- function(G) {
-    .Call(`_LocalFCI_convert_pc_amat`, G)
+overallF1 <- function(est, ref, targets, verbose) {
+    .Call(`_LocalFCI_overallF1`, est, ref, targets, verbose)
 }
 
-interNeighborhoodEdgeMetrics <- function(est, reference, targets) {
-    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, targets)
-}
-
-all_metrics <- function(est, true_cpdag, est_cpdag, targets, verbose = FALSE) {
-    .Call(`_LocalFCI_all_metrics`, est, true_cpdag, est_cpdag, targets, verbose)
+all_metrics <- function(est, ref_graph, targets, verbose = FALSE, algo = "pc", ref = "sub_cpdag") {
+    .Call(`_LocalFCI_all_metrics`, est, ref_graph, targets, verbose, algo, ref)
 }
 
 neighborhood_metrics <- function(G) {
@@ -69,6 +73,10 @@ combn_cpp <- function(x, l) {
     .Call(`_LocalFCI_combn_cpp`, x, l)
 }
 
+isMember <- function(x, i) {
+    .Call(`_LocalFCI_isMember`, x, i)
+}
+
 testArmaCor <- function(M) {
     .Call(`_LocalFCI_testArmaCor`, M)
 }
@@ -89,12 +97,20 @@ check_dag_object <- function(nodes, node_names, adj) {
     .Call(`_LocalFCI_check_dag_object`, nodes, node_names, adj)
 }
 
+check_dag_object2 <- function(nodes) {
+    invisible(.Call(`_LocalFCI_check_dag_object2`, nodes))
+}
+
 check_neighbors_retrieval <- function(nodes, node_names, adj, t) {
     .Call(`_LocalFCI_check_neighbors_retrieval`, nodes, node_names, adj, t)
 }
 
 check_amat_retrieval <- function(nodes, node_names, adj, i, j) {
     .Call(`_LocalFCI_check_amat_retrieval`, nodes, node_names, adj, i, j)
+}
+
+check_amat_retrieval_function <- function(nodes, node_names, adj, i, j) {
+    .Call(`_LocalFCI_check_amat_retrieval_function`, nodes, node_names, adj, i, j)
 }
 
 check_amat_row_retrieval <- function(nodes, node_names, adj, i) {
@@ -107,6 +123,10 @@ check_amat_col_retrieval <- function(nodes, node_names, adj, j) {
 
 check_adjacent_non_adjacent <- function(nodes, node_names, adj, i) {
     .Call(`_LocalFCI_check_adjacent_non_adjacent`, nodes, node_names, adj, i)
+}
+
+check_non_adjacent_solo <- function(nodes, node_names, adj, i) {
+    .Call(`_LocalFCI_check_non_adjacent_solo`, nodes, node_names, adj, i)
 }
 
 check_amat_setval <- function(nodes, node_names, adj, i, j, val) {
@@ -285,6 +305,10 @@ testallRules <- function(td, dummy_df, dummy_t, names, m) {
     .Call(`_LocalFCI_testallRules`, td, dummy_df, dummy_t, names, m)
 }
 
+testConvertMixed <- function(td, t, names, m, v) {
+    .Call(`_LocalFCI_testConvertMixed`, td, t, names, m, v)
+}
+
 getNbhd <- function(p, node_names, adj, targets, verbose) {
     .Call(`_LocalFCI_getNbhd`, p, node_names, adj, targets, verbose)
 }
@@ -303,10 +327,6 @@ setListEmptySet <- function(neighbors, i, j) {
 
 setListEfficient <- function(neighbors, i, j, kvals) {
     .Call(`_LocalFCI_setListEfficient`, neighbors, i, j, kvals)
-}
-
-setListTrue <- function(neighbors, i, j, kvals) {
-    .Call(`_LocalFCI_setListTrue`, neighbors, i, j, kvals)
 }
 
 checkSeparationFunc <- function(neighbors, i, j, sep, val_to_check) {

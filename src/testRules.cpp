@@ -89,6 +89,16 @@ NumericMatrix testallRules(NumericMatrix td,arma::mat dummy_df,NumericVector dum
   return lfci.getAmat();
 }
 
+// [[Rcpp::export]]
+NumericMatrix testConvertMixed(NumericMatrix td,NumericVector t,StringVector names,NumericMatrix m,NumericVector v){
+  LocalFCI lfci(td,t,names,3,true);
+  lfci.setAmat(m);
+  lfci.setNeighbors(v);
+  // lfci.verbose = true;
+  lfci.convertMixedGraph();
+  return lfci.getAmat();
+}
+
 
 
 

@@ -48,9 +48,16 @@ test_that("Testing Map Data Structure",{
 })
 
 test_that("Testing combn",{
-  microbenchmark::microbenchmark(combn(1:30,4),combn_cpp(1:30,4))
+  #microbenchmark::microbenchmark(combn(1:30,4),combn_cpp(1:30,4))
   for (i in 1:4){
     expect_equal(combn_cpp(1:30,i),combn(1:30,i))
   }
+  
+  expect_error(combn_cpp(1:3,4))
+  res <- matrix(1.1,nrow = 1,ncol=1)
+  res[1,1] <- NA
+  expect_equal(combn_cpp(1:3,0),res)
+  expect_equal(combn_cpp(c(1,3,8),1),combn(c(1,3,8),1))
+  expect_error(combn_cpp(2,-1))
 })
 

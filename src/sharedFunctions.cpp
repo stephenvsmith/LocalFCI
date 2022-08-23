@@ -12,27 +12,39 @@ NumericMatrix combn_cpp(NumericVector x,int l){
   NumericMatrix result;
   
   if (l > x.length()){
-    stop("There aren't enough neighbors for the current value of l\n");
+    stop("There aren't enough neighbors for the current value of l");
+  } else if (l < 0){
+    stop("The value of l is negative");
   }
   
   if (l==0){
     result = NumericMatrix(1,1);
     result(0,0) = NA_REAL;
-    return result;
   } else if (xlength==1 && l == 1){
     result = NumericMatrix(1,1);
     result(0,0) = x(0);
-    return result;
   } else if (l>=1 && xlength>1) {
     Function f("combn");
     result = f(Named("x")=x,_["m"]=l);
-    return result;
-  } else {
-    Rcout << "The value of l is negative: " << l << std::endl;
-    Rcout << "Or the value of l is less than the size of the vector. Length of input vector: " << x.length() << std::endl;
   }
   
   return result;
+}
+
+// Determines whether or not i is in vector x
+// [[Rcpp::export]]
+bool isMember(NumericVector x,int i){
+  NumericVector::iterator it = x.begin();
+  int j;
+  
+  for (;it!=x.end();++it){
+    j = *it;
+    if (i == j){
+      return true;
+    }
+  }
+  
+  return false;
 }
 
 
@@ -87,28 +99,15 @@ void print_matrix(NumericMatrix m){
 }
 
 
-void iteration_print(const int &l,const int &i,const int &j,const NumericVector &sep,const StringVector &names,const double &pval){
-  Rcout << "l: " << l << " | i: " << i << " | j: " << j << " | k: ";
-  if (l == 0){
-    Rcout << sep;
-  } else {
-    print_vector_elements(sep,names);
-  }
-  Rcout << " | p-val: " << pval;
-  Rcout << std::endl;
-}
+// void iteration_print(const int &l,const int &i,const int &j,const NumericVector &sep,const StringVector &names,const double &pval){
+//   Rcout << "l: " << l << " | i: " << i << " | j: " << j << " | k: ";
+//   if (l == 0){
+//     Rcout << sep;
+//   } else {
+//     print_vector_elements(sep,names);
+//   }
+//   Rcout << " | p-val: " << pval;
+//   Rcout << std::endl;
+// }
 
-// Determines whether or not i is in vector x
-bool isMember(NumericVector x,int i){
-  NumericVector::iterator it = x.begin();
-  int j;
-  
-  for (;it!=x.end();++it){
-    j = *it;
-    if (i == j){
-      return true;
-    }
-  }
-  
-  return false;
-}
+

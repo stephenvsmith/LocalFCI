@@ -14,7 +14,7 @@ LocalFCI::LocalFCI(NumericMatrix true_dag,arma::mat df,
     node_numbering.insert(std::pair<int,int>(neighborhood(i),i));
   }
   if (verbose){
-    Rcout << "Element mapping for efficient ordering:\n";
+    Rcout << "Element mapping for efficient ordering (True -> Efficient):\n";
     for(auto it = node_numbering.cbegin(); it != node_numbering.cend(); ++it)
     {
       Rcout << it->first << " " << it->second  << "\n";
@@ -29,7 +29,6 @@ LocalFCI::LocalFCI(NumericMatrix true_dag,
   ConstrainedAlgo(true_dag,targets,names,
                   lmax,verbose){
   pop = true;
-  if (verbose) Rcout << "Population Version\n";
   // Make a map to relate efficient numbering to true numbering
   // Map: true numbering -> efficient numbering
   for (int i=0;i<N;++i){
@@ -88,17 +87,18 @@ void LocalFCI::getSkeletonTotal(){
                 Rcout << "There is " << neighbors.length() << " neighbor.\n";
               }
             }
-            if (neighbors.length()>neighborhood.length()){
-              stop("Invalid number of neighbors for nodes i and j.\n");
-            }
-            
-            std::for_each(neighbors.begin(),neighbors.end(),[this](int n){
-              if (n>=N){
-                stop("Neighbor value %i is too large.",n);
-              } else if (n<0){
-                stop("Neighbor value is negative");
-              }
-            });
+            // For debugging purposes in case of an error
+            // if (neighbors.length()>neighborhood.length()){
+            //   stop("Invalid number of neighbors for nodes i and j.\n");
+            // }
+            // 
+            // std::for_each(neighbors.begin(),neighbors.end(),[this](int n){
+            //   if (n>=N){
+            //     stop("Neighbor value %i is too large.",n);
+            //   } else if (n<0){
+            //     stop("Neighbor value is negative");
+            //   }
+            // });
             kvals = combn_cpp(neighborhood[neighbors],l);
             // check whether nodes i and j are separated by any of the potential separating sets in kvals
             checkSeparation(l,i,j,kvals);
@@ -173,16 +173,14 @@ void LocalFCI::getSkeletonTarget(int t){
           if (verbose){
             Rcout << "The value of j is " << j << std::endl;
           }
-          if (l>0){
-            // Find neighbors of i and j from the true DAG (or they are estimated)
-            // These neighbors are using the true node numbers (check documentation for this function)
-            neighbors = true_DAG -> getNeighborsMultiTargets(NumericVector::create(neighborhood(i),neighborhood(j)),
-                                                             verbose);
-            if (verbose){
-              print_vector_elements_nonames(neighbors,"Potential separating nodes: ","\n");  
-            }
-          } else {
-            neighbors = NA_REAL;  // l = 0
+          // Find neighbors of i and j from the true DAG (or they are estimated)
+          // These neighbors are using the true node numbers (check documentation for this function)
+          silencer();
+          neighbors = true_DAG -> getNeighborsMultiTargets(NumericVector::create(neighborhood(i),neighborhood(j)),
+                                                           verbose);
+          removeSilencer();
+          if (verbose){
+            print_vector_elements_nonames(neighbors,"Potential separating nodes: ","\n");  
           }
           
           // If there are enough potential neighbors to match the current separating set size, we continue
@@ -193,10 +191,6 @@ void LocalFCI::getSkeletonTarget(int t){
             kvals = combn_cpp(neighbors,l);
             
             checkSeparation(l,i,j,kvals);
-            
-            // if (verbose){
-            //   iteration_print(l,i,j,getSep(),names,p_vals.back());
-            // }
           }
         }
       }
@@ -327,7 +321,7 @@ void LocalFCI::getVStructures() {
  */
 
 /*
- * FUTURE DEVELOPMENT:
+ * TODO:
  * - don't check anything if all values are 0
  * 
  */
@@ -344,7 +338,8 @@ void LocalFCI::rule1search(int beta,int alpha,bool &track_changes){
     if ((C_tilde->operator()(gamma,beta)==1) && (C_tilde->operator()(beta,gamma)!= 0)){ 
       if ((C_tilde->getAmatVal(alpha,gamma)==0) && (C_tilde->getAmatVal(gamma,alpha)==0)){
         if (C_tilde->getAmatVal(beta,gamma)==3){
-          Rcout << "Contradiction in Rule 1! " << "G(" << beta << "," << gamma << ")=3 when it must be changed to 2\n";
+          warning("Contradiction in Rule 1! G(%i,%i)=3 when it must be changed to 2",beta,gamma);
+          //Rcout << "Contradiction in Rule 1! " << "G(" << beta << "," << gamma << ")=3 when it must be changed to 2\n";
         }
         C_tilde->operator()(beta,gamma)=2;
         C_tilde->operator()(gamma,beta)=3;
@@ -384,7 +379,6 @@ bool LocalFCI::rule1(bool &track_changes) {
  */
 
 void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bool &track_changes){
-  //verbose = true;
   // Condition 1 refers to alpha -> beta *-> gamma
   if (condition1){
     for (int gamma=0;gamma<N;++gamma){
@@ -414,11 +408,7 @@ void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bo
         }
       }
     }
-  } else {
-    Rcout << "Both essential conditions for Rule 2 failed. This function was called incorrectly.\n";
   }
-  
-  
 }
 
 bool LocalFCI::rule2(bool &track_changes) {
@@ -530,8 +520,8 @@ bool LocalFCI::check_sep_r4(int beta,NumericVector md_path){
   int theta = md_path(0);
   int gamma = md_path(n-1);
   
-  if (verbose) Rcout << " of " << theta << " and " << gamma << " by " << neighborhood(beta);
-  bool cond1 = S->isSepSetMember(theta,gamma,neighborhood(beta));
+  if (verbose) Rcout << " of " << neighborhood(theta) << " and " << neighborhood(gamma) << " by " << neighborhood(beta);
+  bool cond1 = S->isSepSetMember(theta,gamma,neighborhood(beta)); // TODO: CHECK IF THESE ARE THE RIGHT ONES
   if (verbose) Rcout << "...finished\n";
   return (cond1);
 }
@@ -544,20 +534,23 @@ bool LocalFCI::rule4(bool &track_changes){
   for (int beta=0;beta<N;++beta){
     for (int gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(beta,gamma)!=0 && C_tilde->getAmatVal(gamma,beta)==1){
-        //Rcout << "Potential beta: " << beta << " | Potential gamma: " << gamma;
+        //Rcout << "Potential beta: " << beta << " | Potential gamma: " << gamma << std::endl;
         for (int alpha=0;alpha<N;++alpha){
           cond1 = C_tilde->getAmatVal(beta,alpha)==2 && C_tilde->getAmatVal(alpha,beta)!=0;
           cond2 = C_tilde->getAmatVal(gamma,alpha)==3 && C_tilde->getAmatVal(alpha,gamma)==2; // triangle structure exists but is not oriented
           if (cond1 && cond2){
-            //Rcout << " | Potential alpha: " << alpha;
-            //Rcout << " | C_tilde[" << beta << ","<< alpha << "] = " << C_tilde -> getAmatVal(beta,alpha);
-            //Rcout << std::endl;
-            //C_tilde -> printAmat();
+            //Rcout << "Potential alpha: " << alpha << std::endl;
             done = false;
-            if(C_tilde->getAmatVal(gamma,beta)==1){ // Not sure about this: TODO: COULD BE A WHILE LOOP BUT IT DOESN'T MAKE SENSE
+            // I do believe this makes sense to be an if statement.
+            // if gamma and beta have already been adjusted, then we don't need
+            // to keep searching through the various values of alpha
+            // This could be optimized, but it is accurate and works for now.
+            if(C_tilde->getAmatVal(gamma,beta)==1){ 
+              // TODO: Why all these additional conditions?
               while(!done && C_tilde->getAmatVal(alpha,beta)!=0 && C_tilde->getAmatVal(alpha,gamma)!=0 && C_tilde->getAmatVal(beta,gamma)!=0){
                 md_path = minDiscPath(alpha,beta,gamma);
                 if (md_path(0)==-1){
+                  Rcout << "No discriminating path for these nodes.\n";
                   done = true; // We are done with this triangle  
                 } else {
                   if(check_sep_r4(beta,md_path)){
@@ -583,7 +576,7 @@ bool LocalFCI::rule4(bool &track_changes){
                     C_tilde->setAmatVal(gamma,beta,2);
                     if (C_tilde->getAmatVal(alpha,beta)==3){
                       //Rcout << "C_tilde[" << alpha << "," << beta << "] = " << C_tilde->getAmatVal(alpha,beta) << std::endl;
-                      Rcout << "\nContradiction in Rule 4b\n";  
+                      warning("Contradiction in Rule 4b"); // This shouldn't be a problem if it comes up.
                     }
                     C_tilde->setAmatVal(alpha,beta,2);
                   }
@@ -594,7 +587,6 @@ bool LocalFCI::rule4(bool &track_changes){
             } 
           }  
         }
-        //Rcout << std::endl;
       }
     }  
   }
@@ -690,11 +682,11 @@ bool LocalFCI::rule9(bool &track_changes){
 
 
 bool LocalFCI::rule10(bool &track_changes){
-  bool cond1;
-  bool cond2;
-  bool cond3;
-  bool cond4;
-  bool cond5;
+  bool cond1; // 1. alpha o-> gamma, 2. beta -> gamma, 3. alpha *-o beta or alpha *-> beta
+  bool cond2; // alpha o- beta or alpha -* beta
+  bool cond3; // alpha *-o d or alpha *-> d
+  bool cond4; // alpha o-* d or alpha -* d
+  bool cond5; // beta d disconnected
   
   NumericVector beta_vals;
   int counter_b=0;
@@ -834,34 +826,34 @@ void LocalFCI::convertMixedGraph(){
     for (int j=0;j<N;++j){
       sep_nbhd = false;
       // First check to see if i and j are in the same neighborhood
-      if (!(true_DAG -> areNeighbors(neighborhood(i),neighborhood(j)))){
-        sep_nbhd = true; // If i and j are not neighbors, then we should not change the orientations from the ancestral graph
+      // If i and j are not neighbors, then we should not change the orientations from the ancestral graph
+      if (pop){
+        sep_nbhd = !(true_DAG->inNeighborhood(neighborhood(i),neighborhood(j))); // uses the DAG version to check for spouses
+      } else {
+        sep_nbhd = !(true_DAG->areNeighbors(neighborhood(i),neighborhood(j))); // checks for adjacency for sample version
       }
-      
+    
       G_ij = C_tilde -> getAmatVal(i,j);
       G_ji = C_tilde -> getAmatVal(j,i);
-      if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==2 && !sep_nbhd){
+      if (G_ij==2 && G_ji==2 && !sep_nbhd){
         // Convert bidirected edge to undirected
+        // Rcout << "Converting bidirected edge to undirected for " << i << " and " << j << std::endl;
         C_tilde->setAmatVal(i,j,1);
         C_tilde->setAmatVal(j,i,1);
-      } else if (C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==2 && !sep_nbhd){ 
-        // Convert o-> to ->
-        C_tilde->setAmatVal(i,j,G_ij-1);
-        C_tilde->setAmatVal(j,i,G_ji-1);
-      } else if (C_tilde->getAmatVal(i,j)==2 && C_tilde->getAmatVal(j,i)==3){ // change no matter what
-        // Convert -> [3,2] to -> [0,1]
-        C_tilde->setAmatVal(i,j,G_ij-1);
+      } else if (G_ij==2 && G_ji==1 && !sep_nbhd){ 
+        // Convert o-> to -> if i and j are in same nbhd
+        // Rcout << "Converting o-> edge to -> for " << i << " and " << j << std::endl;
+        C_tilde->setAmatVal(i,j,1);
         C_tilde->setAmatVal(j,i,0);
-      } else if (C_tilde->getAmatVal(j,i)==2 && C_tilde->getAmatVal(i,j)==3){ // change no matter what
-        // Convert <- [2,3] to <- [1,0]  
-        C_tilde->setAmatVal(j,i,1);
-        C_tilde->setAmatVal(i,j,0);
-      } else if (C_tilde->getAmatVal(i,j)==3 && C_tilde->getAmatVal(j,i)==1 && !sep_nbhd){
+      } else if (G_ij==2 && G_ji==3){ // change no matter what
+        // Convert -> [3,2] to -> [0,1]
+        // Rcout << "Converting numbering of directed edge for " << i << " and " << j << std::endl;
+        C_tilde->setAmatVal(i,j,1);
+        C_tilde->setAmatVal(j,i,0);
+      } else if (G_ij==1 && G_ji==3 && !sep_nbhd){
         // Convert -o [3,1] to -> [0,1]
-        C_tilde->setAmatVal(i,j,0);
-      } else if (C_tilde->getAmatVal(i,j)==1 && C_tilde->getAmatVal(j,i)==3 && !sep_nbhd){
-        // Convert o- [1,3] to <- [1,0]
-        C_tilde->setAmatVal(j,i,0);  
+        // Rcout << "Converting -o edge to directed for " << i << " and " << j << std::endl;
+        C_tilde->setAmatVal(j,i,0);
       }
     }
   }
@@ -999,22 +991,22 @@ NumericVector LocalFCI::minDiscPath(int a,int b,int c){
         if (verbose) print_vector_elements_nonames(minDiscPath,"Minimum Discriminating Path: ","\n");
         return minDiscPath;
       } // End If
-
+      
       pred = mpath(m-2);
-
+      
       ++counter;
       
       // d is connected to c, so we search iteratively
       if (C_tilde->getAmatVal(d,c)==2 && C_tilde->getAmatVal(c,d)==3 && C_tilde->getAmatVal(pred,d)==2){
         visited(d) = true;
         // Find all neighbors of d not visited yet
-
+        
         NumericVector r_vals = get_r_vals(C_tilde,d,visited);
         
         if (r_vals.length()>0){
-        
+          
           path_list = updatePathList(mpath,r_vals,path_list,verbose);
-        
+          
         }
       }
       list_length = path_list.length();
@@ -1049,6 +1041,7 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
   }
   
   // Check for paths of 4 or more (what we are interested in for rule 9)
+  //Rcout << "alpha = " << alpha << " | beta = " << beta << std::endl;
   if (verbose) Rcout << "Checking for paths of 4 or more\n";
   if (!done){
     visited.assign(N,false);
@@ -1088,6 +1081,9 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
           for (int i=0;i<n_path-2;++i){
             cond1 = (C_tilde->getAmatVal(path(i),path(i+2))==0) && (C_tilde->getAmatVal(path(i+2),path(i))==0);
             if (!cond1){
+              if (verbose){
+                Rcout << "This path is invalid because it is covered.\n";
+              }
               uncov = false;
               break;
             }
@@ -1141,9 +1137,11 @@ void LocalFCI::run(){
     Rcout << "Beginning algorithm over each individual neighborhood.\n";
   }
   // Get the skeleton for each target node and its neighborhood
+  
   std::for_each(targets.begin(),
                 targets.end(),
                 [this](int t){ getSkeletonTarget(t); });
+  
   
   // Rule 0: Obtain V Structures
   getVStructures();

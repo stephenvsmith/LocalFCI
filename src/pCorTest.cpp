@@ -45,13 +45,13 @@ double fisherZ(double pc,int n,int k_size){
   return sqrt(n - k_size - 3) * 0.5 * logPart(pc);
 }
 
-void printListVals(List l){
-  bool a = l["result"];
-  double b = l["pval"];
-  Rcout << "List Values:\n";
-  Rcout << "Result: " << a;
-  Rcout << "P-Value: " << b;
-}
+// void printListVals(List l){
+//   bool a = l["result"];
+//   double b = l["pval"];
+//   Rcout << "List Values:\n";
+//   Rcout << "Result: " << a;
+//   Rcout << "P-Value: " << b;
+// }
 
 // [[Rcpp::export]]
 List condIndTest(arma::mat &C,const int &i,const int &j,const arma::uvec &k,const int &n,const double &signif_level){

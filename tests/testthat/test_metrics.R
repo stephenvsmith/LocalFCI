@@ -1,9 +1,54 @@
-library(tidyverse,quietly = TRUE,verbose = FALSE)
-library(pcalg,quietly = TRUE,verbose = FALSE)
-library(bnlearn,verbose = FALSE)
+library(tidyverse,quietly = TRUE,verbose = FALSE,warn.conflicts = FALSE)
+library(pcalg,quietly = TRUE,verbose = FALSE,warn.conflicts = FALSE)
+library(bnlearn,verbose = FALSE,warn.conflicts = FALSE)
 
 data("asiaDAG")
 data("asiadf")
+nodes <- colnames(asiaDAG)
+
+test_that("Check function to determine mutual neighborhoods",{
+  # targets: tub, bronc | checking: either
+  expect_true(inTargetNeighborhood(asiaDAG,c(2,5)-1,5))
+  # checking: dysp
+  expect_true(inTargetNeighborhood(asiaDAG,c(2,5)-1,7))
+  # checking: lung
+  expect_true(inTargetNeighborhood(asiaDAG,c(2,5)-1,3))
+  # checking: xray
+  expect_false(inTargetNeighborhood(asiaDAG,c(2,5)-1,6))
+  # targets: asia, xray | checking: smoke
+  expect_false(inTargetNeighborhood(asiaDAG,c(1,7)-1,2))
+  
+  
+  # targets: tub, bronc | checking: either, bronc
+  expect_true(sharedNeighborhood(asiaDAG,c(2,5)-1,5,4))
+  # checking: either, dysp
+  expect_true(sharedNeighborhood(asiaDAG,c(2,5)-1,5,7))
+  # targets: asia, dysp | checking: tub, either
+  expect_false(sharedNeighborhood(asiaDAG,c(1,8)-1,1,5))
+  # targets: asia, dysp | checking: tub, bronc
+  expect_false(sharedNeighborhood(asiaDAG,c(1,8)-1,1,4))
+  # targets: lung, either | checking: tub, either
+  expect_true(sharedNeighborhood(asiaDAG,c(4,6)-1,1,5))
+  # targets: either | checking: tub, either
+  expect_true(sharedNeighborhood(asiaDAG,c(6)-1,1,5))
+  # targets: asia, either | checking: tub, dysp
+  expect_true(sharedNeighborhood(asiaDAG,c(1,6)-1,1,7))
+  # targets: asia, either | checking: asia, either
+  expect_false(sharedNeighborhood(asiaDAG,c(1,6)-1,0,5))
+  # targets: asia, either, tub | checking: asia, either
+  expect_true(sharedNeighborhood(asiaDAG,c(1,6,2)-1,0,5))
+  
+  test_amat <- matrix(c(
+    0,1,0,0,0,1,
+    0,0,0,0,0,0,
+    0,0,0,1,0,0,
+    0,0,0,0,0,0,
+    0,0,1,0,0,0,
+    0,0,0,0,1,0
+  ),byrow = TRUE,ncol = 6)
+  sharedNeighborhood(test_amat,c(0,2),5,4)
+  sharedNeighborhood(test_amat,c(0,4),5,4)
+})
 
 test_that("checking metric functions",{
   true_amat <- matrix(c(0,1,0,0,
@@ -20,11 +65,27 @@ test_that("checking metric functions",{
                          0,0,1,1,
                          0,0,0,0,
                          0,0,0,0),byrow = TRUE,nrow = 4)
-  testthat::expect_equal(compare_skeletons(false_skel,true_amat,FALSE),list("skel_fp"=2,"skel_fn"=2,"skel_correct"=2))
-  testthat::expect_equal(compare_skeletons(perfect_skel,true_amat,FALSE),list("skel_fp"=0,"skel_fn"=0,"skel_correct"=4))
+  expect_equal(compare_skeletons(false_skel,true_amat,targets = c(1,3)),list("skel_fp"=2,"skel_fn"=2,"skel_correct"=2))
+  expect_equal(compare_skeletons(false_skel,true_amat,targets = 3),list("skel_fp"=0,"skel_fn"=1,"skel_correct"=2))
+  expect_equal(compare_skeletons(perfect_skel,true_amat,targets = 3),list("skel_fp"=0,"skel_fn"=0,"skel_correct"=3))
+  expect_equal(compare_skeletons(perfect_skel,true_amat,targets = c(1,3)),list("skel_fp"=0,"skel_fn"=0,"skel_correct"=4))
   
-  testthat::expect_equal(compare_v_structures(false_skel,true_amat,FALSE),list("missing"=0,"added"=2,"correct"=0))
-  testthat::expect_equal(compare_v_structures(perfect_skel,true_amat,FALSE),list("missing"=0,"added"=1,"correct"=0))
+  expect_equal(compare_v_structures(false_skel,true_amat,targets = c(0,3)),list("missing"=0,"added"=0,"correct"=0))
+  expect_equal(compare_v_structures(false_skel,true_amat,targets = 3),list("missing"=0,"added"=0,"correct"=0))
+  expect_equal(compare_v_structures(perfect_skel,true_amat,targets = 1),list("missing"=0,"added"=1,"correct"=0))
+  expect_equal(compare_v_structures(false_skel,true_amat,targets = 1),list("missing"=0,"added"=2,"correct"=0))
+  
+  expect_equal(parent_recovery_accuracy(perfect_skel,true_amat,targets = 3),list("missing"=0,"added"=0,"correct"=2,"potential"=0))
+  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = 3),list("missing"=1,"added"=0,"correct"=1,"potential"=0))
+  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = c(0,3)),list("missing"=1,"added"=0,"correct"=1,"potential"=0))
+  # Adding a potential
+  false_skel[3,4] <- 1
+  false_skel[4,3] <- 1
+  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = 3),list("missing"=1,"added"=0,"correct"=1,"potential"=1))
+  # Using 1-index numbering: Missing 3 -> 4, correctly has 2->3 and 2->4, has 3-4 as undirected edge
+  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = c(2,3)),list("missing"=1,"added"=0,"correct"=2,"potential"=1))
+  # Same as above, but added 1->4 and 1->3
+  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = c(1,2,3)),list("missing"=1,"added"=2,"correct"=2,"potential"=1))
   
   true_amat <- matrix(c(0,1,1,0,0,1,
                         0,0,0,0,0,1,
@@ -38,7 +99,15 @@ test_that("checking metric functions",{
                          0,1,1,0,0,1,
                          0,0,1,0,0,1,
                          0,0,0,1,0,0),nrow = 6,byrow = TRUE)
-  testthat::expect_equal(compare_v_structures(false_amat,true_amat,FALSE),list("missing"=1,"added"=2,"correct"=2))
+  g <- empty.graph(nodes = paste0("V",1:6))
+  amat(g) <- true_amat
+  g_false <- empty.graph(nodes = paste0("V",1:6))
+  amat(g_false) <- false_amat
+  par(mfrow=c(1,2))
+  graphviz.plot(g)
+  graphviz.plot(g_false)
+  
+  expect_equal(compare_v_structures(false_amat,true_amat,0),list("missing"=1,"added"=2,"correct"=2))
   
   t <- c(1,6,7,8)
   est <- localfci(data=asiadf,true_dag = asiaDAG,targets = t,verbose = FALSE)
@@ -53,10 +122,14 @@ test_that("checking metric functions",{
   pc_g <- empty.graph(colnames(asiaDAG))
   amat(lfci_g) <- est$amat
   amat(pc_g) <- pc_asia
+  par(mfrow=c(1,2))
   graphviz.plot(lfci_g)
   graphviz.plot(pc_g)
-  graphviz.compare(lfci_g,pc_g)
-  expect_snapshot_output(all_metrics(est$amat,asiaDAG,pc_asia,t-1))
+  
+  # skeleton perfect, missing tub -> either <- lung but have either -> dysp <- bronc, have all parents except for tub, which is a potential
+  expect_snapshot_output(all_metrics(est$amat,asiaDAG,t-1,algo="lfci"))
+  # skeleton perfect (smoke edges don't count), missing both v-structures and added 1, missing all parents, either got two fp parents
+  expect_snapshot_output(all_metrics(pc_asia,asiaDAG,t-1,algo="pc"))
   
 })
 
@@ -175,12 +248,73 @@ test_that("Test MB Recovery (General) Function",{
   )
 })
 
-interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,0)
-interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,c(0,7))
-res <- localfci(true_dag = asiaDAG,targets=c(1,8),node_names = nodes,verbose = FALSE)
-interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(0,7))
-res <- localfci(true_dag = asiaDAG,targets=c(3,7),node_names = nodes,verbose = FALSE)
-interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(2,6))
+test_that("Ancestral Relations",{
+  interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,0)
+  # Missing edge between asia and either and asia and dysp shouldn't count
+  # Correct edge between tub and either
+  interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,c(0,7))
+  res <- localfci(true_dag = asiaDAG,targets=c(1,8),node_names = nodes,verbose = FALSE)
+  g_true <- empty.graph(nodes = nodes)
+  amat(g_true) <- asiaDAG
+  g_est <- empty.graph(nodes=nodes)
+  amat(g_est) <- res$amat
+  par(mfrow=c(1,2))
+  graphviz.plot(g_true)
+  graphviz.plot(g_est)
+  # asia and dysp are targets: correct edge between tub and either, but it is not oriented
+  interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(0,7))
+  
+  
+  res <- localfci(true_dag = asiaDAG,targets=c(3,7),node_names = nodes,verbose = FALSE)
+  g_est <- empty.graph(nodes=nodes)
+  amat(g_est) <- res$amat
+  par(mfrow=c(1,2))
+  graphviz.plot(g_true)
+  graphviz.plot(g_est)
+  # smoke and xray are the targets: lung and either are connected, but not oriented
+  interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(2,6))
+  
+  true_amat <- matrix(0,ncol = 16,nrow = 16)
+  true_amat[1,3] <- 1
+  true_amat[2,4] <- true_amat[2,11] <- 1
+  true_amat[1,4] <- true_amat[4,3] <- true_amat[4,9] <- 1
+  true_amat[5,4] <- 1
+  true_amat[6,5] <- true_amat[6,14] <- 1
+  true_amat[7,4] <- true_amat[7,8] <- 1
+  true_amat[9,8] <- 1
+  true_amat[10,5] <- 1
+  true_amat[11,1] <- 1
+  true_amat[12,16] <- 1
+  true_amat[13,14] <- true_amat[13,12] <- true_amat[13,15] <- 1
+  true_amat[14,10] <- 1
+  true_amat[15,7] <- 1
+  true_amat[16,11] <- 1
+  true_g <- empty.graph(nodes = as.character(1:16))
+  amat(true_g) <- true_amat
+  graphviz.plot(true_g)
+  
+  est_amat <- matrix(0,ncol = 16,nrow = 16)
+  est_amat[1,12] <- 1
+  est_amat[2,14] <- est_amat[14,2] <- 1
+  est_amat[3,1] <- 1
+  est_amat[4,3] <- est_amat[4,2] <- est_amat[4,15] <- est_amat[15,4] <- 1
+  est_amat[5,4] <- est_amat[5,15] <- est_amat[5,14] <- est_amat[14,5] <- 1
+  est_amat[7,3] <- est_amat[7,8] <- 1
+  est_amat[8,9] <- est_amat[9,8] <- 1
+  est_amat[12,13] <- 1
+  est_amat[13,14] <- est_amat[13,9] <- 1
+  est_amat[15,13] <- 1
+  est_g <- empty.graph(nodes = as.character(1:16))
+  amat(est_g) <- est_amat
+  graphviz.plot(est_g)
+  
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,c(3,12,7),verbose = TRUE))
+  
+  # Get one true positive
+  est_amat[12,1] <- 1
+  est_amat[1,12] <- 0
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,c(3,12,7),verbose = TRUE))
+})
 
 
 

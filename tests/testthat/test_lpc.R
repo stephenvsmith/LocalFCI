@@ -45,3 +45,29 @@ test_that("Multiple Targets",{
   graphviz.plot(lpc_test_pop2)
   expect_output(cat(amat_pop2))
 })
+
+
+test_that("Wrapper function (Population Version)",{
+  expect_snapshot(wrapper_res <- localpc(true_dag = asiaDAG,targets = c(3,4),
+                                         node_names = names))
+  res_g <- empty.graph(names)
+  amat(res_g) <- wrapper_res$amat
+  graphviz.plot(res_g)
+})
+
+test_that("Wrapper function (Semi-Sample Version)",{
+  expect_snapshot(wrapper_res_semi <- localpc(data = asiadf,true_dag = asiaDAG,
+                                              targets = c(3,4),node_names = names))
+})
+
+test_that("Wrapper function (Sample Version)",{
+  expect_snapshot(wrapper_res_sample <- localpc(data = asiadf,targets = c(3,4),
+                                                node_names = names))
+  # Same as above, but without names
+  expect_snapshot(wrapper_res_sample <- localpc(data = asiadf,targets = c(3,4)))
+})
+
+test_that("Testing data structure correctness",{
+  dag_df <- data.frame(asiaDAG)
+  expect_error(tmp <- localpc(true_dag = dag_df,targets = t),NA)
+})

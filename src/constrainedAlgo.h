@@ -31,7 +31,15 @@ public:
   void printAmat(){ C_tilde -> printAmat(); };
   
   // For debugging and algorithm analysis
+  bool verbose_history=false;
   bool verbose=false;
+  void silencer(){
+    verbose_history = verbose;
+    verbose = false;
+  }
+  void removeSilencer(){
+    verbose = verbose_history;
+  }
   
   int getSize(){ return p; }
   
@@ -68,7 +76,13 @@ public:
   }
   
   void setNeighbors(NumericVector neighbors){
-    neighborhood = neighbors;  
+    neighborhood = neighbors;
+    N = neighborhood.size();
+    if (verbose){
+      for (int i=0;i<N;++i){
+        Rcout << "True: " << neighborhood(i) << " | Renumbered: " << i << std::endl;
+      }
+    }
   }
   
 protected:

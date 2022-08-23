@@ -37,6 +37,12 @@ List check_dag_object(int nodes,StringVector node_names,NumericMatrix adj){
 }
 
 // [[Rcpp::export]]
+void check_dag_object2(int nodes){
+  DAG g(nodes);
+  g.printAmat();
+}
+
+// [[Rcpp::export]]
 NumericVector check_neighbors_retrieval(int nodes,StringVector node_names,NumericMatrix adj,int t){
   DAG g(nodes,node_names,adj);
   bool v = false;
@@ -48,6 +54,12 @@ NumericVector check_neighbors_retrieval(int nodes,StringVector node_names,Numeri
 int check_amat_retrieval(int nodes,StringVector node_names,NumericMatrix adj,int i,int j){
   DAG g(nodes,node_names,adj);
   return g(i,j);
+}
+
+// [[Rcpp::export]]
+int check_amat_retrieval_function(int nodes,StringVector node_names,NumericMatrix adj,int i,int j){
+  DAG g(nodes,node_names,adj);
+  return g.getAmatVal(i,j);
 }
 
 // [[Rcpp::export]]
@@ -69,6 +81,12 @@ List check_adjacent_non_adjacent(int nodes,StringVector node_names,NumericMatrix
     _["adj"]=g.getAdjacent(i),
     _["nonadj"]=g.getNonAdjacent(i)
   );
+}
+
+// [[Rcpp::export]]
+NumericVector check_non_adjacent_solo(int nodes,StringVector node_names,NumericMatrix adj,int i){
+  Graph g(nodes,node_names,adj);
+  return g.getNonAdjacent(i);
 }
 
 // [[Rcpp::export]]

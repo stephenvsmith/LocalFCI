@@ -2,12 +2,12 @@
 
 using namespace Rcpp;
 
-DAG::DAG(int nodes,StringVector node_names,NumericMatrix adj) :
-  Graph::Graph (nodes,node_names,adj)
+DAG::DAG(int nodes,StringVector node_names,NumericMatrix adj,bool verbose) :
+  Graph::Graph (nodes,node_names,adj,verbose)
   {}
 
-DAG::DAG(int nodes) : 
-  Graph::Graph(nodes)
+DAG::DAG(int nodes,bool verbose) : 
+  Graph::Graph(nodes,verbose)
   {}
 
 void DAG::getNonIncidentNodes(std::vector<int> &v){
@@ -83,15 +83,17 @@ NumericVector DAG::getNeighbors(const int &i,bool &verbose){
   if (verbose){
     Rcout << "FUNCTION get_neighbors_from_dag. Node " << i << std::endl;
   }
-  if (p<Graph::getNCol()){
-    Rcout << "WARNING: iteration stop value is less than the number of columns in the adj. matrix.\n"; 
+  
+  if (i < 0 || i >= p){
+    stop("Invalid index (i = %i, p = %i)",i,p);
   }
+  
   for (int j = 0;j<p;++j){
-    if (Graph::getAmatVal(j,i)==1){ 
+    if (amat(j,i)==1){ 
       parents.push_back(j);
       if (verbose)
         Rcout << "Call from get_neighbors_from_dag. Node " << j << " is a parent.\n";
-    } else if (Graph::getAmatVal(i,j)==1){
+    } else if (amat(i,j)==1){
       children.push_back(j);
       if (verbose)
         Rcout << "Call from get_neighbors_from_dag. Node " << j << " is a child.\n";
@@ -104,7 +106,7 @@ NumericVector DAG::getNeighbors(const int &i,bool &verbose){
     if (verbose)
       Rcout << "Call from get_neighbors_from_dag. We are evaluating the following child: " << *it << std::endl;
     for (int j = 0; j<p; ++j){
-      current_val = Graph::getAmatVal(j,*it);
+      current_val = amat(j,*it);
       if (current_val == 1 && i != j){
         potential_spouses.push_back(j);
         if (verbose)
@@ -154,18 +156,21 @@ NumericVector DAG::getNeighborsMultiTargets(const NumericVector &targets,bool &v
 }
 
 bool DAG::inNeighborhood(int i,int j){
+  // We consider a node in the same neighborhood as itself
+  if (i==j){
+    return true;
+  }
+  // This checks for adjacency
   if (Graph::areNeighbors(i,j)){
     return true;
   }
   // Find children of both nodes
   int p = Graph::size();
-  if (p<Graph::getNCol()){
-    Rcout << "WARNING: iteration stop value is less than the number of columns in the adj. matrix.\n"; 
-  }
+  
   // Determining if i and j are spouses
   for (int k = 0;k<p;++k){
-    if (Graph::getAmatVal(i,k)==1 && Graph::getAmatVal(j,k)==1){
-      if (Graph::getAmatVal(k,i)==0 && Graph::getAmatVal(k,j)==0){
+    if (amat(i,k)==1 && amat(j,k)==1){
+      if (amat(k,i)==0 && amat(k,j)==0){
         return true;
       }
     }
@@ -177,30 +182,46 @@ NumericVector DAG::getParents(int i){
   int p = Graph::size();
   NumericVector parents;
   for (int j=0;j<p;++j){
-    if (getAmatVal(j,i)==1){
+    if (getAmatVal(j,i)==1 && amat(i,j)==0){
       parents.push_back(j);
     }
   }
   return parents;
 }
 
+NumericVector DAG::getChildren(int i){
+  int p = Graph::size();
+  NumericVector children;
+  for (int j=0;j<p;++j){
+    if (getAmatVal(i,j)==1 && amat(j,i)==0){
+      children.push_back(j);
+    }
+  }
+  return children;
+}
+
 bool DAG::isAncestor(int desc,int anc){
   NumericVector current_ancestors;
   NumericVector next_level_ancestors;
   current_ancestors = getParents(desc);
+  int level=1;
   
   while (current_ancestors.size()>0){
     if (isMember(current_ancestors,anc)){
+      if (verbose){
+        Rcout << anc << " is an ancestor of " << desc << " " << level << " levels up.\n";
+      }
       return true;
     }
     std::for_each(current_ancestors.begin(),current_ancestors.end(),
                   [&next_level_ancestors,this](int node){
-                      next_level_ancestors = union_(next_level_ancestors,getParents(node));
-                    });
+                    next_level_ancestors = union_(next_level_ancestors,getParents(node));
+                  });
     current_ancestors = next_level_ancestors;
     next_level_ancestors = NumericVector::create();
+    ++level;
+    
   }
   return false;
 }
-  
-  
+

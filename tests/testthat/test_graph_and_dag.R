@@ -59,6 +59,7 @@ test_that("Testing Graph and DAG classes using asia data",{
   target <- which(nodes=="asia")-1
   result <- which(nodes=="tub")-1
   expect_equal(check_neighbors_retrieval(p,nodes,asiaDAG,target),result)
+  expect_warning(check_neighbors_retrieval(3,nodes,asiaDAG,target))
   
   # Neighbors of "either" should be "bronc" (spouse), "dysp" and "xray" (children), and "lung" and "tub" (parents)
   # expect_equal(sort(nodes[get_neighbors_from_dag(which(nodes=="either")-1,p,asiaDAG,verbose=FALSE)+1]),c("bronc","dysp","lung","tub","xray"))
@@ -72,6 +73,7 @@ test_that("Testing Graph and DAG classes using asia data",{
 
 test_that("Testing miscellaneous graph functions",{
   expect_equal(checkEmptyGraph(10),matrix(0,ncol = 10,nrow = 10))
+  expect_snapshot_output(check_dag_object2(10))
 })
 
 test_that("Testing acyclicity",{
@@ -85,6 +87,8 @@ test_that("Testing acyclicity",{
     0,1,0,0,0
   ),nrow = 5,ncol=5,byrow = TRUE)
   expect_false(checkAcyclicity(5,LETTERS[1:5],amat))
+  
+  expect_true(checkAcyclicity(0,nodes,matrix(nrow = 0,ncol = 0)))
 })
 
 test_that("Test for identifying ancestors",{
@@ -101,4 +105,48 @@ test_that("Test for identifying ancestors",{
       }
     }
   }
+})
+
+test_that("Testing for correct errors and warnings",{
+  # different numbers of rows and columns
+  expect_error(check_amat_works(5,paste0("V",1:5),matrix(0,nrow = 5,ncol = 4)))
+  
+  # Index for getNeighbors (DAG) is invalid
+  expect_error(check_neighbors_retrieval(p,nodes,asiaDAG,p))
+  expect_error(check_neighbors_retrieval(p,nodes,asiaDAG,-3))
+  expect_error(check_neighbors_retrieval(p,nodes,asiaDAG,p+1))
+  expect_error(check_neighbors_retrieval(p,nodes,asiaDAG,p-1),NA)
+  
+  # Index for getAdjacent (Graph) is invalid
+  expect_error(check_adjacent_non_adjacent(p,nodes,asiaDAG,p))
+  expect_error(check_adjacent_non_adjacent(p,nodes,asiaDAG,-2))
+  expect_error(check_adjacent_non_adjacent(p,nodes,asiaDAG,p+1))
+  expect_error(check_adjacent_non_adjacent(p,nodes,asiaDAG,p-1),NA)
+  
+  # Index for getNonAdjacent (Graph) is invalid
+  expect_error(check_non_adjacent_solo(p,nodes,asiaDAG,p))
+  expect_error(check_non_adjacent_solo(p,nodes,asiaDAG,-1))
+  expect_error(check_non_adjacent_solo(p,nodes,asiaDAG,p+1))
+  expect_error(check_non_adjacent_solo(p,nodes,asiaDAG,p-1),NA)
+  
+  # Index for getAmatVal is invalid
+  n_names <- colnames(asiaDAG)
+  expect_error(check_amat_retrieval_function(p,n_names,asiaDAG,p,0))
+  expect_error(check_amat_retrieval_function(p,n_names,asiaDAG,0,p))
+  expect_error(check_amat_retrieval_function(p,n_names,asiaDAG,p+1,0))
+  expect_error(check_amat_retrieval_function(p,n_names,asiaDAG,0,p+1))
+  expect_error(check_amat_retrieval_function(p,n_names,asiaDAG,p-1,0),NA)
+  expect_error(check_amat_retrieval_function(p,n_names,asiaDAG,0,p-1),NA)
+  expect_error(check_amat_retrieval_function(p,n_names,asiaDAG,-2,0))
+  expect_error(check_amat_retrieval_function(p,n_names,asiaDAG,0,-1))
+  
+  # Index for getAmat(Col|Row) is invalid
+  expect_error(check_amat_row_retrieval(p,n_names,asiaDAG,p))
+  expect_error(check_amat_row_retrieval(p,n_names,asiaDAG,p-1),NA)
+  expect_error(check_amat_row_retrieval(p,n_names,asiaDAG,p+1))
+  expect_error(check_amat_row_retrieval(p,n_names,asiaDAG,-1))
+  expect_error(check_amat_col_retrieval(p,n_names,asiaDAG,p))
+  expect_error(check_amat_col_retrieval(p,n_names,asiaDAG,p-1),NA)
+  expect_error(check_amat_col_retrieval(p,n_names,asiaDAG,p+1))
+  expect_error(check_amat_col_retrieval(p,n_names,asiaDAG,-1))
 })

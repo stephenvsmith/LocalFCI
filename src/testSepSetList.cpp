@@ -48,17 +48,6 @@ NumericVector setListEfficient(NumericVector neighbors,int i,int j,NumericVector
 }
 
 // [[Rcpp::export]]
-NumericVector setListTrue(NumericVector neighbors,int i,int j,NumericVector kvals){
-  SepSetList *S = new SepSetList(neighbors);
-  S -> changeList(i,j,kvals);
-  S -> printSepSetList();
-  NumericVector results = S -> getSepSet(i,j);
-  delete S;
-  return results;
-}
-
-
-// [[Rcpp::export]]
 bool checkSeparationFunc(NumericVector neighbors,int i,int j,NumericVector sep,int val_to_check){
   SepSetList *S = new SepSetList(neighbors);
   S -> changeList(i,j,sep);

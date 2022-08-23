@@ -1,3 +1,30 @@
+#' Local FCI Algorithm
+#' 
+#' `localfci()` applies the local FCI algorithm to a dataset over 
+#' certain target neighborhoods, which may be provided by the user 
+#' through the true DAG or may be estimated by a 
+#' Markov Blanket estimation algorithm 
+#' 
+#' @param data A dataframe or matrix containing network data
+#' @param true_dag An optional parameter used primarily for simulations 
+#' in order to obtain the Markov Blankets of certain target nodes
+#' @param targets A numeric vector specifying the target nodes
+#' @param node_names A string vector with the node names, useful for tracking output
+#' @param lmax The maximum size of separating set considered in the algorithm. Default is 3
+#' @param tol The significance level of our conditional independence tests. Default is 0.01
+#' @param mb_tol The significance level of our Markov Blanket estimation algorithms. Default is 0.05
+#' @param method Algorithm used for Markov Blanket estimation. Default is MMPC.
+#' @param test The conditional independence test used for all algorithms.
+#' @param verbose A boolean which determines whether or not to print a trace of the output.
+#' 
+#' @returns A list containing various elements computed from or during the algorithm.
+#' @return A list including the estimated adjacency matrix, timing calculations, 
+#' the number of conditional independence tests, 
+#' a matrix providing Markov Blanket information, a list containing 
+#' separating sets, and statistics about the original dataset
+#' 
+#' @export
+
 localfci <- function(data=NULL,true_dag=NULL,targets,
                          node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,
                          method="MMPC",test="testIndFisher",verbose = TRUE){
@@ -10,6 +37,7 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
   data_means <- NA
   data_cov <- NA
   if (!is.null(data)){
+
     if (is.data.frame(data)){
       data <- as.matrix(data)
     }

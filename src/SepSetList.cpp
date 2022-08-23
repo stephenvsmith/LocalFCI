@@ -48,6 +48,7 @@ NumericVector SepSetList::getSepSet(int i,int j){
 
 // k is assumed to be according to the true Graph numbering
 bool SepSetList::isSepSetMember(int i,int j,int k){
+  checkInputValues(i,j,N);
   NumericVector sepset_ji;
   NumericVector sepset_ij;
   bool is_member;
@@ -62,7 +63,7 @@ bool SepSetList::isSepSetMember(int i,int j,int k){
   is_member_check = isMember(sepset_ji,k);
   
   if (is_member != is_member_check){
-    warning("Warning: separation sets for %i and %i disagree",i,j);
+    warning("Separation sets for %i and %i disagree",i,j);
   }
   
   return is_member && is_member_check;

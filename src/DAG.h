@@ -11,8 +11,8 @@ class DAG : public Graph {
 public:
   // Need to make a warning if there is a cycle or any undirected edges when constructing
   
-  DAG(int nodes);
-  DAG(int nodes,StringVector node_names,NumericMatrix adj);
+  DAG(int nodes,bool verbose=false);
+  DAG(int nodes,StringVector node_names,NumericMatrix adj,bool verbose=false);
   
   void getNonIncidentNodes(std::vector<int> &v);
   bool isAcyclic();
@@ -26,6 +26,7 @@ public:
   bool inNeighborhood(int i,int j);
   
   NumericVector getParents(int i);
+  NumericVector getChildren(int i);
   bool isAncestor(int desc,int anc);
 
 };

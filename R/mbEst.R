@@ -1,40 +1,63 @@
-# This function will return the Markov Blanket for a target value
+#' Estimate Markov Blanket of Target Node
+#' 
+#' `getMB()` applies a Markov Blanket estimation algorithm to a target node
+#' 
+#' @param target An integer identifying the target node whose MB we are attempting to recover
+#' @param dataset A dataset used for estimation
+#' @param threshold A positive real number designating the threshold for conditional independence tests used in the algorithm
+#' @param method The name of the Markov Blanket estimation algorithm to use. Valid algorithms include "MMPC", "SES", and "gOMP".
+#' @param test The conditional independence test to use in the algorithm. Default is the Fisher Independence test.
+#' @param verbose Whether to provide detailed output
+#' @export
 getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFisher",verbose=FALSE){
   if (verbose) cat("Estimating Markov Blankets using\n",
                    "Algorithm:",method,"\n",
                    "Test:",test,"\n",
                    "Tolerance:",threshold,"\n")
-
+  
+  if (threshold<=0 | threshold > 1){
+    stop("MB Estimation threshold is invalid. Threshold must be in (0,1]")
+  }
+  
+  if (!(method %in% c("MMPC","SES","gOMP"))){
+    stop("Invalid MB estimation algorithm")
+  }
+  
+  if (!(target %in% seq(1,ncol(dataset)))){
+    stop(paste0("Invalid target index (t=",target,")"))
+  }
+  
   if (method=="MMPC"){
     mb <- MXM::MMPC(target=target,dataset=dataset,threshold=threshold,test=test)
   } else if (method=="SES"){
     mb <- MXM::SES(target=target,dataset=dataset,threshold=threshold,test=test)
-  } else if (method=="gOMP"){
-    mb <- MXM::gomp(target=target,dataset=dataset,test = test)$res[,1] # there are more options here to explore, also need to look closer at output
-  } # There is also fbed.reg, 
+  } 
+  # else if (method=="gOMP"){
+  #   mb <- MXM::gomp(target=target,dataset=dataset,test = test)$res[,1] # there are more options here to explore, also need to look closer at output
+  # } # There is also fbed.reg, 
   if (verbose) cat("Results for target",target,":",paste(mb@selectedVars,collapse = ","),"\n")
   return(list("mb"=mb@selectedVars,
               "time"=mb@runtime[3]))
 }
 
-
-# This function will take a vector of targets and return a list of the markov blankets
-getAllMBs <- function(targets,dataset,threshold=0.01,method="MMPC",
-                      test="testIndFisher",verbose=TRUE){
-  target_mbs <- lapply(targets,
-                       function(t) getMB(t,dataset,threshold,method,test,verbose))
-  additional_nodes <- unique(
+constructFinalMBList <- function(targets,target_mbs,
+                                 dataset,threshold,method,test,verbose){
+  # A vector to identify only the first-order neighbors
+  first_order_neighbors <- unique(
     setdiff(
       getAllMBNodes(target_mbs),targets))
-  if (length(additional_nodes)>0){
-    second_order_mbs <- lapply(additional_nodes,
+  # Apply MB algorithm again to obtain second-order neighbors
+  if (length(first_order_neighbors)>0){
+    second_order_mbs <- lapply(first_order_neighbors,
                                function(t) 
                                  getMB(t,dataset,
                                        threshold,
                                        method,
                                        test,verbose))
+    # Combine first-order MBs and second-order MBs in one list
     final_list <- c(target_mbs,second_order_mbs)
-    names(final_list) <- as.character(c(targets,additional_nodes))
+    names(final_list) <- as.character(c(targets,
+                                        first_order_neighbors))
     return(final_list)
   } else {
     names(target_mbs) <- as.character(targets)
@@ -42,11 +65,58 @@ getAllMBs <- function(targets,dataset,threshold=0.01,method="MMPC",
   }
 }
 
+
+#' Estimate Markov Blankets of a vector of target nodes
+#' 
+#' `getAllMBs()` applies Markov Blanket algorithms to a vector of target nodes and
+#' their first-order neighbors
+#' 
+#' @param targets a vector of integers which will identify the target nodes of our algorithm
+#' @inheritParams getMB
+#' @export
+getAllMBs <- function(targets,dataset,threshold=0.01,method="MMPC",
+                      test="testIndFisher",verbose=TRUE){
+  p <- ncol(dataset)
+  if (!(all(targets %in% seq(p)))){
+    stop("Invalid target values for MB Estimation procedure")
+  }
+  
+  if (any(duplicated(targets))){
+    warning("Duplicate targets inputted. Removing duplicates.")
+    targets <- unique(targets)
+  }
+  
+  # Find the MBs for the target nodes
+  target_mbs <- lapply(targets,
+                       function(t) getMB(t,dataset,threshold,method,test,verbose))
+  
+  return(constructFinalMBList(targets,target_mbs,dataset,
+                              threshold,method,test,verbose))
+}
+
+
 # This function will take a list of Markov Blankets and form an adjacency matrix
 # All Markov Blanket nodes will be considered children of the 
 # targets and first-order neighbors for simplicity
+#' Create Initial Graph from MB List
+#' 
+#' `getEstInitialDAG()` connects nodes in a list containing Markov Blankets for an initial graph used by our local algorithms. 
+#' For simplicity, all nodes in a Markov Blanket will be considered a child of the target or first-order neighbor in the initial adjacency matrix.
+#' 
+#' @param mbList is a named list containing the estimated Markov Blankets for the targets and their first-order neighbors
+#' @param p is the number of nodes in the graph
+#' @param verbose 
 getEstInitialDAG <- function(mbList,p,verbose=FALSE){
   if (verbose) cat("Creating the reference DAG using Markov Blanket list.\n")
+  
+  if (p <= 0){
+    stop("Invalid network size p")
+  }
+  
+  if (length(mbList)==0){
+    stop("MB List is empty")
+  }
+  
   adj <- matrix(0,nrow = p,ncol = p)
   all_nodes <- as.numeric(names(mbList))
   nodes_seq <- all_nodes
@@ -55,6 +125,9 @@ getEstInitialDAG <- function(mbList,p,verbose=FALSE){
     mb <- mbList[[as.character(node)]][["mb"]]
     if (length(mb)>0){
       sapply(mb,function(x){
+        if (node > p | x > p){
+          stop("Invalid index. The value for p is too small.\n")
+        }
         if (adj[node,x]==0 & adj[x,node]==0){
           adj[node,x] <<- 1
         }
@@ -81,9 +154,9 @@ getAllMBNodes <- function(mbList){
   nodes <- unique(
     unlist(
       sapply(mbList,
-           function(x) return(x[["mb"]])
-           )
+             function(x) return(x[["mb"]])
       )
+    )
   )
   names(nodes) <- NULL
   return(nodes)
@@ -110,7 +183,7 @@ calcParentRecovery <- function(ref,est,target){
   # Get all the parent nodes in both graphs
   parent_ref <- which(ref[,target]==1 & ref[target,]!=1) 
   parent_est <- which(est[,target]==1 & est[target,]!=1) 
-
+  
   # If a node is in both vectors, then it is a true positive
   # If it is in the reference but not in the estimated, then it is a false negative
   # If it is in the estimated but not the reference, then it is a false positive
@@ -158,7 +231,7 @@ calcSpouseRecovery <- function(ref,est,target){
   
   spouses_ref <- getSpouses(ref,child_ref,target)
   spouses_est <- getSpouses(est,child_est,target)
-
+  
   # If a node is in both vectors, then it is a true positive
   # If it is in the reference but not in the estimated, then it is a false negative
   # If it is in the estimated but not the reference, then it is a false positive
@@ -194,14 +267,14 @@ spouseRecovery <- function(g,target){
 }
 
 mbRecoveryTarget <- function(ref,est,target){
-
+  
   # Obtain all children and parents from Reference and Target Graphs
   ref_nodes <- getConnections(ref,target)
   est_nodes <- getConnections(est,target)
   
   # Obtain spouse nodes from reference
   ref_nodes <- c(ref_nodes,spouseRecovery(ref,target))
-
+  
   # Compare MB recovery
   return(
     c("mb_tp"=length(intersect(ref_nodes,est_nodes)),
