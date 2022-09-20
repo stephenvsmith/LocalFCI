@@ -11,7 +11,7 @@ test_that("Get correct neighbors and check separating set update",{
   expect_equal(setdiff(neighbor_names,c("tub","lung","xray","dysp","bronc","either")),character(0))
   
   cat("\n\n")
-  printS(neighbors)
+  expect_snapshot_output(printS(neighbors))
   cat("\n\n")
   
   size <- length(neighbors)-1

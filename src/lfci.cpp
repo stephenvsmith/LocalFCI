@@ -2,16 +2,17 @@
 
 LocalFCI::LocalFCI(NumericMatrix true_dag,arma::mat df,
                    NumericVector targets,
-                   StringVector names,int lmax,
+                   StringVector names,
+                   int lmax,
                    double signif_level,
-                   bool verbose) : 
+                   bool verbose,bool estDAG) : 
   ConstrainedAlgo(true_dag,df,targets,names,lmax,
-                  signif_level,verbose){
+                  signif_level,verbose,estDAG){
   
   // Make a map to relate efficient numbering to true numbering
   // Map: true numbering -> efficient numbering
-  for (int i=0;i<N;++i){
-    node_numbering.insert(std::pair<int,int>(neighborhood(i),i));
+  for (size_t i=0;i<N;++i){
+    node_numbering.insert(std::pair<size_t,size_t>(neighborhood(i),i));
   }
   if (verbose){
     Rcout << "Element mapping for efficient ordering (True -> Efficient):\n";
@@ -24,14 +25,15 @@ LocalFCI::LocalFCI(NumericMatrix true_dag,arma::mat df,
 
 LocalFCI::LocalFCI(NumericMatrix true_dag,
                    NumericVector targets,
-                   StringVector names,int lmax,
+                   StringVector names,
+                   int lmax,
                    bool verbose) : 
   ConstrainedAlgo(true_dag,targets,names,
                   lmax,verbose){
   pop = true;
   // Make a map to relate efficient numbering to true numbering
   // Map: true numbering -> efficient numbering
-  for (int i=0;i<N;++i){
+  for (size_t i=0;i<N;++i){
     node_numbering.insert(std::pair<int,int>(neighborhood(i),i));
   }
   if (verbose){
@@ -52,14 +54,14 @@ void LocalFCI::getSkeletonTotal(){
   NumericMatrix kvals;
   
   int l = -1;
-  //Rcout << "Finding the skeleton for the complete undirected graph on X_T U N_T\n\n";
+  // Finding the skeleton for the complete undirected graph on U_t (X_t U N_t)
   while (l < lmax){
     l += 1;
     if (verbose){
       Rcout << "The value of l is " << l << std::endl;
     }
     
-    for (int i=0;i<N;++i){
+    for (size_t i=0;i<N;++i){
       if (verbose){
         Rcout << "The value of i is " << i;
         Rcout << " (" << names(neighborhood(i)) << ")"<< std::endl;
@@ -67,17 +69,14 @@ void LocalFCI::getSkeletonTotal(){
       // Work through potential neighbors with separating set of size l
       // These potential neighbors are those currently connected to node i in the current iteration's estimated graph
       edges_i = C_tilde->getAdjacent(i);
-      for (NumericVector::iterator it = edges_i.begin(); it != edges_i.end(); ++it){
-        int j = *it;
+      for (auto j : edges_i){
         if (j > i){
-          
           if (verbose){
             Rcout << "The value of j is " << j;
             Rcout << " (" << names(neighborhood(j)) << ")"<< std::endl;
           }
           // Find neighbors of i and j from the current graph C
           neighbors = setdiff(union_(edges_i,C_tilde->getAdjacent(j)),NumericVector::create(i,j));
-          
           // If there are enough potential neighbors to match the current separating set size, we continue
           if (neighbors.length()>= l){
             if (verbose && l>0){
@@ -87,18 +86,6 @@ void LocalFCI::getSkeletonTotal(){
                 Rcout << "There is " << neighbors.length() << " neighbor.\n";
               }
             }
-            // For debugging purposes in case of an error
-            // if (neighbors.length()>neighborhood.length()){
-            //   stop("Invalid number of neighbors for nodes i and j.\n");
-            // }
-            // 
-            // std::for_each(neighbors.begin(),neighbors.end(),[this](int n){
-            //   if (n>=N){
-            //     stop("Neighbor value %i is too large.",n);
-            //   } else if (n<0){
-            //     stop("Neighbor value is negative");
-            //   }
-            // });
             kvals = combn_cpp(neighborhood[neighbors],l);
             // check whether nodes i and j are separated by any of the potential separating sets in kvals
             checkSeparation(l,i,j,kvals);
@@ -118,31 +105,29 @@ void LocalFCI::getSkeletonTotal(){
   total_skeleton_time = duration.count() / 1000000.;
 }
 
-void LocalFCI::getSkeletonTarget(int t){
+void LocalFCI::getSkeletonTarget(const size_t &t){
   auto target_skeleton_start = high_resolution_clock::now();
-  int l = 0; // We should start with l=1 because we've already done l=0 previously
-  int i;
-  int j;
+  size_t l = 0; // We should start with l=1 because we've already done l=0 previously
   NumericVector neighbors;
   NumericVector edges_i;
   NumericMatrix kvals;
   
   // Making an adjustment to target based on efficient numbering 
-  int target_efficient = node_numbering.find(t)->second;
+  size_t target_efficient = node_numbering.find(t)->second;
   // Find neighborhood just surrounding the target node
   NumericVector target_neighborhood = true_DAG->getNeighbors(t,verbose);
   target_neighborhood.push_back(t);
   std::transform(target_neighborhood.begin(),target_neighborhood.end(),
                  target_neighborhood.begin(),
-                 [this](int a) { return node_numbering.find(a)->second; });
+                 [this](size_t a) { return node_numbering.find(a)->second; });
   std::sort(target_neighborhood.begin(),target_neighborhood.end());
   
   if (verbose){
     Rcout << "\n\nFinding skeleton for the neighborhood of target " << t;
     Rcout << " (Efficient Number: " << target_efficient << ")"<< std::endl;
     Rcout << "Neighborhood nodes under consideration: ";
-    print_vector_elements_nonames(target_neighborhood,""," | (");
-    for (int i=0;i<target_neighborhood.length();++i){
+    printVecElementsNoNames(target_neighborhood,""," | (");
+    for (size_t i=0;i<target_neighborhood.length();++i){
       if (i<target_neighborhood.length()-1){
         Rcout << names(neighborhood(target_neighborhood(i))) << "(" << neighborhood(target_neighborhood(i)) << ")" << " ";  
       } else {
@@ -158,8 +143,7 @@ void LocalFCI::getSkeletonTarget(int t){
     }
     
     // We only consider the target and its neighborhood in the graph currently
-    for (NumericVector::iterator it=target_neighborhood.begin();it<target_neighborhood.end();++it){
-      i = *it;
+    for (auto i : target_neighborhood){
       if (verbose){
         Rcout << "The value of i is " << i << std::endl;
       }
@@ -167,8 +151,7 @@ void LocalFCI::getSkeletonTarget(int t){
       // These potential neighbors are those currently connected to node i in the current iteration's estimated graph
       // We do not want to separate the connections between two different cliques
       edges_i = intersect(C_tilde->getAdjacent(i),target_neighborhood);
-      for (NumericVector::iterator it2 = edges_i.begin(); it2 != edges_i.end(); ++it2){
-        j = *it2;
+      for (auto j : edges_i){
         if (j > i){
           if (verbose){
             Rcout << "The value of j is " << j << std::endl;
@@ -180,7 +163,7 @@ void LocalFCI::getSkeletonTarget(int t){
                                                            verbose);
           removeSilencer();
           if (verbose){
-            print_vector_elements_nonames(neighbors,"Potential separating nodes: ","\n");  
+            printVecElementsNoNames(neighbors,"Potential separating nodes: ","\n");  
           }
           
           // If there are enough potential neighbors to match the current separating set size, we continue
@@ -215,9 +198,7 @@ void LocalFCI::getSkeletonTarget(int t){
 // We are trying to identify structures i -> k <- j
 // Where i and j are not adjacent, and k is not in the separating set of i and j
 void LocalFCI::getVStructures() {
-  int j;
-  int k;
-  int k_eff;
+  size_t k_eff;
   
   bool no_neighbors;
   bool j_invalid;
@@ -242,7 +223,7 @@ void LocalFCI::getVStructures() {
   }
   // We are searching for i-k-j where i and j are not adjacent and k is 
   // not in the separating set for i and j
-  for (int i=0;i<N;++i){
+  for (size_t i=0;i<N;++i){
     placeholder = C_tilde->getAmatRow(i); // We will search this vector for nodes connected to node i
     no_neighbors = (all(placeholder==0)).is_true();
     if (!no_neighbors){ // If there are neighbors to consider
@@ -252,8 +233,7 @@ void LocalFCI::getVStructures() {
       i_adj = C_tilde->getAdjacent(i); // potential values of k
       j_vals = C_tilde->getNonAdjacent(i); // potential values of j
       // Iterate over possible j values
-      for (NumericVector::iterator it=j_vals.begin();it != j_vals.end();++it){
-        j = *it;
+      for (auto j : j_vals){
         // We move on if:
         // Node j has no children,
         // j is parent to i, 
@@ -270,15 +250,14 @@ void LocalFCI::getVStructures() {
           std::sort(k_vals.begin(),k_vals.end());
           if (verbose && k_vals.length()>0){
             Rcout << "Potential k values: ";
-            print_vector_elements(k_vals,names[neighborhood],"","\n");
+            printVecElements(k_vals,names[neighborhood],"","\n");
           }
           // If there are no common neighbors, move to next j
           if (k_vals.length()!=0){
             // We loop through all of the common neighbors
             sepset_ij = S->getSepSet(i,j);
             sepset_ji = S->getSepSet(j,i);
-            for (NumericVector::iterator it2 = k_vals.begin();it2!=k_vals.end();++it2){
-              k = *it2;
+            for (auto k : k_vals){
               if (verbose){
                 Rcout << "k: " << k << " (" << names(neighborhood(k)) << ")\n"; 
               }
@@ -288,11 +267,15 @@ void LocalFCI::getVStructures() {
               if (S->isPotentialVStruct(i,j,k)){ 
                 if (verbose){
                   Rcout << "Separation Set: ";
-                  print_vector_elements_nonames(sepset_ij);
+                  printVecElementsNoNames(sepset_ij);
                   Rcout << " | V-Structure (True Numbering): " << neighborhood(i) << "*->" << k << "<-*" << neighborhood(j) << std::endl; 
                 }
                 C_tilde->setAmatVal(i,k_eff,2); // An arrow is denoted by "2"
                 C_tilde->setAmatVal(j,k_eff,2); // i and j are separated ("0")
+                ++rules_used(0);
+                if (verbose){
+                  Rcout << "Rule 0 has been used " << rules_used(0) << " times.\n";
+                }
               }
             }
           }
@@ -331,10 +314,10 @@ void LocalFCI::getVStructures() {
  * If alpha and gamma are not adjacent, then orient the triple: alpha *-> beta -> gamma
  */
 
-void LocalFCI::rule1search(int beta,int alpha,bool &track_changes){
+void LocalFCI::rule1search(size_t beta,size_t alpha,bool &track_changes){
   // Search for beta o-* gamma (beta (1) (!=0) gamma)
   //verbose = true;
-  for (int gamma=0;gamma<N;++gamma){
+  for (size_t gamma=0;gamma<N;++gamma){
     if ((C_tilde->operator()(gamma,beta)==1) && (C_tilde->operator()(beta,gamma)!= 0)){ 
       if ((C_tilde->getAmatVal(alpha,gamma)==0) && (C_tilde->getAmatVal(gamma,alpha)==0)){
         if (C_tilde->getAmatVal(beta,gamma)==3){
@@ -351,17 +334,21 @@ void LocalFCI::rule1search(int beta,int alpha,bool &track_changes){
           Rcout << " as " << beta << " -> " << gamma << "\n";
         }
         track_changes=true;
+        ++rules_used(1);
+        if (verbose){
+          Rcout << "Rule 1 has been used " << rules_used(1) << " times.\n";
+        }
       }
     }
   }
 }
 
 bool LocalFCI::rule1(bool &track_changes) {
-  // int gamma;
+  // size_t gamma;
   // Outer loops: Go through every node to find an asterisk. The node it is incident on is alpha
   // The connected node is beta, which must have an arrowhead pointing into it.
-  for (int alpha = 0;alpha<N;++alpha){
-    for (int beta = 0;beta<N;++beta){
+  for (size_t alpha = 0;alpha<N;++alpha){
+    for (size_t beta = 0;beta<N;++beta){
       if (C_tilde->getAmatVal(alpha,beta)==2 && C_tilde->getAmatVal(beta,alpha)!=0){ // alpha *-> beta
         rule1search(beta,alpha,track_changes);
       }
@@ -378,24 +365,26 @@ bool LocalFCI::rule1(bool &track_changes) {
  * 
  */
 
-void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bool &track_changes){
+void LocalFCI::rule2search(size_t beta,size_t alpha,bool condition1,bool condition2,bool &track_changes){
   // Condition 1 refers to alpha -> beta *-> gamma
   if (condition1){
-    for (int gamma=0;gamma<N;++gamma){
+    for (size_t gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(gamma,beta)!=0 && C_tilde->getAmatVal(beta,gamma)==2){ // beta *-> gamma
         if (C_tilde->getAmatVal(alpha,gamma)==1 && C_tilde->getAmatVal(gamma,alpha)!=0){ // alpha *-o gamma
           C_tilde->setAmatVal(alpha,gamma,2); // alpha *-> gamma
           track_changes = true;
+          ++rules_used(2);
           if (verbose){
             Rcout << "Rule 2:\n";
             Rcout << "Orient: " << alpha << " -> " << beta << " *-> " << gamma;
             Rcout << " as: " << alpha << " *-> " << gamma << std::endl;
+            Rcout << "Rule 2 has been used " << rules_used(2) << " times.\n";
           }
         }
       }
     }
   } else if (condition2){ // Condition 2 refers to alpha *-> beta -> gamma
-    for (int gamma=0;gamma<N;++gamma){
+    for (size_t gamma=0;gamma<N;++gamma){
       if ((C_tilde->getAmatVal(gamma,beta)==3) && (C_tilde->getAmatVal(beta,gamma)==2)){ // beta -> gamma
         if ((C_tilde->getAmatVal(alpha,gamma)==1) && (C_tilde->getAmatVal(gamma,alpha)!=0)){ // alpha *-o gamma
           C_tilde->setAmatVal(alpha,gamma,2); // alpha *-> gamma
@@ -405,6 +394,10 @@ void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bo
             Rcout << " as: " << alpha << " *-> " << gamma << std::endl;
           }
           track_changes = true;
+          ++rules_used(2);
+          if (verbose){
+            Rcout << "Rule 2 has been used " << rules_used(2) << " times.\n";
+          }
         }
       }
     }
@@ -412,12 +405,12 @@ void LocalFCI::rule2search(int beta,int alpha,bool condition1,bool condition2,bo
 }
 
 bool LocalFCI::rule2(bool &track_changes) {
-  //int gamma;
+  //size_t gamma;
   bool condition1;
   bool condition2;
   // Searching for alpha -> beta OR alpha *-> beta
-  for (int alpha = 0;alpha<N;++alpha){
-    for (int beta = 0;beta<N;++beta){
+  for (size_t alpha = 0;alpha<N;++alpha){
+    for (size_t beta = 0;beta<N;++beta){
       condition1 = (C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)==3); // alpha -> beta
       condition2 = (C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)!=0); // alpha *-> beta
       if (condition1 | condition2){
@@ -436,10 +429,10 @@ bool LocalFCI::rule2(bool &track_changes) {
  * 
  */
 
-List LocalFCI::rule3asearch(int beta,int alpha){
+List LocalFCI::rule3asearch(size_t beta,size_t alpha){
   NumericVector gammafinal; // There may be multiple values of gamma for which this holds. This assures we get them all.
   bool success = false;
-  for (int gamma=0;gamma<N;++gamma){
+  for (size_t gamma=0;gamma<N;++gamma){
     // Search for beta <-* gamma
     if (C_tilde->getAmatVal(gamma,beta)==2 && C_tilde->getAmatVal(beta,gamma)!=0 && gamma!= alpha){
       gammafinal.push_back(gamma);
@@ -455,12 +448,12 @@ List LocalFCI::rule3asearch(int beta,int alpha){
   );
 }
 
-void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bool &track_changes){
+void LocalFCI::rule3bsearch(const size_t &alpha,const size_t &beta,const size_t &gamma,bool &track_changes){
   bool condition1;
   bool condition2;
   //verbose = true;
   // We are searching for alpha (*) (1) theta (1) (*) gamma
-  for (int theta = 0;theta<N;++theta){
+  for (size_t theta = 0;theta<N;++theta){
     condition1 = (C_tilde->getAmatVal(alpha,theta)==1) && (C_tilde->getAmatVal(theta,alpha)!=0); // alpha *-o theta
     condition2 = (C_tilde->getAmatVal(theta,gamma)!=0) && (C_tilde->getAmatVal(gamma,theta)==1); // theta o-* gamma
     if (condition1 && condition2){
@@ -472,6 +465,10 @@ void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bo
             Rcout << "Orient: " << theta << " *-> " << beta << std::endl;
           }
           track_changes = true;
+          ++rules_used(3);
+          if (verbose){
+            Rcout << "Rule 3 has been used " << rules_used(3) << " times.\n";
+          }
         }
       }
     }
@@ -480,21 +477,19 @@ void LocalFCI::rule3bsearch(const int &alpha,const int &beta,const int &gamma,bo
 
 
 bool LocalFCI::rule3(bool &track_changes) {
-  int gamma;
   List searchResults;
   NumericVector gammaVals;
   //bool condition1;
   //bool condition2;
   // (alpha (*) (2) beta (2) (*) gamma)
-  for (int alpha = 0;alpha<N;++alpha){
-    for (int beta = 0;beta<N;++beta){
+  for (size_t alpha = 0;alpha<N;++alpha){
+    for (size_t beta = 0;beta<N;++beta){
       if ((C_tilde->getAmatVal(alpha,beta)==2) && (C_tilde->getAmatVal(beta,alpha)!=0)){ // alpha *-> beta <-* gamma
         searchResults = rule3asearch(beta,alpha); // Search for gamma
         if (searchResults["rule3success"]){
           // Iterate over all values of gamma to find values of theta
           gammaVals = searchResults["gamma"];
-          for (NumericVector::iterator it = gammaVals.begin();it != gammaVals.end();++it){
-            gamma = *it;
+          for (auto gamma : gammaVals){
             rule3bsearch(alpha,beta,gamma,track_changes);
           }
         }
@@ -514,14 +509,14 @@ bool LocalFCI::rule3(bool &track_changes) {
  * 
  */
 
-bool LocalFCI::check_sep_r4(int beta,NumericVector md_path){
+bool LocalFCI::check_sep_r4(size_t beta,NumericVector md_path){
   if (verbose) Rcout << "Checking separation";
-  int n = md_path.length();
-  int theta = md_path(0);
-  int gamma = md_path(n-1);
+  size_t n = md_path.length();
+  size_t theta = md_path(0);
+  size_t gamma = md_path(n-1);
   
   if (verbose) Rcout << " of " << neighborhood(theta) << " and " << neighborhood(gamma) << " by " << neighborhood(beta);
-  bool cond1 = S->isSepSetMember(theta,gamma,neighborhood(beta)); // TODO: CHECK IF THESE ARE THE RIGHT ONES
+  bool cond1 = S->isSepSetMember(theta,gamma,neighborhood(beta)); 
   if (verbose) Rcout << "...finished\n";
   return (cond1);
 }
@@ -531,11 +526,11 @@ bool LocalFCI::rule4(bool &track_changes){
   bool cond2;
   bool done;
   NumericVector md_path;
-  for (int beta=0;beta<N;++beta){
-    for (int gamma=0;gamma<N;++gamma){
+  for (size_t beta=0;beta<N;++beta){
+    for (size_t gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(beta,gamma)!=0 && C_tilde->getAmatVal(gamma,beta)==1){
         //Rcout << "Potential beta: " << beta << " | Potential gamma: " << gamma << std::endl;
-        for (int alpha=0;alpha<N;++alpha){
+        for (size_t alpha=0;alpha<N;++alpha){
           cond1 = C_tilde->getAmatVal(beta,alpha)==2 && C_tilde->getAmatVal(alpha,beta)!=0;
           cond2 = C_tilde->getAmatVal(gamma,alpha)==3 && C_tilde->getAmatVal(alpha,gamma)==2; // triangle structure exists but is not oriented
           if (cond1 && cond2){
@@ -582,6 +577,10 @@ bool LocalFCI::rule4(bool &track_changes){
                   }
                   done = true;
                   track_changes = true;
+                  ++rules_used(4);
+                  if (verbose){
+                    Rcout << "Rule 4 has been used " << rules_used(4) << " times.\n";
+                  }
                 }
               }
             } 
@@ -598,10 +597,10 @@ bool LocalFCI::rule8(bool &track_changes){
   bool cond1;
   bool cond2;
   bool cond3;
-  for (int alpha=0;alpha<N;++alpha){
-    for (int gamma=0;gamma<N;++gamma){
+  for (size_t alpha=0;alpha<N;++alpha){
+    for (size_t gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(alpha,gamma)==2 && C_tilde->getAmatVal(gamma,alpha)==1){ // alpha o-> gamma
-        for (int beta=0;beta<N;++beta){
+        for (size_t beta=0;beta<N;++beta){
           cond1 = C_tilde->getAmatVal(beta,alpha)==3 && C_tilde->getAmatVal(alpha,beta)==2; // alpha -> beta
           cond2 = C_tilde->getAmatVal(beta,alpha)==3 && C_tilde->getAmatVal(alpha,beta)==1; // alpha -o beta
           if (cond1 || cond2){
@@ -622,6 +621,10 @@ bool LocalFCI::rule8(bool &track_changes){
                 }
               }
               track_changes = true;
+              ++rules_used(8);
+              if (verbose){
+                Rcout << "Rule 8 has been used " << rules_used(8) << " times.\n";
+              }
             }
           }
         }
@@ -639,18 +642,18 @@ bool LocalFCI::rule9(bool &track_changes){
   bool cond4;
   bool cond_final;
   std::vector<int> beta_vals;
-  int beta_current;
+  size_t beta_current;
   NumericVector upd;
   
-  for (int alpha=0;alpha<N;++alpha){
-    for (int gamma=0;gamma<N;++gamma){
+  for (size_t alpha=0;alpha<N;++alpha){
+    for (size_t gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(alpha,gamma)==2 && C_tilde->getAmatVal(gamma,alpha)==1){ // alpha o-> gamma
         if (verbose){
           Rcout << "Potential alpha: " << alpha << " | Potential gamma: " << gamma << std::endl;
         }
         beta_vals.clear();
         // Find all beta such that alpha (o-)-(o>) beta, and beta and gamma are not connected
-        for (int beta=0;beta<N;++beta){
+        for (size_t beta=0;beta<N;++beta){
           cond1 = C_tilde->getAmatVal(alpha,beta) == 2 || C_tilde->getAmatVal(alpha,beta) == 1;
           cond2 = C_tilde->getAmatVal(beta,alpha) == 1 || C_tilde->getAmatVal(beta,alpha) == 3;
           cond3 = C_tilde->getAmatVal(gamma,beta) == 0 && C_tilde->getAmatVal(beta,gamma) == 0;
@@ -676,6 +679,10 @@ bool LocalFCI::rule9(bool &track_changes){
               Rcout << "Orient: " << alpha << " -> " << gamma << std::endl;
             }
             track_changes = true;
+            ++rules_used(9);
+            if (verbose){
+              Rcout << "Rule 9 has been used " << rules_used(9) << " times.\n";
+            }
           }
         }
       }  
@@ -693,33 +700,33 @@ bool LocalFCI::rule10(bool &track_changes){
   bool cond5; // beta d disconnected
   
   NumericVector beta_vals;
-  int counter_b=0;
-  int beta;
+  size_t counter_b=0;
+  size_t beta;
   
-  int counter_d=0;
+  size_t counter_d=0;
   NumericVector rem;
   NumericVector d_vals;
-  int d;
+  size_t d;
   
   NumericVector x_vals;
   NumericVector x2_vals;
-  int counter_x1;
-  int first_pos;
+  size_t counter_x1;
+  size_t first_pos;
   
-  int counter_x2;
-  int second_pos;
+  size_t counter_x2;
+  size_t second_pos;
   
   NumericVector t1;
   NumericVector t2;
   
   
   
-  for (int alpha=0;alpha<N;++alpha){
-    for (int gamma=0;gamma<N;++gamma){ // search for alpha o-> gamma
+  for (size_t alpha=0;alpha<N;++alpha){
+    for (size_t gamma=0;gamma<N;++gamma){ // search for alpha o-> gamma
       cond1 = C_tilde->getAmatVal(alpha,gamma)==2 && C_tilde->getAmatVal(gamma,alpha)==1;
       if (cond1){
         //Rcout << "Potential alpha: " << alpha << " | Potential gamma: " << gamma << std::endl;
-        for (int b=0;b<N;++b){ // search for beta -> gamma
+        for (size_t b=0;b<N;++b){ // search for beta -> gamma
           cond1 = C_tilde->getAmatVal(gamma,b)==3 && C_tilde->getAmatVal(b,gamma)==2;
           if (cond1){
             //Rcout << "Potential beta: " << b << std::endl;
@@ -735,7 +742,7 @@ bool LocalFCI::rule10(bool &track_changes){
             rem = NumericVector::create(beta);
             //Rcout << "Current beta: " << beta << std::endl;
             d_vals = setdiff(beta_vals,rem);
-            //print_vector_elements_nonames(d_vals,"d_vals: ","\n");
+            //printVecElementsNoNames(d_vals,"d_vals: ","\n");
             counter_d = 0;
             while ((counter_d < d_vals.length()) && (C_tilde->getAmatVal(gamma,alpha)==1)){
               d = d_vals(counter_d);
@@ -751,10 +758,14 @@ bool LocalFCI::rule10(bool &track_changes){
                 C_tilde->setAmatVal(gamma,alpha,3);
                 if (verbose) Rcout << "\nRule 10 [easy]:\nOrient: " << alpha << " -> " << gamma << std::endl;
                 track_changes = true;
+                ++rules_used(10);
+                if (verbose){
+                  Rcout << "Rule 10 has been used " << rules_used(10) << " times.\n";
+                }
               } else { // search for two minimal uncovered p.d. paths
                 // Find all x s.t. a (-o)-(o>) x  
                 x_vals = NumericVector(0); // Creates an empty vector
-                for (int x=0;x<N;++x){
+                for (size_t x=0;x<N;++x){
                   cond1 = C_tilde->getAmatVal(alpha,x)==1 || C_tilde->getAmatVal(alpha,x)==2;
                   cond2 = C_tilde->getAmatVal(x,alpha)==1 || C_tilde->getAmatVal(x,alpha)==3;
                   cond3 = x != gamma;
@@ -776,13 +787,17 @@ bool LocalFCI::rule10(bool &track_changes){
                       //Rcout << "Potential first node on uncovered p.d. path p2: " << second_pos << std::endl;
                       ++counter_x2;
                       t1 = minUncovPdPath(alpha,first_pos,beta);
-                      if (verbose) print_vector_elements_nonames(t1,"t1: ","\n");
+                      if (verbose) printVecElementsNoNames(t1,"t1: ","\n");
                       if (t1.length()>1){
                         t2 = minUncovPdPath(alpha,second_pos,d);
                         if (t2.length()>1 && first_pos!=second_pos && C_tilde->getAmatVal(first_pos,second_pos)==0){
                           C_tilde->setAmatVal(gamma,alpha,3);
                           if (verbose) Rcout << "\nRule 10\nOrient: " << alpha << " -> " << gamma << std::endl;
                           track_changes = true;
+                          ++rules_used(10);
+                          if (verbose){
+                            Rcout << "Rule 10 has been used " << rules_used(10) << " times.\n";
+                          }
                         } 
                       }
                     }
@@ -823,11 +838,11 @@ void LocalFCI::allRules(){
  */
 
 void LocalFCI::convertMixedGraph(){
-  int G_ij;
-  int G_ji;
+  size_t G_ij;
+  size_t G_ji;
   bool sep_nbhd;
-  for (int i=0;i<N;++i){
-    for (int j=0;j<N;++j){
+  for (size_t i=0;i<N;++i){
+    for (size_t j=0;j<N;++j){
       sep_nbhd = false;
       // First check to see if i and j are in the same neighborhood
       // If i and j are not neighbors, then we should not change the orientations from the ancestral graph
@@ -866,11 +881,11 @@ void LocalFCI::convertMixedGraph(){
 void LocalFCI::convertFinalGraph(){
   Graph* g = new Graph(p);
   g -> emptyGraph();
-  int current_val = 0;
-  int nrow = C_tilde -> getNRow();
-  int ncol = C_tilde -> getNCol();
-  for (int i=0;i<nrow;++i){
-    for (int j=0;j<ncol;++j){
+  size_t current_val = 0;
+  size_t nrow = C_tilde -> getNRow();
+  size_t ncol = C_tilde -> getNCol();
+  for (size_t i=0;i<nrow;++i){
+    for (size_t j=0;j<ncol;++j){
       //Rcout << "(" << neighborhood(i) << "," << neighborhood(j) << "): ";
       current_val = C_tilde -> getAmatVal(i,j);
       //Rcout << current_val << std::endl;
@@ -890,35 +905,35 @@ void LocalFCI::convertFinalGraph(){
  */
 
 // Obtain values "d" that haven't been visited and d*->a
-NumericVector get_d_vals(Graph *pag,int &a,LogicalVector &visited,bool verbose=false){
-  int p = pag->size();
+NumericVector get_d_vals(Graph *pag,size_t &a,LogicalVector &visited,bool verbose=false){
+  size_t p = pag->size();
   NumericVector d_vals;
-  for (int i=0;i<p;++i){
+  for (size_t i=0;i<p;++i){
     // We need d *-> a
     if (pag->getAmatVal(a,i)!=0 && pag->getAmatVal(i,a)==2 && !visited(i)){
       d_vals.push_back(i);
     }
   }
-  if (verbose) print_vector_elements_nonames(d_vals,"\nPotential values: ","\n");
+  if (verbose) printVecElementsNoNames(d_vals,"\nPotential values: ","\n");
   return d_vals;
 }
 
-NumericVector get_r_vals(Graph *pag,int d,LogicalVector &visited,bool verbose=false){
-  int p = pag->size();
+NumericVector get_r_vals(Graph *pag,size_t d,LogicalVector &visited,bool verbose=false){
+  size_t p = pag->size();
   NumericVector r_vals;
-  for (int i=0;i<p;++i){
+  for (size_t i=0;i<p;++i){
     // We need r *-> d
     if (pag->getAmatVal(d,i)!=0 && pag->getAmatVal(i,d)==2 && !visited(i)){
       r_vals.push_back(i);  
     }
   }
-  if (verbose) print_vector_elements_nonames(r_vals,"Potential values for the path: ","\n");
+  if (verbose) printVecElementsNoNames(r_vals,"Potential values for the path: ","\n");
   return r_vals;
 }
 
-List createPathList(int a,NumericVector set,bool verbose=false){
+List createPathList(size_t a,NumericVector set,bool verbose=false){
   if (verbose) Rcout << "Creating path list\n";
-  int num_paths = set.length();
+  size_t num_paths = set.length();
   NumericVector path = {0};
   path[0] = a;
   
@@ -926,28 +941,28 @@ List createPathList(int a,NumericVector set,bool verbose=false){
   
   NumericVector new_path;
   
-  for (int i = 0;i<num_paths;++i){
+  for (size_t i = 0;i<num_paths;++i){
     new_path = clone(path);
     new_path.push_back(set(i));
     paths_to_try[i] = new_path;
-    if (verbose) print_vector_elements_nonames(paths_to_try[i],"New Path: ","\n");
+    if (verbose) printVecElementsNoNames(paths_to_try[i],"New Path: ","\n");
   }
   
   return paths_to_try;
 }
 
 List updatePathList(NumericVector mpath,NumericVector &set,List &old_paths,bool verbose=false){
-  int old_size = old_paths.length();
+  size_t old_size = old_paths.length();
   if (verbose) Rcout << "Size of old path list: " << old_size << std::endl;
-  int num_paths = set.length();
-  //mpath.erase(0); // we don't need to go over this point again
+  size_t num_paths = set.length();
+  //mpath.erase(0); // we don't need to go over this posize_t again
   List new_paths(old_size+num_paths);
   if (verbose) Rcout << "Size of new path list: " << new_paths.length() << std::endl;
   
   NumericVector new_path;
   String starter1 = String("Path ");
   String starter2;
-  for (int i=0;i<old_size+num_paths;++i){
+  for (size_t i=0;i<old_size+num_paths;++i){
     if (i < old_size){
       new_paths[i] = old_paths[i]; 
     } else {
@@ -958,13 +973,13 @@ List updatePathList(NumericVector mpath,NumericVector &set,List &old_paths,bool 
     starter2 = starter1;
     starter2 += std::to_string(i);
     starter2 += ": ";
-    if (verbose) print_vector_elements_nonames(new_paths[i],starter2,"\n");
+    if (verbose) printVecElementsNoNames(new_paths[i],starter2,"\n");
   }
   return new_paths;
 }
 
 
-NumericVector LocalFCI::minDiscPath(int a,int b,int c){
+NumericVector LocalFCI::minDiscPath(size_t a,size_t b,size_t c){
   LogicalVector visited(N);
   visited(a) = true;
   visited(b) = true;
@@ -973,16 +988,15 @@ NumericVector LocalFCI::minDiscPath(int a,int b,int c){
   NumericVector d_vals = get_d_vals(C_tilde,a,visited,verbose); // Obtain values that are colliders on a path from the nodes to c
   if (d_vals.length()>0){
     List path_list = createPathList(a,d_vals,verbose);
-    int counter = 0; // ensures that we go through each vector in the list
-    int list_length = path_list.length();
+    size_t counter = 0; // ensures that we go through each vector in the list
+    size_t list_length = path_list.length();
     NumericVector mpath; // tracks the potential minimum discriminating path
-    int m; // tracks the current length of the minimum discriminating path
-    int d; // gives the last value in the path
-    int pred;
-    //verbose=true;
+    size_t m; // tracks the current length of the minimum discriminating path
+    size_t d; // gives the last value in the path
+    size_t pred;
     while (counter < list_length){
       mpath = path_list[counter];
-      if (verbose) print_vector_elements_nonames(mpath,"mpath: ","\n");
+      if (verbose) printVecElementsNoNames(mpath,"mpath: ","\n");
       m = mpath.length();
       d = mpath(m-1);
       if (C_tilde->getAmatVal(c,d)==0 && C_tilde->getAmatVal(d,c)==0){
@@ -992,7 +1006,7 @@ NumericVector LocalFCI::minDiscPath(int a,int b,int c){
         }
         minDiscPath.push_back(b);
         minDiscPath.push_back(c);
-        if (verbose) print_vector_elements_nonames(minDiscPath,"Minimum Discriminating Path: ","\n");
+        if (verbose) printVecElementsNoNames(minDiscPath,"Minimum Discriminating Path: ","\n");
         return minDiscPath;
       } // End If
       
@@ -1004,13 +1018,9 @@ NumericVector LocalFCI::minDiscPath(int a,int b,int c){
       if (C_tilde->getAmatVal(d,c)==2 && C_tilde->getAmatVal(c,d)==3 && C_tilde->getAmatVal(pred,d)==2){
         visited(d) = true;
         // Find all neighbors of d not visited yet
-        
         NumericVector r_vals = get_r_vals(C_tilde,d,visited);
-        
         if (r_vals.length()>0){
-          
           path_list = updatePathList(mpath,r_vals,path_list,verbose);
-          
         }
       }
       list_length = path_list.length();
@@ -1020,16 +1030,16 @@ NumericVector LocalFCI::minDiscPath(int a,int b,int c){
 }
 
 
-NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
+NumericVector LocalFCI::minUncovPdPath(size_t alpha,size_t beta,size_t gamma){
   NumericVector path;
   NumericVector mpath;
   NumericVector final_path(0);
   NumericVector theta_vals(0);
   List path_list;
-  int counter;
-  int m;
-  int d;
-  int n_path;
+  size_t counter;
+  size_t m;
+  size_t d;
+  size_t n_path;
   bool uncov;
   bool done = false;
   NumericVector r_vals(0);
@@ -1052,7 +1062,7 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
     visited[alpha]=true;
     visited[beta]=true;
     visited[gamma]=true;
-    for (int theta=0;theta<N;++theta){
+    for (size_t theta=0;theta<N;++theta){
       cond1 = C_tilde->getAmatVal(beta,theta)==1 || C_tilde->getAmatVal(beta,theta)==2;
       cond2 = C_tilde->getAmatVal(theta,beta)==1 || C_tilde->getAmatVal(theta,beta)==3;
       cond3 = C_tilde->getAmatVal(theta,alpha) == 0 && C_tilde->getAmatVal(alpha,theta)== 0 && !visited[theta];
@@ -1066,7 +1076,7 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
       counter = 0;
       while ((counter<path_list.length()) && (!done)){
         mpath = path_list[counter];
-        if (verbose) print_vector_elements_nonames(mpath,"mpath: ","\n");
+        if (verbose) printVecElementsNoNames(mpath,"mpath: ","\n");
         m = mpath.length();
         d = mpath(m-1);
         visited[d]=true;
@@ -1075,14 +1085,14 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
         if (cond1 && cond2){
           if (verbose) Rcout << "Found a final node on the uncovered p.d. path: " << d << std::endl;
           path = NumericVector::create(alpha);
-          for (int i=0;i<m;++i){
+          for (size_t i=0;i<m;++i){
             path.push_back(mpath(i));  
           }
           path.push_back(gamma);
-          if (verbose) print_vector_elements_nonames(path,"Path: ","\n");
+          if (verbose) printVecElementsNoNames(path,"Path: ","\n");
           n_path = path.length();
           uncov=true;
-          for (int i=0;i<n_path-2;++i){
+          for (size_t i=0;i<n_path-2;++i){
             cond1 = (C_tilde->getAmatVal(path(i),path(i+2))==0) && (C_tilde->getAmatVal(path(i+2),path(i))==0);
             if (!cond1){
               if (verbose){
@@ -1094,14 +1104,14 @@ NumericVector LocalFCI::minUncovPdPath(int alpha,int beta,int gamma){
           }
           if (uncov){
             final_path = path;
-            if (verbose) print_vector_elements_nonames(final_path,"Final Path: ","\n");
+            if (verbose) printVecElementsNoNames(final_path,"Final Path: ","\n");
             done = true;
           }
         } else {
           // d and c are not connected or connected with a "wrong" edge
           // iteratively search for neighbors of d not yet visited
           // and add them to potential members of the path
-          for (int i=0;i<N;++i){
+          for (size_t i=0;i<N;++i){
             cond1 = C_tilde->getAmatVal(d,i) == 1 || C_tilde->getAmatVal(d,i)==2;
             cond2 = C_tilde->getAmatVal(i,d) == 1 || C_tilde->getAmatVal(i,d)==3;
             cond3 = !visited[i];
@@ -1144,7 +1154,7 @@ void LocalFCI::run(){
   
   std::for_each(targets.begin(),
                 targets.end(),
-                [this](int t){ getSkeletonTarget(t); });
+                [this](size_t t){ getSkeletonTarget(t); });
   
   
   // Rule 0: Obtain V Structures

@@ -119,8 +119,16 @@ bool checkAcyclicity(int nodes,StringVector node_names,NumericMatrix adj){
 }
 
 // [[Rcpp::export]]
-bool checkIsAncestor(int nodes,StringVector node_names,NumericMatrix adj,int desc,int anc){
-  DAG g(nodes,node_names,adj);
+bool checkIsAncestor(int nodes,StringVector node_names,NumericMatrix adj,
+                     int desc,int anc,bool verbose=false){
+  DAG g(nodes,node_names,adj,false,verbose);
   return g.isAncestor(desc,anc);
+}
+
+// [[Rcpp::export]]
+bool checkInNeighborhood(int nodes,StringVector node_names,NumericMatrix adj,
+                         int i,int j,bool verbose=false){
+  DAG g(nodes,node_names,adj,false,verbose);
+  return g.inNeighborhood(i,j);
 }
 

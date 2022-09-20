@@ -10,6 +10,11 @@
 localpc <- function(data=NULL,true_dag=NULL,targets,
                           node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,
                           method="MMPC",test="testIndFisher",verbose = TRUE){
+  
+  if (lmax < 0){
+    stop("Invalid lmax value")
+  }
+  
   p <- ifelse(is.null(data),ncol(true_dag),ncol(data))
   if (is.null(node_names)){
     node_names <- paste0("V",0:(p-1))
@@ -31,14 +36,16 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
   
   if (is.null(true_dag)){
     # Find Markov Blankets (mbEst.R)
-    mbList <- getAllMBs(targets,data,mb_tol,method,test,verbose)
+    mbList <- getAllMBs(targets,data,mb_tol,lmax,method,test,verbose)
     
     # Create adjacency matrix based on Markov Blankets (mbEst.R)
     true_dag <- getEstInitialDAG(mbList,ncol(data),verbose)
     semi_sample_version <- FALSE
+    estDAG <- FALSE
   } else {
     mbList <- list()
     semi_sample_version <- TRUE
+    estDAG <- TRUE
   }
   
   # Convert any data frame to a matrix
@@ -58,14 +65,16 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
     if (verbose){
       cat("Population Version:\n")
     }
-    results <- localpc_cpp_pop(true_dag,cpp_targets,node_names,lmax,verbose)
+    results <- popLocalPC(true_dag,cpp_targets,
+                          node_names,lmax,verbose)
   } else {
     if (semi_sample_version & verbose){
       cat("Semi-Sample Version:\n")
     } else {
       if (verbose) cat("Sample Version:\n")
     }
-    results <- localpc_cpp(true_dag,data,cpp_targets,node_names,lmax,tol,verbose)
+    results <- sampleLocalPC(true_dag,data,cpp_targets,
+                             node_names,lmax,tol,verbose,estDAG)
   }
   
   # We change the target to target - 1 in order to accommodate change to C++

@@ -28,6 +28,9 @@
 localfci <- function(data=NULL,true_dag=NULL,targets,
                          node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,
                          method="MMPC",test="testIndFisher",verbose = TRUE){
+  if (lmax < 0){
+    stop("Invalid lmax value")
+  }
   
   p <- ifelse(is.null(data),ncol(true_dag),ncol(data))
   if (is.null(node_names)){
@@ -51,13 +54,16 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
   
   if (is.null(true_dag)){
     # Find Markov Blankets (mbEst.R)
-    mbList <- getAllMBs(targets,data,mb_tol,method,test,verbose)
+    mbList <- getAllMBs(targets,data,mb_tol,lmax,method,test,verbose)
     
     # Create adjacency matrix based on Markov Blankets (mbEst.R)
     true_dag <- getEstInitialDAG(mbList,ncol(data),verbose)
-
+    
+    # We are using a DAG with estimated Markov Blankets encoded
+    estDAG <- TRUE
   } else {
     mbList <- list()
+    estDAG <- FALSE
   }
   
   # Convert any data frame to a matrix
@@ -77,9 +83,11 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     if (verbose){
       cat("Population Version:\n")
     }
-    results <- localfci_cpp_pop(true_dag,cpp_targets,node_names,lmax,verbose)
+    results <- popLocalFCI(true_dag,cpp_targets,
+                           node_names,lmax,verbose)
   } else {
-    results <- localfci_cpp(true_dag,data,cpp_targets,node_names,lmax,tol,verbose)
+    results <- sampleLocalFCI(true_dag,data,cpp_targets,
+                              node_names,lmax,tol,verbose,estDAG)
   }
   
   # We change the target to target - 1 in order to accommodate change to C++
@@ -87,6 +95,7 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     "amat"=results$G,
     "S"=results$S,
     "NumTests"=results$NumTests,
+    "RulesUsed"=results$RulesUsed,
     "Nodes"=results$allNodes+1, # to convert to R numbering
     "totalSkeletonTime"=results$totalSkeletonTime,
     "targetSkeletonTimes"=results$targetSkeletonTimes,

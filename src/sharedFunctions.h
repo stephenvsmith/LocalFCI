@@ -6,16 +6,16 @@
 
 using namespace Rcpp;
 
-NumericMatrix combn_cpp(NumericVector x,int l);
+NumericMatrix combn_cpp(NumericVector x,size_t l);
 
-void print_vector_elements(NumericVector v,StringVector names, String opening="",String closing="");
+void printVecElements(NumericVector v,StringVector names, 
+                      String opening="",String closing="");
 
-void print_vector_elements_nonames(NumericVector v,String opening="",String closing="",String sep=" ");
+void printVecElementsNoNames(NumericVector v,String opening="",
+                             String closing="",String sep=" ");
 
-void print_matrix(NumericMatrix m);
+void printMatrix(NumericMatrix m);
 
-void iteration_print(const int &l,const int &i,const int &j,const NumericVector &sep,const StringVector &names,const double &pval);
-
-bool isMember(NumericVector x,int i);
+bool isMember(NumericVector x,const size_t &i);
 
 #endif

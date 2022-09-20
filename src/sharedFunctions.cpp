@@ -7,8 +7,8 @@ using namespace Rcpp;
  * Tested: 12/16/20
  */
 // [[Rcpp::export]]
-NumericMatrix combn_cpp(NumericVector x,int l){
-  int xlength = x.length();
+NumericMatrix combn_cpp(NumericVector x,size_t l){
+  size_t xlength = x.length();
   NumericMatrix result;
   
   if (l > x.length()){
@@ -33,9 +33,9 @@ NumericMatrix combn_cpp(NumericVector x,int l){
 
 // Determines whether or not i is in vector x
 // [[Rcpp::export]]
-bool isMember(NumericVector x,int i){
+bool isMember(NumericVector x,const size_t &i){
   NumericVector::iterator it = x.begin();
-  int j;
+  size_t j;
   
   for (;it!=x.end();++it){
     j = *it;
@@ -50,16 +50,10 @@ bool isMember(NumericVector x,int i){
 
 // PRINTING FUNCTIONS (DEBUGGING)
 
-/*
- * 
- * Functions for printing different values 
- * 
- */
-
-void print_vector_elements(NumericVector v,StringVector names,String opening,String closing){
-  int ln = v.length();
+void printVecElements(NumericVector v,StringVector names,String opening,String closing){
+  size_t ln = v.length();
   Rcout << opening.get_cstring();
-  for (int i = 0;i<ln;++i) {
+  for (size_t i = 0;i<ln;++i) {
     Rcout << names(v(i));
     if (i < ln-1){
       Rcout << " ";
@@ -69,10 +63,11 @@ void print_vector_elements(NumericVector v,StringVector names,String opening,Str
 }
 
 
-void print_vector_elements_nonames(NumericVector v,String opening,String closing,String sep){
-  int l = v.length();
+void printVecElementsNoNames(NumericVector v,String opening,
+                             String closing,String sep){
+  size_t l = v.length();
   Rcout << opening.get_cstring();
-  for (int i = 0;i<l;++i) {
+  for (size_t i = 0;i<l;++i) {
     Rcout << v(i);
     if (i<l-1){
       Rcout << sep.get_cstring();
@@ -82,12 +77,12 @@ void print_vector_elements_nonames(NumericVector v,String opening,String closing
 }
 
 
-void print_matrix(NumericMatrix m){
-  int n = m.nrow();
-  int p = m.ncol();
+void printMatrix(NumericMatrix m){
+  size_t n = m.nrow();
+  size_t p = m.ncol();
   String ending;
-  for (int i = 0;i<n;++i){
-    for (int j = 0;j<p;++j){
+  for (size_t i = 0;i<n;++i){
+    for (size_t j = 0;j<p;++j){
       if (j==p-1){
         ending = "\n";
       } else{
@@ -97,17 +92,5 @@ void print_matrix(NumericMatrix m){
     }
   }
 }
-
-
-// void iteration_print(const int &l,const int &i,const int &j,const NumericVector &sep,const StringVector &names,const double &pval){
-//   Rcout << "l: " << l << " | i: " << i << " | j: " << j << " | k: ";
-//   if (l == 0){
-//     Rcout << sep;
-//   } else {
-//     print_vector_elements(sep,names);
-//   }
-//   Rcout << " | p-val: " << pval;
-//   Rcout << std::endl;
-// }
 
 

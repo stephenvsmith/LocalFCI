@@ -2,20 +2,24 @@
 
     Rule 1:
     Orient: 1 *-> 3 o-* 4 as 3 -> 4
+    Rule 1 has been used 1 times.
     Track changes: 1
 
 # Rule 2 is correct.
 
     Rule 2:
     Orient: 0 *-> 1 -> 2 as: 0 *-> 2
+    Rule 2 has been used 1 times.
     Rule 2:
     Orient: 3 -> 4 *-> 5 as: 3 *-> 5
+    Rule 2 has been used 2 times.
     Track changes: 1
 
 # Rule 3 is correct.
 
     Rule 3:
     Orient: 6 *-> 4
+    Rule 3 has been used 1 times.
     Track changes: 1
 
 # Rule 4 is correct.
@@ -41,6 +45,7 @@
     
     Rule 4
     There is a discriminating path between 6 and 5 for 4 and 4 is in the SepSet of 5 and 6. Orient: 4 -> 5
+    Rule 4 has been used 1 times.
     Track changes: 1
 
 # Rule 4 is correct (beta not in separation set).
@@ -66,6 +71,7 @@
     
     Rule 4
     There is a discriminating path between 6 and 5 for 4 and 4 is NOT in the SepSet of 5 and 6. Orient: 3 <-> 4 <-> 5
+    Rule 4 has been used 1 times.
     Track changes: 1
 
 # Rule 4 testing conditions
@@ -85,9 +91,11 @@
     
     Rule 8
     Orient: 0 o-> 1 -> 5 with 0 o-> 5 as 0 -> 5
+    Rule 8 has been used 1 times.
     
     Rule 8
     Orient: 3 -> 4 -> 5 with 3 o-> 5 as 3 -> 5
+    Rule 8 has been used 2 times.
     Track changes: 1
 
 # Rule 9 is correct.
@@ -130,6 +138,7 @@
     Counter: 4 | Number of paths: 4
     Rule 9: There exists an uncovered potentially directed path between 4 and 6
     Orient: 4 -> 6
+    Rule 9 has been used 1 times.
     Potential alpha: 5 | Potential gamma: 7
     Potential beta: 4
     Checking for paths of 4 or more
@@ -221,6 +230,7 @@
     Counter: 5 | Number of paths: 5
     Rule 9: There exists an uncovered potentially directed path between 2 and 4
     Orient: 2 -> 4
+    Rule 9 has been used 1 times.
     Potential alpha: 3 | Potential gamma: 1
     Potential beta: 0
     Potential beta: 2
@@ -276,6 +286,7 @@
     
     Rule 10
     Orient: 2 -> 4
+    Rule 10 has been used 1 times.
     Track changes: 1
 
 # Rule 10 (simple)
@@ -283,6 +294,7 @@
     
     Rule 10 [easy]:
     Orient: 0 -> 2
+    Rule 10 has been used 1 times.
     Track changes: 1
 
 # Rule 10 (capture simple unprotected pd paths)
@@ -307,6 +319,7 @@
     
     Rule 10
     Orient: 0 -> 2
+    Rule 10 has been used 1 times.
     Track changes: 1
          [,1] [,2] [,3] [,4] [,5] [,6]
     [1,]    0    0    2    0    1    2
@@ -320,10 +333,13 @@
 
     Rule 1:
     Orient: 2 *-> 6 o-* 0 as 6 -> 0
+    Rule 1 has been used 1 times.
     Rule 1:
     Orient: 6 *-> 0 o-* 3 as 0 -> 3
+    Rule 1 has been used 2 times.
     Rule 1:
     Orient: 7 *-> 1 o-* 5 as 1 -> 5
+    Rule 1 has been used 3 times.
     Potential alpha: 2 | Potential gamma: 4
     Potential beta: 6
     Potential beta: 7
@@ -345,6 +361,7 @@
     Counter: 2 | Number of paths: 2
     Rule 9: There exists an uncovered potentially directed path between 2 and 4
     Orient: 2 -> 4
+    Rule 9 has been used 1 times.
     Potential alpha: 7 | Potential gamma: 1
     Potential beta: 2
     Checking for paths of 4 or more
@@ -410,22 +427,22 @@
     There are 2 targets.
     Targets: V2 V10
     Target: 1
-    FUNCTION get_neighbors_from_dag. Node 1
-    Call from get_neighbors_from_dag. Node 0 is a parent.
-    Call from get_neighbors_from_dag. Node 2 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 2
-    Call from get_neighbors_from_dag. Node 3 is a potential spouse of node 1.
+    FUNCTION getNeighbors. Node 1
+    Call from getNeighbors. Node 0 is a parent.
+    Call from getNeighbors. Node 2 is a child.
+    Call from getNeighbors. We are evaluating the following child: 2
+    Call from getNeighbors. Node 3 is a potential spouse of node 1.
     Neighbors of node 1: 0, 2, 3
     
     Target: 9
-    FUNCTION get_neighbors_from_dag. Node 9
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. Node 8 is a child.
-    Call from get_neighbors_from_dag. Node 11 is a parent.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 6 is a potential spouse of node 9.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 8
-    Call from get_neighbors_from_dag. Node 10 is a potential spouse of node 9.
+    FUNCTION getNeighbors. Node 9
+    Call from getNeighbors. Node 7 is a child.
+    Call from getNeighbors. Node 8 is a child.
+    Call from getNeighbors. Node 11 is a parent.
+    Call from getNeighbors. We are evaluating the following child: 7
+    Call from getNeighbors. Node 6 is a potential spouse of node 9.
+    Call from getNeighbors. We are evaluating the following child: 8
+    Call from getNeighbors. Node 10 is a potential spouse of node 9.
     Neighbors of node 9: 6, 7, 8, 10, 11
     
     Total Neighborhood:

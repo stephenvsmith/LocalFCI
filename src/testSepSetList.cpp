@@ -54,6 +54,7 @@ bool checkSeparationFunc(NumericVector neighbors,int i,int j,NumericVector sep,i
   bool results = S -> isSepSetMember(i,j,val_to_check);
   delete S;
   return results;
+  
 }
 
 // [[Rcpp::export]]
@@ -64,6 +65,7 @@ bool checkSeparationFuncCorrected(NumericVector neighbors,int i,int j,NumericVec
   bool results = S -> isSepSetMember(i,j,val_to_check);
   delete S;
   return results;
+  
 }
 
 

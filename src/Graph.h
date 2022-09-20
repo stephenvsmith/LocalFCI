@@ -8,103 +8,68 @@ using namespace Rcpp;
 // Base class
 class Graph {
 public:
-  
   // Constructors
-  Graph(int nodes,bool verbose=false); // Tested
-  Graph(int nodes,StringVector node_names,NumericMatrix adj,bool verbose=false); // Tested
+  Graph(size_t nodes,bool verbose=false); 
+  Graph(size_t nodes,StringVector node_names,
+        NumericMatrix adj,bool verbose=false);
   
-  // Fills the adjacency matrix with zeros
-  void emptyGraph(); // Tested
-  
-  // Tested in testGraph.cpp and test_Graph.R
-  void printAmat();
-  
-  // Tested
-  // Determines if two nodes are neighbors
-  bool areNeighbors(int i,int j){
-    return amat(i,j)!=0 || amat(j,i)!=0;
+  void validateIndex(const size_t &ind) const {
+    if (ind < 0){
+      stop("Invalid index: negative value");
+    } else if (ind >= p){
+      stop("Invalid index: too large");
+    }
   }
   
   // Accessors
-  
-  int size() {
-    return p;
-  }
-  
-  // Tested
-  StringVector getNodeNames(){
-    return names;
-  }
-  
-  // Tested
-  NumericMatrix getAmat(){
-    return amat;
-  }
-  
-  // Tested
-  int getAmatVal(int i,int j){
-    if (i<0 || j<0){
-      stop("Invalid negative index");
-    }
-    if (i>=p || j>=p){
-      Rcout << "i = " << i << " | j = " << j << " | Number of Nodes=" << p << std::endl; 
-      stop("Invalid index: too large");
-    }
+  int size() { return p; }
+  StringVector getNodeNames(){ return names; }
+  NumericMatrix getAmat(){ return amat; }
+  int getAmatVal(const size_t &i,const size_t &j){
+    validateIndex(i); validateIndex(j);
     return amat(i,j);
   }
+  int operator ()(const size_t &i,const size_t &j) const { 
+    validateIndex(i); validateIndex(j);
+    return amat(i,j); 
+  }
   
-  // Tested in graphtests.cpp and test_Graph.R
-  NumericVector getAmatRow(int row){
-    if (row>=p){
-      stop("Row index is too large");
-    } else if (row < 0){
-      stop("Row index is negative");
-    }
+  NumericVector getAmatRow(const size_t &row){
+    validateIndex(row);
     return amat(row,_);
   }
   
   // Tested in graphtests.cpp and test_Graph.R
-  NumericVector getAmatCol(int col){
-    if (col>=p){
-      stop("Column index is too large");
-    } else if (col < 0){
-      stop("Column index is negative");
-    }
+  NumericVector getAmatCol(const size_t &col){
+    validateIndex(col);
     return amat(_,col);
   }
   
-  int getNCol(){
-    return amat.ncol();
-  }
-  
-  int getNRow(){
-    return amat.nrow();
-  }
-  
-  // Tested in graphtests.cpp and test_Graph.R
-  NumericVector getAdjacent(int i);
-  NumericVector getNonAdjacent(int i);
+  int getNCol(){ return amat.ncol(); }
+  int getNRow(){ return amat.nrow(); }
+  NumericVector getAdjacent(const size_t &i);
+  NumericVector getNonAdjacent(const size_t &i);
   
   // Setters
-  void setSize(int s){
-    p = s;
+  void setSize(const size_t &s){ p = s; }
+  void setNames(StringVector n){ names = n; }
+  void setAmat(NumericMatrix m){ amat = m; p = m.ncol(); }
+  double & operator ()(const size_t &i, const size_t &j) {
+    return amat(i,j);
   }
-  
-  void setNames(StringVector n){
-    names = n;
-  }
-  
-  void setAmat(NumericMatrix m){
-    amat = m;
-    p = m.ncol();
-  }
-  
-  int operator ()(unsigned i,unsigned j) const    {return amat(i,j);}
-  double & operator ()(unsigned i, unsigned j) {return amat(i,j);}
-  
-  // Tested
-  void setAmatVal(int i,int j,int val){
+  void setAmatVal(const size_t &i,
+                  const size_t &j,
+                  const size_t &val){
     amat(i,j) = val;
+  }
+  
+  // Fills the adjacency matrix with zeros
+  void emptyGraph(); 
+  void printAmat();
+  // Determines if two nodes are neighbors
+  bool areNeighbors(const size_t &i,const size_t &j){
+    validateIndex(i); validateIndex(j);
+    return amat(i,j)!=0 || amat(j,i)!=0;
   }
 
 protected:
@@ -112,9 +77,8 @@ protected:
   bool verbose;
    
 private:
-  int p;
+  size_t p;
   StringVector names;
-
 };
 
 #endif

@@ -2,7 +2,8 @@
 
 using namespace Rcpp;
 
-Graph::Graph(int nodes,StringVector node_names,NumericMatrix adj,bool verbose) : 
+Graph::Graph(size_t nodes,StringVector node_names,
+             NumericMatrix adj,bool verbose) : 
   p(nodes),names(node_names),amat(adj),verbose(verbose) {
   if (adj.nrow()!=adj.ncol()){
     stop("Dimensions of adjacency matrix do not match.");
@@ -13,48 +14,44 @@ Graph::Graph(int nodes,StringVector node_names,NumericMatrix adj,bool verbose) :
   }
 };
 
-Graph::Graph(int nodes,bool verbose) : p(nodes),verbose(verbose) {
-  StringVector tmp(nodes);
-  names = tmp;
-  NumericMatrix tmp1(nodes);
-  amat = tmp1;
-  std::fill(amat.begin(), amat.end(), 1); //tested
-  amat.fill_diag(0); //tested
+// Initializes a complete graph without names
+Graph::Graph(size_t nodes,bool verbose) : 
+  p(nodes),verbose(verbose) {
+  names = StringVector(nodes);
+  amat = NumericMatrix(nodes);
+  std::fill(amat.begin(), amat.end(), 1);
+  amat.fill_diag(0);
 }
 
 void Graph::emptyGraph(){
   std::fill(amat.begin(),amat.end(),0);  
 }
 
-NumericVector Graph::getAdjacent(int i){
-  if (i < 0 || i>=p){
-    stop("Call from getAdjacent: invalid index (i=%i, p=%i)",i,p);
-  }
-  NumericVector current_edges;
+NumericVector Graph::getAdjacent(const size_t &i){
+  validateIndex(i);
+  NumericVector adj_nodes;
   for (int j=0;j<p;++j){
-    if (amat(i,j)==1 || amat(j,i)==1){
-      current_edges.push_back(j);
+    if (amat(i,j)!=0 || amat(j,i)!=0){
+      adj_nodes.push_back(j);
     }
   }
-  return current_edges;
+  return adj_nodes;
 }
 
-// Returns nodes that are not adjacent to i in the estimated skeleton
-NumericVector Graph::getNonAdjacent(int i){
-  if (i < 0 || i>=p){
-    stop("Call from getNonAdjacent: invalid index (i=%i, p=%i)",i,p);
-  }
-  NumericVector final;
+// Returns nodes that are not adjacent to i in the graph
+NumericVector Graph::getNonAdjacent(const size_t &i){
+  validateIndex(i);
+  NumericVector non_adj;
   
   for (int j=0;j<p;++j){
     if (amat(i,j)==0 && amat(j,i)==0 && j!=i){
-      final.push_back(j);
+      non_adj.push_back(j);
     }
   }
   
-  return final;
+  return non_adj;
 }
 
 void Graph::printAmat(){
-  print_matrix(amat);
+  printMatrix(amat);
 }

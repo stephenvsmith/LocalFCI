@@ -9,7 +9,8 @@
 #' @param test The conditional independence test to use in the algorithm. Default is the Fisher Independence test.
 #' @param verbose Whether to provide detailed output
 #' @export
-getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFisher",verbose=FALSE){
+getMB <- function(target,dataset,threshold=0.01,lmax=3,
+                  method="MMPC",test="testIndFisher",verbose=FALSE){
   if (verbose) cat("Estimating Markov Blankets using\n",
                    "Algorithm:",method,"\n",
                    "Test:",test,"\n",
@@ -19,7 +20,7 @@ getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFishe
     stop("MB Estimation threshold is invalid. Threshold must be in (0,1]")
   }
   
-  if (!(method %in% c("MMPC","SES","gOMP"))){
+  if (!(method %in% c("MMPC","SES","gOMP","pc.sel"))){
     stop("Invalid MB estimation algorithm")
   }
   
@@ -28,20 +29,38 @@ getMB <- function(target,dataset,threshold=0.01,method="MMPC",test="testIndFishe
   }
   
   if (method=="MMPC"){
-    mb <- MXM::MMPC(target=target,dataset=dataset,threshold=threshold,test=test)
+    mb <- MXM::MMPC(target=target,dataset=dataset,
+                    threshold=threshold,test=test,
+                    max_k=lmax,hash = TRUE)
+    mb_vars <- mb@selectedVars
+    n_tests <- mb@n.tests
+    runtime <- mb@runtime[3]
   } else if (method=="SES"){
-    mb <- MXM::SES(target=target,dataset=dataset,threshold=threshold,test=test)
-  } 
+    mb <- MXM::SES(target=target,dataset=dataset,
+                   threshold=threshold,test=test,
+                   max_k=lmax,hash = TRUE)
+    mb_vars <- mb@selectedVars
+    n_tests <- mb@n.tests
+    runtime <- mb@runtime[3]
+  } else if (method=="pc.sel"){
+    mb <- MXM::pc.sel(target=dataset[,target],
+                      dataset=dataset[,-target],
+                      threshold=threshold)
+    mb_vars <- sort(mb$vars)
+    n_tests <- sum(mb$n.tests)
+    runtime <- mb$runtime[3]
+  }
   # else if (method=="gOMP"){
   #   mb <- MXM::gomp(target=target,dataset=dataset,test = test)$res[,1] # there are more options here to explore, also need to look closer at output
   # } # There is also fbed.reg, 
   if (verbose) cat("Results for target",target,":",paste(mb@selectedVars,collapse = ","),"\n")
-  return(list("mb"=mb@selectedVars,
-              "time"=mb@runtime[3]))
+  return(list("mb"=mb_vars,
+              "time"=runtime,
+              "n_tests"=n_tests))
 }
 
 constructFinalMBList <- function(targets,target_mbs,
-                                 dataset,threshold,method,test,verbose){
+                                 dataset,threshold,lmax,method,test,verbose){
   # A vector to identify only the first-order neighbors
   first_order_neighbors <- unique(
     setdiff(
@@ -52,6 +71,7 @@ constructFinalMBList <- function(targets,target_mbs,
                                function(t) 
                                  getMB(t,dataset,
                                        threshold,
+                                       lmax,
                                        method,
                                        test,verbose))
     # Combine first-order MBs and second-order MBs in one list
@@ -74,8 +94,9 @@ constructFinalMBList <- function(targets,target_mbs,
 #' @param targets a vector of integers which will identify the target nodes of our algorithm
 #' @inheritParams getMB
 #' @export
-getAllMBs <- function(targets,dataset,threshold=0.01,method="MMPC",
-                      test="testIndFisher",verbose=TRUE){
+getAllMBs <- function(targets,dataset,threshold=0.01,lmax=3,
+                      method="MMPC",test="testIndFisher",
+                      verbose=TRUE){
   p <- ncol(dataset)
   if (!(all(targets %in% seq(p)))){
     stop("Invalid target values for MB Estimation procedure")
@@ -88,10 +109,12 @@ getAllMBs <- function(targets,dataset,threshold=0.01,method="MMPC",
   
   # Find the MBs for the target nodes
   target_mbs <- lapply(targets,
-                       function(t) getMB(t,dataset,threshold,method,test,verbose))
+                       function(t) 
+                         getMB(t,dataset,threshold,lmax,method,test,verbose)
+                       )
   
   return(constructFinalMBList(targets,target_mbs,dataset,
-                              threshold,method,test,verbose))
+                              threshold,lmax,method,test,verbose))
 }
 
 
@@ -149,6 +172,14 @@ getTotalMBTime <- function(mbList){
   })))
 }
 
+# Obtain the total time taken for estimating the Markov Blankets as stored in the
+# value returned by the `getMB` function
+getTotalMBTests <- function(mbList){
+  return(sum(sapply(mbList,function(mb){
+    return(mb[["n_tests"]])
+  })))
+}
+
 # Obtain only a vector of nodes returned by the `getMB` function
 getAllMBNodes <- function(mbList){
   nodes <- unique(
@@ -164,20 +195,20 @@ getAllMBNodes <- function(mbList){
 
 # Measurement Function ----------------------------------------------------
 
-# Calculate metrics for recovery of Markov Blankets
-calcUndirRecovery <- function(ref,est,target){
-  # Get all the nodes connected to target via undirected edge in both graphs
-  undir_ref <- which(ref[target,]==1 & ref[,target]==1) 
-  undir_est <- which(est[target,]==1 & est[,target]==1) 
-  # If a node is in both vectors, then it is a true positive
-  # If it is in the reference but not in the estimated, then it is a false negative
-  # If it is in the estimated but not the reference, then it is a false positive
-  return(c(
-    "tp"=length(intersect(undir_ref,undir_est)),
-    "fn"=length(setdiff(undir_ref,undir_est)),
-    "fp"=length(setdiff(undir_est,undir_ref))
-  ))
-}
+# # Calculate metrics for recovery of Markov Blankets
+# calcUndirRecovery <- function(ref,est,target){
+#   # Get all the nodes connected to target via undirected edge in both graphs
+#   undir_ref <- which(ref[target,]==1 & ref[,target]==1) 
+#   undir_est <- which(est[target,]==1 & est[,target]==1) 
+#   # If a node is in both vectors, then it is a true positive
+#   # If it is in the reference but not in the estimated, then it is a false negative
+#   # If it is in the estimated but not the reference, then it is a false positive
+#   return(c(
+#     "tp"=length(intersect(undir_ref,undir_est)),
+#     "fn"=length(setdiff(undir_ref,undir_est)),
+#     "fp"=length(setdiff(undir_est,undir_ref))
+#   ))
+# }
 
 calcParentRecovery <- function(ref,est,target){
   # Get all the parent nodes in both graphs
@@ -242,20 +273,47 @@ calcSpouseRecovery <- function(ref,est,target){
   ))
 }
 
-mbRecoveryMetricsList <- function(ref,est,targets){
-  return(lapply(targets,function(target){
-    list(
-      "undirected"=calcUndirRecovery(ref,est,target),
-      "parent"=calcParentRecovery(ref,est,target),
-      "child"=calcChildRecovery(ref,est,target),
-      "spouse"=calcSpouseRecovery(ref,est,target)
-    )
-  }))
-}
-
 getConnections <- function(g,target){
   # Get all target children or parents
   return(which(g[target,]==1 | g[,target]==1))
+}
+
+### Input the initial matrix from the MB estimation algorithm
+# and determine which MB nodes were correctly identified
+mbRecoveryMetricsList <- function(ref,est,targets){
+  return(lapply(targets,function(target){
+    #cat("Target:",target,"\n")
+    # Get estimated MB nodes
+    mb_nodes <- getConnections(est,target)
+    #cat("Estimated Markov Blanket:",paste(mb_nodes,collapse = " "),"\n")
+    children <- which(ref[target,]==1 & ref[,target]==0)
+    #cat("True Children:",paste(children,collapse = " "),"\n")
+    parents <- which(ref[,target]==1 & ref[target,]==0) 
+    #cat("True Parents:",paste(parents,collapse = " "),"\n")
+    spouses <- getSpouses(ref,children,target)
+    #cat("True Spouses:",paste(spouses,collapse = " "),"\n")
+    return(data.frame(
+      "mb_children_fn"=sum(!(children %in% mb_nodes)),
+      "mb_children_tp"=sum(children %in% mb_nodes),
+      "mb_parents_fn"=sum(!(parents %in% mb_nodes)),
+      "mb_parents_tp"=sum(parents %in% mb_nodes),
+      "mb_spouses_fn"=sum(!(spouses %in% mb_nodes)),
+      "mb_spouses_tp"=sum(spouses %in% mb_nodes),
+      "mb_total_fp"=sum(!(mb_nodes %in% c(children,parents,spouses)))
+    ))
+  }))
+}
+
+mbRecoveryMetrics <- function(ref,est,targets){
+  metrics_list <- mbRecoveryMetricsList(ref,est,targets)
+  df <- as.data.frame(do.call(rbind,metrics_list))
+  if (nrow(df)==1){
+    return(df)
+  } else {
+    df <- apply(df,2,unlist)
+    combined_results <- data.frame(t(colSums(df)))
+    return(combined_results)
+  }
 }
 
 spouseRecovery <- function(g,target){
@@ -284,28 +342,29 @@ mbRecoveryTarget <- function(ref,est,target){
 }
 
 mbRecovery <- function(ref,est,targets){
-  recoveryList <- lapply(targets,function(t) mbRecoveryTarget(ref,est,t))
-  return(Reduce("+",recoveryList))
+  recovery_list <- lapply(targets,function(t) mbRecoveryTarget(ref,est,t))
+  recovery_vec <- Reduce("+",recovery_list)
+  return(data.frame(t(recovery_vec)))
 }
 
-mbRecoverySpecific <- function(mbRecList){
-  return(
-    data.frame(
-      "undirectedMB_fn"=sum(sapply(mbRecList,function(x) return(x$undirected['fn']))),
-      "undirectedMB_fp"=sum(sapply(mbRecList,function(x) return(x$undirected['fp']))),
-      "undirectedMB_tp"=sum(sapply(mbRecList,function(x) return(x$undirected['tp']))),
-      "parentMB_fn"=sum(sapply(mbRecList,function(x) return(x$parent['fn']))),
-      "parentMB_fp"=sum(sapply(mbRecList,function(x) return(x$parent['fp']))),
-      "parentMB_tp"=sum(sapply(mbRecList,function(x) return(x$parent['tp']))),
-      "childMB_fn"=sum(sapply(mbRecList,function(x) return(x$child['fn']))),
-      "childMB_fp"=sum(sapply(mbRecList,function(x) return(x$child['fp']))),
-      "childMB_tp"=sum(sapply(mbRecList,function(x) return(x$child['tp']))),
-      "spouseMB_fn"=sum(sapply(mbRecList,function(x) return(x$spouse['fn']))),
-      "spouseMB_fp"=sum(sapply(mbRecList,function(x) return(x$spouse['fp']))),
-      "spouseMB_tp"=sum(sapply(mbRecList,function(x) return(x$spouse['tp'])))
-    )
-  )
-}
+# mbRecoverySpecific <- function(mbRecList){
+#   return(
+#     data.frame(
+#       "undirectedMB_fn"=sum(sapply(mbRecList,function(x) return(x$undirected['fn']))),
+#       "undirectedMB_fp"=sum(sapply(mbRecList,function(x) return(x$undirected['fp']))),
+#       "undirectedMB_tp"=sum(sapply(mbRecList,function(x) return(x$undirected['tp']))),
+#       "parentMB_fn"=sum(sapply(mbRecList,function(x) return(x$parent['fn']))),
+#       "parentMB_fp"=sum(sapply(mbRecList,function(x) return(x$parent['fp']))),
+#       "parentMB_tp"=sum(sapply(mbRecList,function(x) return(x$parent['tp']))),
+#       "childMB_fn"=sum(sapply(mbRecList,function(x) return(x$child['fn']))),
+#       "childMB_fp"=sum(sapply(mbRecList,function(x) return(x$child['fp']))),
+#       "childMB_tp"=sum(sapply(mbRecList,function(x) return(x$child['tp']))),
+#       "spouseMB_fn"=sum(sapply(mbRecList,function(x) return(x$spouse['fn']))),
+#       "spouseMB_fp"=sum(sapply(mbRecList,function(x) return(x$spouse['fp']))),
+#       "spouseMB_tp"=sum(sapply(mbRecList,function(x) return(x$spouse['tp'])))
+#     )
+#   )
+# }
 
 
 

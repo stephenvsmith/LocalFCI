@@ -6,15 +6,17 @@
 
 using namespace Rcpp;
 
-double getPartialCorrelation(arma::mat C,int i,int j,arma::uvec k);
+double getPartialCorrelation(arma::mat C,size_t i,size_t j,arma::uvec k);
 
 double logPart(double r);
 
-double fisherZ(double pc,int n,int k_size);
+double fisherZ(double pc,size_t n,size_t k_size);
 
-List condIndTest(arma::mat &C,const int &i,const int &j,const arma::uvec &k,
-                 const int &n,const double &signif_level=0.05);
-List condIndTestPop(NumericMatrix G,const int &i,const int &j,
+List condIndTest(arma::mat &C,const size_t &i,const size_t &j,
+                 const arma::uvec &k,const size_t &n,
+                 const double &signif_level=0.05);
+
+List condIndTestPop(NumericMatrix G,const size_t &i,const size_t &j,
                     const arma::uvec &k);
 
 #endif

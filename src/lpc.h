@@ -1,24 +1,26 @@
 #ifndef LPC_H
 #define LPC_H
 
-#include "constrainedAlgo.h"
-
+#include "ConstrainedAlgo.h"
+// for tracking time
 using namespace std::chrono;
 
 class LocalPC : public ConstrainedAlgo {
 public:
   LocalPC(NumericMatrix true_dag,arma::mat df,
            NumericVector targets,
-           StringVector names,int lmax,
+           StringVector names,
+           int lmax,
            double signif_level,
-           bool verbose);
+           bool verbose,bool estDAG=false);
   
   LocalPC(NumericMatrix true_dag, // population version
            NumericVector targets,
-           StringVector names,int lmax,
+           StringVector names,
+           int lmax,
            bool verbose);
   
-  void getSkeletonTarget(int t);
+  void getSkeletonTarget(const size_t &t);
   
   using ConstrainedAlgo::getVStructures;
   

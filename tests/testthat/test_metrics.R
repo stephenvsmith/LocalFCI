@@ -4,6 +4,7 @@ library(bnlearn,verbose = FALSE,warn.conflicts = FALSE)
 
 data("asiaDAG")
 data("asiadf")
+data("andesDAG")
 nodes <- colnames(asiaDAG)
 
 test_that("Check function to determine mutual neighborhoods",{
@@ -50,43 +51,92 @@ test_that("Check function to determine mutual neighborhoods",{
   sharedNeighborhood(test_amat,c(0,4),5,4)
 })
 
-test_that("checking metric functions",{
-  true_amat <- matrix(c(0,1,0,0,
-                        1,0,1,1,
-                        0,0,0,1,
-                        0,0,0,0),byrow = TRUE,nrow = 4)
-  
-  perfect_skel <- matrix(c(0,1,0,0,
-                           0,0,0,1,
-                           0,1,0,1,
-                           0,0,0,0),byrow = TRUE,nrow = 4)
-  
-  false_skel <- matrix(c(0,0,1,1,
-                         0,0,1,1,
-                         0,0,0,0,
+true_amat <- matrix(c(0,1,0,0,
+                      1,0,1,1,
+                      0,0,0,1,
+                      0,0,0,0),byrow = TRUE,nrow = 4)
+
+perfect_skel <- matrix(c(0,1,0,0,
+                         0,0,0,1,
+                         0,1,0,1,
                          0,0,0,0),byrow = TRUE,nrow = 4)
-  expect_equal(compare_skeletons(false_skel,true_amat,targets = c(1,3)),list("skel_fp"=2,"skel_fn"=2,"skel_correct"=2))
-  expect_equal(compare_skeletons(false_skel,true_amat,targets = 3),list("skel_fp"=0,"skel_fn"=1,"skel_correct"=2))
-  expect_equal(compare_skeletons(perfect_skel,true_amat,targets = 3),list("skel_fp"=0,"skel_fn"=0,"skel_correct"=3))
-  expect_equal(compare_skeletons(perfect_skel,true_amat,targets = c(1,3)),list("skel_fp"=0,"skel_fn"=0,"skel_correct"=4))
-  
-  expect_equal(compare_v_structures(false_skel,true_amat,targets = c(0,3)),list("missing"=0,"added"=0,"correct"=0))
-  expect_equal(compare_v_structures(false_skel,true_amat,targets = 3),list("missing"=0,"added"=0,"correct"=0))
-  expect_equal(compare_v_structures(perfect_skel,true_amat,targets = 1),list("missing"=0,"added"=1,"correct"=0))
-  expect_equal(compare_v_structures(false_skel,true_amat,targets = 1),list("missing"=0,"added"=2,"correct"=0))
-  
-  expect_equal(parent_recovery_accuracy(perfect_skel,true_amat,targets = 3),list("missing"=0,"added"=0,"correct"=2,"potential"=0))
-  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = 3),list("missing"=1,"added"=0,"correct"=1,"potential"=0))
-  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = c(0,3)),list("missing"=1,"added"=0,"correct"=1,"potential"=0))
+
+false_skel <- matrix(c(0,0,1,1,
+                       0,0,1,1,
+                       0,0,0,0,
+                       0,0,0,0),byrow = TRUE,nrow = 4)
+test_that("checking skeleton comparison function",{
+  expect_equal(compareSkeletons(false_skel,true_amat,targets = c(1,3)),list("skel_fp"=2,"skel_fn"=2,"skel_correct"=2))
+  expect_equal(compareSkeletons(false_skel,true_amat,targets = 3),list("skel_fp"=0,"skel_fn"=1,"skel_correct"=2))
+  expect_equal(compareSkeletons(perfect_skel,true_amat,targets = 3),list("skel_fp"=0,"skel_fn"=0,"skel_correct"=3))
+  expect_equal(compareSkeletons(perfect_skel,true_amat,targets = c(1,3)),list("skel_fp"=0,"skel_fn"=0,"skel_correct"=4))
+})
+
+test_that("checking v structure comparison functions",{
+  expect_equal(compareVStructures(false_skel,true_amat,targets = c(0,3),TRUE),list("missing"=0,"added"=0,"correct"=0))
+  expect_equal(compareVStructures(false_skel,true_amat,targets = 3,TRUE),list("missing"=0,"added"=0,"correct"=0))
+  expect_equal(compareVStructures(perfect_skel,true_amat,targets = 1,TRUE),list("missing"=0,"added"=1,"correct"=0))
+  expect_equal(compareVStructures(false_skel,true_amat,targets = 1,TRUE),list("missing"=0,"added"=2,"correct"=0))
+})
+
+test_that("checking parent recovery accuracy functions",{
+  expect_equal(parentRecoveryAccuracy(perfect_skel,true_amat,targets = 3),list("missing"=0,"added"=0,"correct"=2,"potential"=0))
+  expect_equal(parentRecoveryAccuracy(false_skel,true_amat,targets = 3),list("missing"=1,"added"=1,"correct"=1,"potential"=0))
+  expect_equal(parentRecoveryAccuracy(false_skel,true_amat,targets = c(0,3)),list("missing"=1,"added"=1,"correct"=1,"potential"=0))
   # Adding a potential
   false_skel[3,4] <- 1
   false_skel[4,3] <- 1
-  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = 3),list("missing"=1,"added"=0,"correct"=1,"potential"=1))
-  # Using 1-index numbering: Missing 3 -> 4, correctly has 2->3 and 2->4, has 3-4 as undirected edge
-  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = c(2,3)),list("missing"=1,"added"=0,"correct"=2,"potential"=1))
-  # Same as above, but added 1->4 and 1->3
-  expect_equal(parent_recovery_accuracy(false_skel,true_amat,targets = c(1,2,3)),list("missing"=1,"added"=2,"correct"=2,"potential"=1))
+  expect_equal(parentRecoveryAccuracy(false_skel,true_amat,targets = 3),list("missing"=1,"added"=1,"correct"=1,"potential"=1))
+  # Using 1-index numbering: Missing 3 -> 4, correctly has 2->3 and 2->4, has 3-4 as undirected edge, added 1->4 and 1->3
+  expect_equal(parentRecoveryAccuracy(false_skel,true_amat,targets = c(2,3)),list("missing"=1,"added"=2,"correct"=2,"potential"=1))
+  expect_equal(parentRecoveryAccuracy(false_skel,true_amat,targets = c(1,2,3)),list("missing"=1,"added"=2,"correct"=2,"potential"=1))
+  false_skel[3,4] <- 2
+  false_skel[4,3] <- 2
+  expect_equal(parentRecoveryAccuracy(false_skel,true_amat,targets = 3),list("missing"=1,"added"=1,"correct"=1,"potential"=0))
+})
+
+true_amat <- matrix(0,ncol = 11,nrow = 11)
+true_amat[3,1] <- true_amat[3,2] <- 1
+true_amat[4,3] <- true_amat[3,4] <- 1
+true_amat[5,3] <- 1
+true_amat[6,5] <- 1
+true_amat[7,6] <- 1
+true_amat[8,11] <- 1
+true_amat[9,11] <- 1
+true_amat[10,7] <- 1
+true_amat[11,4] <- 1
+
+test_amat <- matrix(0,ncol = 11,nrow = 11)
+test_amat[1,3] <- test_amat[3,1] <- 1
+test_amat[2,3] <- test_amat[3,2] <- 1
+test_amat[3,11] <- test_amat[11,3] <- 1
+test_amat[4,3] <- 1
+test_amat[5,6] <- test_amat[6,5] <- 1
+test_amat[7,3] <- 2; test_amat[3,7] <- 1
+test_amat[8,11] <- test_amat[11,8] <- 2
+test_amat[9,11] <- 1
+test_that("Additional pra tests (1)",{
+  expect_snapshot_output(parentRecoveryAccuracy(test_amat,true_amat,c(2,6,10),verbose = TRUE))
   
+  test_amat[11,8] <- test_amat[8,11] <- 1
+  expect_snapshot_output(parentRecoveryAccuracy(test_amat,true_amat,c(2,6,10),verbose = TRUE))
+})
+
+test_that("Additional pra tests (2)",{
+  # make a few adjustments
+  test_amat[11,8] <- 3
+  test_amat[7,3] <- 1
+  test_amat[3,7] <- 0
+  test_amat[3,4] <- 1
+  expect_snapshot_output(parentRecoveryAccuracy(test_amat,true_amat,c(2,6,10),verbose = TRUE))
+})
+
+test_that("Additional pra tests (3)",{
+  test_amat[11,8] <- test_amat[8,11] <- 1
+  expect_snapshot_output(parentRecoveryAccuracy(test_amat,true_amat,c(2,6,10),verbose = TRUE))
+})
+
+test_that("additional v-structure comparison function tests",{
   true_amat <- matrix(c(0,1,1,0,0,1,
                         0,0,0,0,0,1,
                         0,0,0,1,0,0,
@@ -99,37 +149,47 @@ test_that("checking metric functions",{
                          0,1,1,0,0,1,
                          0,0,1,0,0,1,
                          0,0,0,1,0,0),nrow = 6,byrow = TRUE)
-  g <- empty.graph(nodes = paste0("V",1:6))
-  amat(g) <- true_amat
-  g_false <- empty.graph(nodes = paste0("V",1:6))
-  amat(g_false) <- false_amat
-  par(mfrow=c(1,2))
-  graphviz.plot(g)
-  graphviz.plot(g_false)
+  # g <- empty.graph(nodes = paste0("V",1:6))
+  # amat(g) <- true_amat
+  # g_false <- empty.graph(nodes = paste0("V",1:6))
+  # amat(g_false) <- false_amat
+  # par(mfrow=c(1,2))
+  # graphviz.plot(g)
+  # graphviz.plot(g_false)
   
-  expect_equal(compare_v_structures(false_amat,true_amat,0),list("missing"=1,"added"=2,"correct"=2))
+  expect_equal(compareVStructures(false_amat,true_amat,0,TRUE),list("missing"=1,"added"=2,"correct"=2))
   
+  true_amat <- matrix(c(
+    0,0,0,0,
+    1,0,0,0,
+    1,0,0,0,
+    0,1,0,0
+  ),byrow = TRUE,ncol = 4)
+  expect_equal(compareVStructures(true_amat,true_amat,0,TRUE),list("missing"=0,"added"=0,"correct"=1))
+})
+
+test_that("checking metric functions",{
   t <- c(1,6,7,8)
   est <- localfci(data=asiadf,true_dag = asiaDAG,targets = t,verbose = FALSE)
-
+  
   pc.fit <- as(pcalg::pc(suffStat = list(C = cor(asiadf), n = nrow(asiadf)),
-                  indepTest = gaussCItest, ## indep.test: partial correlations
-                  alpha=0.05, labels = colnames(asiaDAG),
-                  verbose = FALSE,m.max=3),"amat")
+                         indepTest = gaussCItest, ## indep.test: partial correlations
+                         alpha=0.05, labels = colnames(asiaDAG),
+                         verbose = FALSE,m.max=3),"amat")
   pc_asia <- matrix(pc.fit,nrow = 8)
   
-  lfci_g <- empty.graph(colnames(asiaDAG))
-  pc_g <- empty.graph(colnames(asiaDAG))
-  amat(lfci_g) <- est$amat
-  amat(pc_g) <- pc_asia
-  par(mfrow=c(1,2))
-  graphviz.plot(lfci_g)
-  graphviz.plot(pc_g)
+  # lfci_g <- empty.graph(colnames(asiaDAG))
+  # pc_g <- empty.graph(colnames(asiaDAG))
+  # amat(lfci_g) <- est$amat
+  # amat(pc_g) <- pc_asia
+  # par(mfrow=c(1,2))
+  # graphviz.plot(lfci_g)
+  # graphviz.plot(pc_g)
   
   # skeleton perfect, missing tub -> either <- lung but have either -> dysp <- bronc, have all parents except for tub, which is a potential
-  expect_snapshot_output(all_metrics(est$amat,asiaDAG,t-1,algo="lfci"))
+  expect_snapshot_output(allMetrics(est$amat,asiaDAG,t-1,algo="lfci"))
   # skeleton perfect (smoke edges don't count), missing both v-structures and added 1, missing all parents, either got two fp parents
-  expect_snapshot_output(all_metrics(pc_asia,asiaDAG,t-1,algo="pc"))
+  expect_snapshot_output(allMetrics(pc_asia,asiaDAG,t-1,algo="pc"))
   
 })
 
@@ -143,9 +203,9 @@ true_amat <- matrix(c(
   0,0,1,0,1,1,0
 ),byrow = TRUE,nrow = 7)
 
-a <- empty.graph(as.character(1:7))
-amat(a) <- true_amat
-graphviz.plot(a)
+# a <- empty.graph(as.character(1:7))
+# amat(a) <- true_amat
+# graphviz.plot(a)
 
 test_that("Checking MB metric functions (Specific)",{
   
@@ -224,98 +284,240 @@ test_that("Test MB Recovery (General) Function",{
     ),
     nrow = 7,byrow = TRUE
   )
-  b <- empty.graph(as.character(1:7))
-  amat(b) <- test_amat
-  graphviz.compare(b,a)
+  # b <- empty.graph(as.character(1:7))
+  # amat(b) <- test_amat
+  # graphviz.compare(b,a)
+  # graphviz.plot(b)
   # 1 is connected to 3, but loses 2 as spouse
   expect_equal(mbRecovery(true_amat,test_amat,1),
-             c("mb_tp"=1,"mb_fn"=1,"mb_fp"=0)
+               data.frame("mb_tp"=1,"mb_fn"=1,"mb_fp"=0)
   )
   # 2 loses 3 and 1 (spouse), adds 7 [At this stage we are double counting]
   expect_equal(mbRecovery(true_amat,test_amat,c(1,2)),
-             c("mb_tp"=1,"mb_fn"=3,"mb_fp"=1)
+               data.frame("mb_tp"=1,"mb_fn"=3,"mb_fp"=1)
   )
   # 6 has perfect recovery (4,5,7)
   expect_equal(mbRecovery(true_amat,test_amat,6),
-             c("mb_tp"=3,"mb_fn"=0,"mb_fp"=0)
+               data.frame("mb_tp"=3,"mb_fn"=0,"mb_fp"=0)
   )
   expect_equal(mbRecovery(true_amat,test_amat,c(1,2,6)),
-               c("mb_tp"=4,"mb_fn"=3,"mb_fp"=1)
+               data.frame("mb_tp"=4,"mb_fn"=3,"mb_fp"=1)
   )
   # 7 keeps 6,5,3 but loses 4 (spouse) and adds 2
   expect_equal(mbRecovery(true_amat,test_amat,7),
-               c("mb_tp"=3,"mb_fn"=1,"mb_fp"=1)
+               data.frame("mb_tp"=3,"mb_fn"=1,"mb_fp"=1)
   )
 })
 
+# Very similar to previous true amat and test amat
+true_amat <- matrix(c(
+  0,0,1,0,0,0,0,
+  0,0,1,0,0,0,0,
+  0,0,0,1,1,0,1,
+  0,0,0,0,0,1,0,
+  0,0,0,0,0,1,0,
+  0,0,0,0,0,0,0,
+  0,0,0,0,1,1,0
+),byrow = TRUE,nrow = 7)
+test_amat <- matrix(
+  c(
+    0,0,0,0,0,0,0,
+    0,0,0,0,0,0,1,
+    1,0,0,0,0,0,1,
+    0,0,0,0,0,1,0,
+    0,0,0,1,0,1,1,
+    0,0,0,0,0,0,1,
+    0,0,0,0,0,0,0
+  ),
+  nrow = 7,byrow = TRUE
+)
+test_that("Detailed MB Recovery Stats",{
+  # amat(a) <- true_amat
+  # graphviz.plot(a)
+  # graphviz.plot(b)
+  expect_snapshot_output(mbRecoveryMetricsList(true_amat,test_amat,1))
+  expect_equal(mbRecoveryMetrics(true_amat,test_amat,1),data.frame(
+    "mb_children_fn"=0,
+    "mb_children_tp"=1,
+    "mb_parents_fn"=0,
+    "mb_parents_tp"=0,
+    "mb_spouses_fn"=1,
+    "mb_spouses_tp"=0,
+    "mb_total_fp"=0
+  ))
+})
+
+test_that("Detailed MB Recovery Stats (2)",{
+  expect_snapshot_output(mbRecoveryMetricsList(true_amat,test_amat,c(1,2,6)))
+  expect_equal(mbRecoveryMetrics(true_amat,test_amat,c(1,2,6)),data.frame(
+    "mb_children_fn"=1,
+    "mb_children_tp"=1,
+    "mb_parents_fn"=0,
+    "mb_parents_tp"=3,
+    "mb_spouses_fn"=2,
+    "mb_spouses_tp"=0,
+    "mb_total_fp"=1
+  ))
+})
+
 test_that("Ancestral Relations",{
-  interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,0)
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,0))
+})
+
+test_that("More ancestral checks (3)",{
   # Missing edge between asia and either and asia and dysp shouldn't count
   # Correct edge between tub and either
-  interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,c(0,7))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,c(0,7)))
+})
+
+test_that("More ancestral checks (3)",{
   res <- localfci(true_dag = asiaDAG,targets=c(1,8),node_names = nodes,verbose = FALSE)
-  g_true <- empty.graph(nodes = nodes)
-  amat(g_true) <- asiaDAG
-  g_est <- empty.graph(nodes=nodes)
-  amat(g_est) <- res$amat
-  par(mfrow=c(1,2))
-  graphviz.plot(g_true)
-  graphviz.plot(g_est)
+  # g_true <- empty.graph(nodes = nodes)
+  # amat(g_true) <- asiaDAG
+  # g_est <- empty.graph(nodes=nodes)
+  # amat(g_est) <- res$amat
+  # par(mfrow=c(1,2))
+  # graphviz.plot(g_true)
+  # graphviz.plot(g_est)
   # asia and dysp are targets: correct edge between tub and either, but it is not oriented
-  interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(0,7))
-  
-  
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(0,7)))
+})
+
+test_that("More ancestral checks (3)",{
   res <- localfci(true_dag = asiaDAG,targets=c(3,7),node_names = nodes,verbose = FALSE)
-  g_est <- empty.graph(nodes=nodes)
-  amat(g_est) <- res$amat
-  par(mfrow=c(1,2))
-  graphviz.plot(g_true)
-  graphviz.plot(g_est)
+  # g_est <- empty.graph(nodes=nodes)
+  # amat(g_est) <- res$amat
+  # par(mfrow=c(1,2))
+  # graphviz.plot(g_true)
+  # graphviz.plot(g_est)
   # smoke and xray are the targets: lung and either are connected, but not oriented
-  interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(2,6))
-  
-  true_amat <- matrix(0,ncol = 16,nrow = 16)
-  true_amat[1,3] <- 1
-  true_amat[2,4] <- true_amat[2,11] <- 1
-  true_amat[1,4] <- true_amat[4,3] <- true_amat[4,9] <- 1
-  true_amat[5,4] <- 1
-  true_amat[6,5] <- true_amat[6,14] <- 1
-  true_amat[7,4] <- true_amat[7,8] <- 1
-  true_amat[9,8] <- 1
-  true_amat[10,5] <- 1
-  true_amat[11,1] <- 1
-  true_amat[12,16] <- 1
-  true_amat[13,14] <- true_amat[13,12] <- true_amat[13,15] <- 1
-  true_amat[14,10] <- 1
-  true_amat[15,7] <- 1
-  true_amat[16,11] <- 1
-  true_g <- empty.graph(nodes = as.character(1:16))
-  amat(true_g) <- true_amat
-  graphviz.plot(true_g)
-  
-  est_amat <- matrix(0,ncol = 16,nrow = 16)
-  est_amat[1,12] <- 1
-  est_amat[2,14] <- est_amat[14,2] <- 1
-  est_amat[3,1] <- 1
-  est_amat[4,3] <- est_amat[4,2] <- est_amat[4,15] <- est_amat[15,4] <- 1
-  est_amat[5,4] <- est_amat[5,15] <- est_amat[5,14] <- est_amat[14,5] <- 1
-  est_amat[7,3] <- est_amat[7,8] <- 1
-  est_amat[8,9] <- est_amat[9,8] <- 1
-  est_amat[12,13] <- 1
-  est_amat[13,14] <- est_amat[13,9] <- 1
-  est_amat[15,13] <- 1
-  est_g <- empty.graph(nodes = as.character(1:16))
-  amat(est_g) <- est_amat
-  graphviz.plot(est_g)
-  
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(res$amat,asiaDAG,c(2,6)))
+})
+
+
+
+true_amat <- matrix(0,ncol = 16,nrow = 16)
+true_amat[1,3] <- 1
+true_amat[2,4] <- true_amat[2,11] <- 1
+true_amat[1,4] <- true_amat[4,3] <- true_amat[4,9] <- 1
+true_amat[5,4] <- 1
+true_amat[6,5] <- true_amat[6,14] <- 1
+true_amat[7,4] <- true_amat[7,8] <- 1
+true_amat[9,8] <- 1
+true_amat[10,5] <- 1
+true_amat[11,1] <- 1
+true_amat[12,16] <- 1
+true_amat[13,14] <- true_amat[13,12] <- true_amat[13,15] <- 1
+true_amat[14,10] <- 1
+true_amat[15,7] <- 1
+true_amat[16,11] <- 1
+# true_g <- empty.graph(nodes = as.character(1:16))
+# amat(true_g) <- true_amat
+# graphviz.plot(true_g)
+
+est_amat <- matrix(0,ncol = 16,nrow = 16)
+est_amat[1,12] <- 1
+est_amat[2,14] <- est_amat[14,2] <- 1
+est_amat[3,1] <- 1
+est_amat[4,3] <- est_amat[4,2] <- est_amat[4,15] <- est_amat[15,4] <- 1
+est_amat[5,4] <- est_amat[5,15] <- est_amat[5,14] <- est_amat[14,5] <- 1
+est_amat[7,3] <- est_amat[7,8] <- 1
+est_amat[8,9] <- est_amat[9,8] <- 1
+est_amat[12,13] <- 1
+est_amat[13,14] <- est_amat[13,9] <- 1
+est_amat[15,13] <- 1
+# est_g <- empty.graph(nodes = as.character(1:16))
+# amat(est_g) <- est_amat
+# graphviz.plot(est_g)
+
+test_that("More ancestral relations tests (1)",{
   expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,c(3,12,7),verbose = TRUE))
-  
+})
+
+test_that("More ancestral relations tests (2)",{
   # Get one true positive
   est_amat[12,1] <- 1
   est_amat[1,12] <- 0
   expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,c(3,12,7),verbose = TRUE))
 })
 
+true_amat <- matrix(c(
+  0,1,0,0,0,0,0,0,
+  0,0,1,0,0,0,0,0,
+  0,0,0,1,0,0,0,0,
+  0,0,0,0,0,0,0,0,
+  0,0,0,1,0,0,0,0,
+  0,0,0,0,1,0,0,0,
+  0,0,0,0,0,1,0,1,
+  0,0,0,0,0,0,0,0
+),byrow = TRUE,ncol = 8)
 
+est_amat <- matrix(c(
+  0,0,0,0,0,0,0,0,
+  1,0,0,0,0,0,0,0,
+  0,1,0,0,0,0,0,0,
+  0,0,1,0,0,0,0,0,
+  0,0,0,1,0,0,1,0,
+  0,0,0,0,0,0,0,0,
+  0,0,0,0,2,0,0,1,
+  0,0,0,0,0,0,0,0
+),byrow = TRUE,ncol = 8)
+
+est_amat2 <- matrix(c(
+  0,0,0,0,0,0,0,0,
+  1,0,0,0,0,0,0,0,
+  0,1,0,0,0,0,0,0,
+  0,0,1,0,0,0,0,0,
+  0,0,0,1,0,3,1,0,
+  0,0,0,0,2,0,0,0,
+  0,0,0,0,0,1,0,1,
+  0,0,0,0,0,0,0,0
+),byrow = TRUE,ncol = 8)
+
+test_that("Additional ancestral comparison tests",{
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,c(0,3,6)))
+})
+
+test_that("Additional ancestral comparison tests (2)",{
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat2,true_amat,c(0,3,6)))
+})
+
+test_that("Testing Overall F1 Score Function",{
+  expect_snapshot_output(overallF1(est_amat,true_amat,c(0,3,6),verbose = TRUE))
+})
+
+test_that("Testing Overall F1 (2)",{
+  expect_snapshot_output(overallF1(est_amat2,true_amat,c(0,3,6),verbose = TRUE))
+})
+
+test_that("Testing Overall F1 (3)",{
+  est_amat3 <- est_amat2 
+  est_amat3[8,6] <- est_amat3[6,8] <- 1
+  est_amat3[6,7] <- 3; est_amat3[7,6] <- 2
+  expect_snapshot_output(overallF1(est_amat3,true_amat,c(0,3,6),verbose = TRUE))
+})
+
+test_that("Miscellaneous function tests",{
+  expect_equal(getNeighborhoodMetrics(asiaDAG),data.frame("size"=8,"num_edges"=8))
+  expect_equal(getNeighborhoodMetrics(andesDAG),data.frame("size"=223,"num_edges"=338))
+})
+
+test_that("Testing warnings and stops",{
+  # Invalid matrices
+  expect_error(compareSkeletons(matrix(0,nrow = 4,ncol = 3),matrix(0,nrow = 4,ncol = 4),0))
+  expect_error(compareSkeletons(matrix(0,nrow = 4,ncol = 4),matrix(0,nrow = 4,ncol = 3),0))
+  expect_error(compareSkeletons(matrix(0,nrow = 5,ncol = 5),matrix(0,nrow = 6,ncol = 6),1))
+  
+  # Invalid targets
+  expect_error(parentRecoveryAccuracy(matrix(0,nrow = 5,ncol = 5),matrix(0,nrow = 5,ncol = 5),-1))
+  expect_error(parentRecoveryAccuracy(matrix(0,nrow = 5,ncol = 5),matrix(0,nrow = 5,ncol = 5),5))
+  expect_error(parentRecoveryAccuracy(matrix(0,nrow = 5,ncol = 5),matrix(0,nrow = 5,ncol = 5),6))
+  expect_error(parentRecoveryAccuracy(matrix(0,nrow = 5,ncol = 5),matrix(0,nrow = 5,ncol = 5),c(2,5,4)))
+  expect_error(parentRecoveryAccuracy(matrix(0,nrow = 5,ncol = 5),matrix(0,nrow = 5,ncol = 5),c(2,4,-1)))
+  
+  # We have an undirected edge denoted by 3's for both entries
+  test_amat <- asiaDAG; test_amat[2,8] <- test_amat[8,2] <- 3
+  expect_warning(interNeighborhoodEdgeMetrics(test_amat,asiaDAG,c(0,7)))
+})
 
 

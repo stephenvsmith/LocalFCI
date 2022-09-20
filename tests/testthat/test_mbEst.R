@@ -9,6 +9,7 @@ test_that("Neighborhood Estimation",{
   # Bronc and Either are in dysp's Markov Blanket
   expect_equal(getMB(8,asiadf)$mb,c(5,6))
   expect_equal(getMB(8,asiadf,method = "SES")$mb,c(5,6))
+  expect_equal(getMB(8,asiadf,method = "pc.sel")$mb,c(5,6))
   
   # Output should find MB for each target first
   # Then 3's non-target first-order neighbors: 4

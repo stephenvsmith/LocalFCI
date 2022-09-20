@@ -37,8 +37,8 @@ test_that("Testing the total skeleton function (one target)",{
   # lung is the target
   testthat::expect_snapshot_output(result_amat <- checkSkeletonTotal(asiaDAG,asiadf,3,node_names))
   total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,5)+1])
-  amat(total_skel) <- result_amat
-  graphviz.plot(total_skel)
+  # amat(total_skel) <- result_amat
+  # graphviz.plot(total_skel)
 })
 
 
@@ -47,16 +47,16 @@ test_that("Testing the total skeleton function (two targets)",{
   testthat::expect_snapshot_output(result_amat <- checkSkeletonTotal(asiaDAG,asiadf,c(3,4),node_names))
 
   total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,4,5,7)+1])
-  amat(total_skel) <- result_amat
-  graphviz.plot(total_skel)
+  # amat(total_skel) <- result_amat
+  # graphviz.plot(total_skel)
 })
 
 test_that("Testing the total skeleton function for population (one target)",{
   
   testthat::expect_snapshot_output(result_amat <- checkSkeletonTotalPop(asiaDAG,3,node_names))
   total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,5)+1])
-  amat(total_skel) <- result_amat
-  graphviz.plot(total_skel)
+  # amat(total_skel) <- result_amat
+  # graphviz.plot(total_skel)
 })
 
 test_that("Testing the total skeleton function for population (two targets)",{
@@ -64,8 +64,8 @@ test_that("Testing the total skeleton function for population (two targets)",{
   testthat::expect_snapshot_output(result_amat <- checkSkeletonTotalPop(asiaDAG,c(3,4),node_names))
   
   total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,4,5,7)+1])
-  amat(total_skel) <- result_amat
-  graphviz.plot(total_skel)
+  # amat(total_skel) <- result_amat
+  # graphviz.plot(total_skel)
 })
 
 test_that("Testing Skeleton Target function and V-Structure function (sample)",{
@@ -80,9 +80,9 @@ test_that("Testing Skeleton Target function and V-Structure function (sample)",{
       }
     }
   }
-  total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,4,5,7)+1])
-  amat(total_skel) <- result_amat
-  graphviz.plot(total_skel)
+  # total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,4,5,7)+1])
+  # amat(total_skel) <- result_amat
+  # graphviz.plot(total_skel)
   # Check v-structure with tub -> either <- lung
   expect_equal(result_amat[1,5],1)
   expect_equal(result_amat[5,1],0)
@@ -101,9 +101,9 @@ test_that("Testing Skeleton Target function and V-Structure function (sample)",{
   
   # Population Version
   result_amat <- checkVStructPop(asiaDAG,c(3,4),node_names)
-  pop_graph <- empty.graph(node_names)
-  amat(pop_graph) <- result_amat
-  graphviz.plot(pop_graph,highlight = list("nodes"=c("lung","bronc")))
+  # pop_graph <- empty.graph(node_names)
+  # amat(pop_graph) <- result_amat
+  # graphviz.plot(pop_graph,highlight = list("nodes"=c("lung","bronc")))
   
   modified_asia_dag <- asiaDAG
   # Remove asia and xray from consideration to match sample version
@@ -120,9 +120,9 @@ test_that("Testing Skeleton Target function and V-Structure function (sample)",{
 test_that("Testing Skeleton Target function and V-Structure function (population)",{
   testthat::expect_snapshot_output(result_amat <- checkVStructPop(asiaDAG,c(3,4),node_names))
   
-  total_skel <- bnlearn::empty.graph(node_names)
-  amat(total_skel) <- result_amat
-  graphviz.plot(total_skel)
+  # total_skel <- bnlearn::empty.graph(node_names)
+  # amat(total_skel) <- result_amat
+  # graphviz.plot(total_skel)
   # Check v-structure with tub -> either <- lung
   expect_equal(result_amat[2,6],1)
   expect_equal(result_amat[6,2],0)
@@ -164,9 +164,9 @@ test_that("Testing Adjacency Matrix Conversion",{
   result_amat <- checkAdjMatConversion(final_mat,asiadf,c(3,4),node_names,
                                        test_mat,c(1,3,4,6,8,10))
   expect_equal(result_amat,final_mat)
-  conv_graph <- empty.graph(as.character(0:10))
-  amat(conv_graph) <- result_amat
-  graphviz.plot(conv_graph)
+  # conv_graph <- empty.graph(as.character(0:10))
+  # amat(conv_graph) <- result_amat
+  # graphviz.plot(conv_graph)
   
   asia_test <- matrix(c(
     0,2,0,2,
@@ -182,7 +182,7 @@ test_that("Local FCI (Putting it all together, sample)",{
   sample_g <- empty.graph(node_names)
   amat(sample_g) <- checkLocalFCISummary(asiaDAG,asiadf,c(0,5),node_names)
   expect_snapshot_output(amat(sample_g))
-  graphviz.plot(sample_g)
+  # graphviz.plot(sample_g)
   
 })
 
@@ -190,22 +190,22 @@ test_that("Local FCI (Putting it all together, population",{
   pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(0,5),node_names)
   expect_snapshot_output(amat(pop_g))
-  graphviz.plot(pop_g)
+  # graphviz.plot(pop_g)
   
-  pop_g <- empty.graph(node_names)
+  # pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(2,7),node_names)
   expect_snapshot_output(amat(pop_g))
-  graphviz.plot(pop_g)
+  # graphviz.plot(pop_g)
   
-  pop_g <- empty.graph(node_names)
+  # pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(1,3,7),node_names)
   expect_snapshot_output(amat(pop_g))
-  graphviz.plot(pop_g)
+  # graphviz.plot(pop_g)
   
-  pop_g <- empty.graph(node_names)
+  # pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(0,6),node_names)
   expect_snapshot_output(amat(pop_g))
-  graphviz.plot(pop_g)
+  # graphviz.plot(pop_g)
 })
 
 test_that("Testing object conversion",{

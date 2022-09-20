@@ -7,21 +7,21 @@ using namespace Rcpp;
 
 class SepSetList {
 public:
-  SepSetList(NumericVector &neighbors); // Tested
+  SepSetList(NumericVector &neighbors);
 
-  void changeList(int i,int j,NumericVector sep); // Tested
-  void changeList(int i,int j); // Tested
+  void changeList(size_t i,size_t j,
+                  NumericVector sep=NumericVector::create(-1));
 
-  NumericVector getSepSet(int i,int j); // Tested
+  NumericVector getSepSet(size_t i,size_t j); 
 
-  bool isPotentialVStruct(int i, int j,int k); // Tested
-  bool isSepSetMember(int i,int j,int k); // Tested
+  bool isPotentialVStruct(size_t i, size_t j,size_t k);
+  bool isSepSetMember(size_t i,size_t j,size_t k);
   
-  void printSepSetList(); // Tested
-  
+  void printSepSetList();
   List getS() { return S; };
+
 private:
-  int N;
+  size_t N;
   NumericVector nodes;
   List S;
 };

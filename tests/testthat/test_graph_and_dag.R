@@ -1,3 +1,4 @@
+library(tidyverse)
 data("asiaDAG")
 nodes <- colnames(asiaDAG)
 p <- ncol(asiaDAG)
@@ -92,16 +93,19 @@ test_that("Testing acyclicity",{
 })
 
 test_that("Test for identifying ancestors",{
+  checkIsAncestor(p,nodes,asiaDAG,7,0,TRUE)
   g <- empty.graph(nodes)
   amat(g) <- asiaDAG
   for (i in 1:p){
     for (j in 1:p){
-      if (i!=j){ # TODO: add a condition to the function for when i=j
-        # cat("i =",i,"(",nodes[i],")","| j =",j,"(",nodes[j],")","\n")
-        # cat("My version:",checkIsAncestor(p,nodes,asiaDAG,i-1,j-1),"\n")
-        # cat("Truth:",nodes[j] %in% bnlearn::ancestors(g,nodes[i]),"\n")
+      if (i!=j){
         expect_equal(checkIsAncestor(p,nodes,asiaDAG,i-1,j-1),
                      nodes[j] %in% bnlearn::ancestors(g,nodes[i]))
+        expect_equal(checkIsAncestor(p,nodes,asiaDAG,j-1,i-1),
+                     nodes[i] %in% bnlearn::ancestors(g,nodes[j]))
+      } else {
+        expect_warning(res <- checkIsAncestor(p,nodes,asiaDAG,i-1,j-1),NA)
+        expect_false(res)
       }
     }
   }
@@ -150,3 +154,43 @@ test_that("Testing for correct errors and warnings",{
   expect_error(check_amat_col_retrieval(p,n_names,asiaDAG,p+1))
   expect_error(check_amat_col_retrieval(p,n_names,asiaDAG,-1))
 })
+
+test_that("Testing inNeighborhood function",{
+  true_amat <- matrix(c(
+    0,0,0,0,0,0,
+    1,0,0,0,0,0,
+    1,1,0,0,0,0,
+    0,0,0,0,0,1,
+    0,0,0,0,0,1,
+    0,0,1,0,0,0
+  ),byrow = TRUE,ncol = 6)
+  correct_responses <- tibble(
+    "i"=rep(0:5,each=6),
+    "j"=rep(0:5,6),
+    "result"=c(
+      TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,
+      TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,
+      TRUE,TRUE,TRUE,FALSE,FALSE,TRUE,
+      FALSE,FALSE,FALSE,TRUE,TRUE,TRUE,
+      FALSE,FALSE,FALSE,TRUE,TRUE,TRUE,
+      FALSE,FALSE,TRUE,TRUE,TRUE,TRUE
+    )
+  )
+  for (i in 0:5){
+    for (j in setdiff(0:5,i)){
+      true_val <- correct_responses %>% 
+        filter(i==!!i) %>% filter(j==!!j) %>% 
+        select(result) %>% unlist()
+      names(true_val) <- NULL
+      cat("i =",i,"|","j =",j,"| ")
+      cat(checkInNeighborhood(p,nodes,true_amat,i,j),"|",
+          true_val,
+          "\n")
+      expect_equal(checkInNeighborhood(p,nodes,true_amat,i,j),true_val)
+    }
+  }
+})
+
+
+
+

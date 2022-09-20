@@ -15,13 +15,15 @@ class ConstrainedAlgo {
 public:
   ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
                   NumericVector targets,
-                  StringVector names,int lmax,
+                  StringVector names,
+                  int lmax,
                   double signif_level,
-                  bool verbose);
+                  bool verbose,bool estDAG=false);
   
   ConstrainedAlgo(NumericMatrix true_dag, // population version
                   NumericVector targets,
-                  StringVector names,int lmax,
+                  StringVector names,
+                  int lmax,
                   bool verbose);
   
   ~ConstrainedAlgo(){delete C_tilde; delete true_DAG; delete S;};
@@ -30,31 +32,21 @@ public:
   void print_elements();
   void printAmat(){ C_tilde -> printAmat(); };
   
-  // For debugging and algorithm analysis
-  bool verbose_history=false;
-  bool verbose=false;
-  void silencer(){
-    verbose_history = verbose;
-    verbose = false;
-  }
-  void removeSilencer(){
-    verbose = verbose_history;
-  }
+  size_t getSize(){ return p; }
   
-  int getSize(){ return p; }
-  
-  virtual void checkSeparation(int l,int i,int j,NumericMatrix kvals);
+  virtual void checkSeparation(int l,size_t i,size_t j,
+                               NumericMatrix kvals);
   
   // Every algorithm must define their own target neighborhood skeleton algorithm
-  virtual void getSkeletonTarget(int t) = 0;
+  virtual void getSkeletonTarget(const size_t &t) = 0;
   
   virtual void getVStructures();
   
   // Accessors
   NumericMatrix getAmat() { return C_tilde -> getAmat(); }
   List getSepSetList() { return S -> getS(); };
-  int getNumTests() { return num_tests; };
-  NumericVector getAdjacent(int i) { return C_tilde -> getAdjacent(i); };
+  size_t getNumTests() { return num_tests; };
+  NumericVector getAdjacent(size_t i) { return C_tilde -> getAdjacent(i); };
   NumericVector getNeighborhood() { return neighborhood; };
   double getMostRecentPVal() { return p_vals[p_vals.size()-1];};
   double getTotalTime() { return total_time; };
@@ -71,7 +63,7 @@ public:
     }
   }
   
-  void setS(int i,int j,NumericVector k){
+  void setS(size_t i,size_t j,NumericVector k){
     S -> changeList(i,j,k);
   }
   
@@ -79,19 +71,23 @@ public:
     neighborhood = neighbors;
     N = neighborhood.size();
     if (verbose){
-      for (int i=0;i<N;++i){
+      for (size_t i=0;i<N;++i){
         Rcout << "True: " << neighborhood(i) << " | Renumbered: " << i << std::endl;
       }
     }
   }
   
+  void setVerboseTrue(){
+    verbose = true;
+  }
+  
 protected:
   int lmax;
-  int num_targets;
-  int p;
-  int n=0;
-  int N; // Tracks the size of the C_tilde matrix
-  int num_tests=0;
+  size_t num_targets;
+  size_t p;
+  size_t n=0;
+  size_t N; // Tracks the size of the C_tilde matrix
+  size_t num_tests=0;
   double total_time;
   NumericVector targets;
   NumericVector neighborhood;
@@ -105,6 +101,17 @@ protected:
   double signif_level=0.01;
   // Assume we are using the sample algorithm unless no data is inputted
   bool pop = false;
+  
+  // For debugging and algorithm analysis
+  bool verbose_history=false;
+  bool verbose=false;
+  void silencer(){
+    verbose_history = verbose;
+    verbose = false;
+  }
+  void removeSilencer(){
+    verbose = verbose_history;
+  }
 
 private:
   NumericVector sep;

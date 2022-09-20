@@ -1,17 +1,20 @@
 # Testing Parent Recovery Accuracy Metrics
 
     t: 2 | i: 0 | Est. Graph: Not a parent | True graph: Parent | Missing: 1
-    t: 2 | i: 3
-    t: 4 | i: 1 | Parent | Correct: 1
-    
+    t: 2 | i: 1 | Est. Graph: Parent | True graph: Not a parent | Added: 1
+    t: 2 | i: 3 | Est. Graph: Parent | True graph: Not a parent | Added: 2
+    t: 2 | i: 4
+    t: 2 | i: 5
+    t: 4 | i: 0
+    t: 4 | i: 1 | Est. Graph: Parent | True graph:  | Parent | Correct: 1
+    t: 4 | i: 2
     t: 4 | i: 3 | Est. Graph: Not a parent | True graph: Parent | Missing: 2 | Undirected edge in Est. Graph | Potential: 1
-    t: 4 | i: 5 | Undirected edge in True Graph | Potential: 2
-    
+    t: 4 | i: 5 | Est. Graph: Parent | True graph:  | Undirected edge in True Graph | Potential: 2
     $missing
     [1] 2
     
     $added
-    [1] 1
+    [1] 2
     
     $correct
     [1] 1
@@ -37,10 +40,10 @@
     0 is in the neighborhood of target node 2
     4 is in the neighborhood of target node 4
     Looking at nodes 0 and 4
-    0 is an ancestor of 4 3 levels up.
+    V0 is an ancestor of V4 3 levels up.
     Checking if 0 is an unmediated ancestor of 4
-    0 is an ancestor of 4 3 levels up.
-    0 is an ancestor of 3 2 levels up.
+    V0 is an ancestor of V4 3 levels up.
+    V0 is an ancestor of V3 2 levels up.
     3 and 4 are in the neighborhood of target 4
     Node 3 is a parent of 4 and is in the same target neighborhood, while also being a descendant of 0
     Checking if 4 is an unmediated ancestor of 0
@@ -73,10 +76,10 @@
     2 is in the neighborhood of target node 2
     4 is in the neighborhood of target node 4
     Looking at nodes 2 and 4
-    2 is an ancestor of 4 2 levels up.
+    V2 is an ancestor of V4 2 levels up.
     Checking if 2 is an unmediated ancestor of 4
-    2 is an ancestor of 4 2 levels up.
-    2 is an ancestor of 3 1 levels up.
+    V2 is an ancestor of V4 2 levels up.
+    V2 is an ancestor of V3 1 levels up.
     3 and 4 are in the neighborhood of target 4
     Node 3 is a parent of 4 and is in the same target neighborhood, while also being a descendant of 2
     Checking if 4 is an unmediated ancestor of 2
@@ -102,7 +105,7 @@
       lfci_skel_fp lfci_skel_fn lfci_skel_tp lfci_v_fn lfci_v_fp lfci_v_tp
     1            0            0            5         1         1         0
       lfci_pra_fn lfci_pra_fp lfci_pra_tp lfci_pra_potential lfci_ancestors_correct
-    1           2           1           1                  2                      0
+    1           2           2           1                  2                      0
       lfci_ancestors_missing lfci_ancestors_fn_orient lfci_ancestors_reverse
     1                      0                        0                      0
       lfci_ancestors_fp_oriented lfci_ancestors_fp_connect lfci_overall_f1

@@ -3,7 +3,7 @@
 void fillTargetNeighborhood(Graph* C_tilde,
                             std::map<int,int> node_numbering,
                             NumericVector nbhd_t){
-  int i_eff; int j_eff;
+  size_t i_eff; size_t j_eff;
   for (auto it=nbhd_t.begin();it<nbhd_t.end()-1;++it){
     i_eff = node_numbering.find(*it)->second;
     for (auto it2 = it+1;it2<nbhd_t.end();++it2){
@@ -18,7 +18,7 @@ void createInitialAmat(DAG* true_DAG,Graph* C_tilde,
                        std::map<int,int> node_numbering,
                        NumericVector &targets,
                        NumericVector &neighborhood,
-                       const int &N,bool verbose){
+                       const size_t &N,bool verbose){
   if (verbose){
     Rcout << "FUNCTION createInitialAmat\n";
   }
@@ -48,7 +48,8 @@ void createInitialAmat(DAG* true_DAG,Graph* C_tilde,
 // Population version of the constructor
 LocalPC::LocalPC(NumericMatrix true_dag,
                  NumericVector targets,
-                 StringVector names,int lmax,
+                 StringVector names,
+                 int lmax,
                  bool verbose) : 
   ConstrainedAlgo(true_dag,targets,names,
                   lmax,verbose){
@@ -56,7 +57,7 @@ LocalPC::LocalPC(NumericMatrix true_dag,
   
   // Make a map to relate efficient numbering to true numbering
   // Map: true numbering -> efficient numbering
-  for (int i=0;i<N;++i){
+  for (size_t i=0;i<N;++i){
     node_numbering.insert(std::pair<int,int>(neighborhood(i),i));
   }
   if (verbose){
@@ -76,15 +77,16 @@ LocalPC::LocalPC(NumericMatrix true_dag,
 // Sample version of the constructor
 LocalPC::LocalPC(NumericMatrix true_dag,arma::mat df,
                  NumericVector targets,
-                 StringVector names,int lmax,
+                 StringVector names,
+                 int lmax,
                  double signif_level,
-                 bool verbose) : 
+                 bool verbose,bool estDAG) : 
   ConstrainedAlgo(true_dag,df,targets,names,lmax,
-                  signif_level,verbose){
+                  signif_level,verbose,estDAG){
   
   // Make a map to relate efficient numbering to true numbering
   // Map: true numbering -> efficient numbering
-  for (int i=0;i<N;++i){
+  for (size_t i=0;i<N;++i){
     node_numbering.insert(std::pair<int,int>(neighborhood(i),i));
   }
   if (verbose){
@@ -105,18 +107,23 @@ void LocalPC::check(){
   Rcout << getSize() << std::endl;
 }
 
-void LocalPC::getSkeletonTarget(int t){
-  // TODO: Ensure that t is in targets
+void validateTarget(NumericVector targets,const size_t &t){
+  if (!isMember(targets,t)){
+    stop("Target %i is not a member of the target vector");
+  }
+}
+
+void LocalPC::getSkeletonTarget(const size_t &t){
+  // Ensure that t is in targets
+  validateTarget(targets,t);
   auto target_skeleton_start = high_resolution_clock::now();
   int l = -1;
-  int i;
-  int j;
   NumericVector neighbors;
   NumericVector edges_i;
   NumericMatrix kvals;
   
   // Making an adjustment to target based on efficient numbering
-  int target_efficient = node_numbering.find(t)->second;
+  size_t target_efficient = node_numbering.find(t)->second;
   // Find neighborhood just surrounding the target node
   NumericVector target_neighborhood = C_tilde->getAdjacent(target_efficient);
   target_neighborhood.push_back(target_efficient);
@@ -126,8 +133,8 @@ void LocalPC::getSkeletonTarget(int t){
     Rcout << "\n\nFinding skeleton for the neighborhood of target " << t;
     Rcout << " (Name: " << names(t) << ", Efficient Number: " << target_efficient << ")"<< std::endl;
     Rcout << "Neighborhood nodes under consideration: ";
-    print_vector_elements_nonames(target_neighborhood,""," | (");
-    for (int i=0;i<target_neighborhood.length();++i){
+    printVecElementsNoNames(target_neighborhood,""," | (");
+    for (size_t i=0;i<target_neighborhood.length();++i){
       if (i<target_neighborhood.length()-1){
         Rcout << names(neighborhood(target_neighborhood(i))) << "(" << neighborhood(target_neighborhood(i)) << ")" << " ";  
       } else {
@@ -143,8 +150,7 @@ void LocalPC::getSkeletonTarget(int t){
     }
     
     // We only consider the target and its neighborhood in the graph currently
-    for (NumericVector::iterator it=target_neighborhood.begin();it<target_neighborhood.end();++it){
-      i = *it;
+    for (auto i : target_neighborhood){
       if (verbose){
         Rcout << "The value of i is " << i << std::endl;
       }
@@ -153,8 +159,7 @@ void LocalPC::getSkeletonTarget(int t){
       // We do not want to separate the connections between two different cliques
       // TODO: explain why we need this line in more detail
       edges_i = intersect(C_tilde->getAdjacent(i),target_neighborhood);
-      for (NumericVector::iterator it2 = edges_i.begin(); it2 != edges_i.end(); ++it2){
-        j = *it2;
+      for (auto j : edges_i){
         if (j > i){
           if (verbose){
             Rcout << "The value of j is " << j << std::endl;
@@ -162,10 +167,12 @@ void LocalPC::getSkeletonTarget(int t){
           if (l>0){
             // Find neighbors of i and j from the true DAG (or they are estimated)
             // These neighbors are using the true node numbers (check documentation for this function)
+            silencer();
             neighbors = true_DAG -> getNeighborsMultiTargets(NumericVector::create(neighborhood(i),neighborhood(j)),
                                                              verbose);
+            removeSilencer();
             if (verbose){
-              print_vector_elements_nonames(neighbors,"Potential separating nodes: ","\n");  
+              printVecElementsNoNames(neighbors,"Potential separating nodes: ","\n");  
             }
           } else {
             neighbors = NA_REAL;  // l = 0
@@ -203,11 +210,11 @@ void LocalPC::getSkeletonTarget(int t){
 void LocalPC::convertFinalGraph(){
   Graph* g = new Graph(p);
   g -> emptyGraph();
-  int current_val = 0;
-  int nrow = C_tilde -> getNRow();
-  int ncol = C_tilde -> getNCol();
-  for (int i=0;i<nrow;++i){
-    for (int j=0;j<ncol;++j){
+  size_t current_val = 0;
+  size_t nrow = C_tilde -> getNRow();
+  size_t ncol = C_tilde -> getNCol();
+  for (size_t i=0;i<nrow;++i){
+    for (size_t j=0;j<ncol;++j){
       current_val = C_tilde -> getAmatVal(i,j);
       g -> setAmatVal(neighborhood(i),neighborhood(j),current_val);  
     }
@@ -229,7 +236,7 @@ void LocalPC::run(){
 
   // Get the skeleton for each target node and its neighborhood
   std::for_each(targets.begin(),targets.end(),
-                [this](int t){ getSkeletonTarget(t); });
+                [this](size_t t){ getSkeletonTarget(t); });
   getVStructures();
   convertFinalGraph();
   

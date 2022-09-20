@@ -19,14 +19,14 @@ void validateInputs(NumericMatrix est,NumericMatrix truth){
 }
 
 void validateTargets(NumericMatrix g,NumericVector targets){
-  if ( is_true(any(targets > g.ncol())) ){
+  if ( is_true(any(targets > g.ncol()-1)) ){
     stop("Invalid target index: value(s) greater than size of graph");
   } else if ( is_true(any(targets < 0)) ){
     stop("Invalid target index: negative value(s)");
   }
 }
 
-int get_edge_number(NumericMatrix G){
+int getEdgeNumber(NumericMatrix G){
   int p = G.nrow();
   int total_edges=0;
   for (int i=0;i<p;++i){
@@ -103,7 +103,7 @@ bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
 }
 
 // [[Rcpp::export]]
-List compare_skeletons(NumericMatrix est,NumericMatrix truth,NumericVector targets){
+List compareSkeletons(NumericMatrix est,NumericMatrix truth,NumericVector targets){
   validateInputs(est,truth);
   int fp=0;
   int fn=0;
@@ -134,57 +134,65 @@ List compare_skeletons(NumericMatrix est,NumericMatrix truth,NumericVector targe
 /*
  * These functions serve to find the differences in the v-structures in two mixed graphs
  */
-List check_triple(NumericMatrix g,int i,int j,int k){
+List checkTriple(NumericMatrix g,int i,int j,int k,bool verbose=false){
   // check if i *-> k <-* j, then k *-> j <-* i, and j *-> i <-* k with each set of parents nonadjacent
   //Rcout << "i: " << i << " | j: " << j << " | k: " << k << " | Conclusion: ";
   
   if (g(i,k)==1 && g(k,i)==0 && g(j,k)==1 && g(k,j)==0 && g(i,j)==0 && g(j,i)==0)
   {
     
-    //Rcout << "i -> k <- j"; 
+    if (verbose){
+      Rcout << i << " -> " << k << " <- " << j << std::endl;  
+    }
     
     return List::create(_["result"]=true,_["order"]=NumericVector::create(i,k,j));  
   }
   else if (g(k,j)==1 && g(j,k)==0 && g(i,j)==1 && g(j,i)==0 && g(i,k)==0 && g(k,i)==0)
   {
-    
-    //Rcout << "i -> j <- k";
-    
+    if (verbose){
+      Rcout << i << " -> " << j << " <- " << k << std::endl;  
+    }
     
     return List::create(_["result"]=true,_["order"]=NumericVector::create(k,j,i));
   }
   else if (g(j,i)==1 && g(i,j)==0 && g(k,i)==1 && g(i,k)==0 && g(j,k)==0 && g(k,j)==0)
   {
-    
-    //Rcout << "j -> i <- k";
+    if (verbose){
+      Rcout << j << " -> " << i << " <- " << k << std::endl;  
+    }
     
     return List::create(_["result"]=true,_["order"]=NumericVector::create(j,i,k));
   }
   else 
   {
-    
-    //Rcout << "No unshielded triple\n";
-    //Rcout << std::endl;
+    if (verbose){
+      Rcout << "No unshielded triple\n";
+      Rcout << std::endl;
+    }
     
     return List::create(_["result"]=false,_["order"]=NA_REAL);
   }
 }
 
-bool check_other_triple(NumericMatrix g2,NumericVector v){
+bool checkOtherTriple(NumericMatrix g2,NumericVector v,bool verbose=false){
   // check v(0) -> v(1) <- v(2) with v(0) and v(2) nonadjacent
   if (g2(v(0),v(1))==1 && g2(v(1),v(0))==0 && 
       g2(v(2),v(1))==1 && g2(v(1),v(2))==0 && 
       g2(v(0),v(2))==0 && g2(v(2),v(0))==0){
-    //Rcout << " | v-structure correctly recovered\n";
+    if (verbose){
+      Rcout << "v-structure correctly recovered\n"; 
+    }
     return true;
   } else {
-    //Rcout << " | v-structure *not* present in true graph\n";
+    if (verbose){
+      Rcout << "v-structure *not* present in other graph\n";
+    }
     return false;
   }
 }
 
 // [[Rcpp::export]]
-List compare_v_structures(NumericMatrix est,NumericMatrix truth,NumericVector targets){
+List compareVStructures(NumericMatrix est,NumericMatrix truth,NumericVector targets,bool verbose=false){
   validateInputs(est,truth);
   int num_missing=0;
   int num_added=0;
@@ -198,12 +206,19 @@ List compare_v_structures(NumericMatrix est,NumericMatrix truth,NumericVector ta
     for (int j=i+1;j<p-1;++j){
       for (int k=j+1;k<p;++k){
         // only proceed if i, j, and k are all in the same target's neighborhood
-        if (sharedNeighborhood(truth,targets,i,j) && sharedNeighborhood(truth,targets,i,k) && sharedNeighborhood(truth,targets,j,k)){
-          //Rcout << "Checking: " << i << ", " << j << ", and " << k << std::endl;
-          //Rcout << "Estimated Graph:\n";
-          triple_check = check_triple(est,i,j,k);
+        if (sharedNeighborhood(truth,targets,i,j) && 
+            sharedNeighborhood(truth,targets,i,k) && 
+            sharedNeighborhood(truth,targets,j,k)){
+          if (verbose){
+            Rcout << "Checking: " << i << ", " << j << ", and " << k << std::endl;
+            Rcout << "Estimated Graph:\n";
+          }
+          triple_check = checkTriple(est,i,j,k,verbose);
           if (triple_check["result"]){
-            if (check_other_triple(truth,triple_check["order"])){
+            if (verbose){
+              Rcout << "True Graph:\n";
+            }
+            if (checkOtherTriple(truth,triple_check["order"],verbose)){
               continue_checking=false; // We don't need to check the true graph since v-structure was correctly identified
               ++num_correct;
             } else {
@@ -213,11 +228,14 @@ List compare_v_structures(NumericMatrix est,NumericMatrix truth,NumericVector ta
           
           // Now, we check if we missed any v-structures
           if (continue_checking){
-            //Rcout << "True Graph:\n";
-            
-            triple_check = check_triple(truth,i,j,k);
+            if (verbose){
+              Rcout << "True Graph:\n";
+            }
+            triple_check = checkTriple(truth,i,j,k,verbose);
             if (triple_check["result"]){
-              //Rcout << " | v-structure *not* present in estimated graph\n";
+              if (verbose){
+                Rcout << "V-structure *not* present in estimated graph\n";
+              }
               ++num_missing;
             } else {
               continue_checking=true;
@@ -235,62 +253,11 @@ List compare_v_structures(NumericMatrix est,NumericMatrix truth,NumericVector ta
   );
 }
 
-/*
- * these functions serve to help us determine whether or not we accurately recover the parent sets of our target nodes
- */
-// void update_edge_values(NumericMatrix est,NumericMatrix truth,const int &i,const int &j,int &correct,int &missing,int &added,bool verbose){
-//   bool est_cond;
-//   bool truth_cond;
-//   // Estimated: i -> j | Ground: i -> j
-//   est_cond = est(i,j)==1 && est(j,i)!=1;
-//   truth_cond = truth(i,j)==1 && truth(j,i)!=1;
-//   if (est_cond && truth_cond){
-//     if (verbose){
-//       Rcout << "Correct parent of " << j << ": " << i << std::endl;
-//     }
-//     ++correct;
-//   } else if (est_cond && !truth_cond){
-//     if (verbose){
-//       Rcout << "False positive parent of " << j << ": " << i << std::endl;
-//     }
-//     ++added;
-//   } else if (!est_cond && truth_cond){
-//     if (verbose){
-//       Rcout << "False negative parent of " << j << ": " << i << std::endl;
-//     }
-//     ++missing;
-//   }
-// }
-
-/*
- // [[Rcpp::export]]
- List compare_directed_edges(NumericMatrix est,NumericMatrix truth){
- int num_correct=0;
- int num_missing=0;
- int num_added=0;
- 
- int p = est.nrow();
- 
- for (int i=0;i<p-1;++i){
- for (int j=i+1;j<p;++j){
- update_edge_values(est,truth,i,j,num_correct,num_missing,num_added);
- update_edge_values(est,truth,j,i,num_correct,num_missing,num_added);
- }  
- }
- 
- return List::create(
- _["missing_par"]=num_missing,
- _["added_par"]=num_added,
- _["correct_par"]=num_correct
- );
- }
- */
-
-void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,NumericVector &targets,
+void oneTargetPRA(NumericMatrix est,NumericMatrix truth,int t,NumericVector &targets,
                    int &correct,int &missing,int &added,int &potential,bool verbose){
   int p = est.nrow();
   for (int i=0;i<p;++i){
-    if (i==t || !sharedNeighborhood(truth,targets,t,i)){
+    if (i==t){
       continue;
     }
     if (verbose){
@@ -312,12 +279,16 @@ void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,NumericVector &ta
      * d) Potential: undirected edge for both
      */
     if (est(i,t)==1 && est(t,i)==0){ // Est: i -> t
-      //Rcout << " | Est. Graph: Parent | True graph: ";
+      if (verbose){
+        Rcout << " | Est. Graph: Parent | True graph: ";
+      }
       // Truth: Either i <- t or i and t are not adjacent
       if (truth(i,t)==0){
         ++added;
-        //Rcout << "Not a parent | ";
-        //Rcout << "Added: " << added << std::endl;
+        if (verbose){
+          Rcout << "Not a parent | ";
+          Rcout << "Added: " << added << std::endl; 
+        }
       }
       else if (truth(i,t)==1 && truth(t,i)==0) { // Truth: i -> t
         ++correct;
@@ -332,8 +303,10 @@ void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,NumericVector &ta
           Rcout << " | Undirected edge in True Graph | Potential: " << potential << std::endl;  
         }
       }
-    } else { // Est: Either i - t or i and t are not adjacent
-      if (truth(i,t)==1 && truth(t,i)!=1){ // Truth: i -> t
+    } else { 
+      // Est: Either i - t or i and t are not adjacent 
+      // or some ancestral marking (not regarded as in the same neighborhood)
+      if (truth(i,t)==1 && truth(t,i)==0){ // Truth: i -> t
         ++missing;
         if (verbose){
           Rcout << " | Est. Graph: Not a parent | True graph: Parent | ";
@@ -350,17 +323,15 @@ void pra_onetarget(NumericMatrix est,NumericMatrix truth,int t,NumericVector &ta
         if (verbose){
           Rcout << " | Both graphs have undirected edges | Potential: " << potential;  
         }
-        
-      } 
-    }
-    if (verbose) {
-      Rcout << "\n";
+      }
+      if (verbose) Rcout << std::endl;
     }
   }
 }
 
 // [[Rcpp::export]]
-List parent_recovery_accuracy(NumericMatrix est,NumericMatrix truth,NumericVector targets,bool verbose=false){
+List parentRecoveryAccuracy(NumericMatrix est,NumericMatrix truth,
+                            NumericVector targets,bool verbose=false){
   validateInputs(est,truth);
   validateTargets(est,targets);
   int num_correct=0;
@@ -370,7 +341,7 @@ List parent_recovery_accuracy(NumericMatrix est,NumericMatrix truth,NumericVecto
   
   std::for_each(targets.begin(),
                 targets.end(),
-                [&](int t) {pra_onetarget(est,truth,t,targets,
+                [&](int t) {oneTargetPRA(est,truth,t,targets,
                     num_correct,num_missing,num_added,num_potential,verbose);});
   
   return List::create(
@@ -380,57 +351,6 @@ List parent_recovery_accuracy(NumericMatrix est,NumericMatrix truth,NumericVecto
     _["potential"]=num_potential
   );
 }
-
-/*
- * We need to work here to convert an adjacency matrix from the true DAG to the notation for a mixed graph for comparison
- * Every time there is a 1, it must be converted to a 2 and its counterpart on the other side of the diagonal must change from a 0 to a 3
- * All other 0's remain the same
- */
-// // [[Rcpp::export]]
-// NumericMatrix convert_true_dag(NumericMatrix G){
-//   
-//   NumericMatrix Gc = clone(G);
-//   int p = Gc.ncol();
-//   
-//   for (int i=0;i<p;++i){
-//     for (int j=i+1;j<p;++j){
-//       if (Gc(i,j)==1){
-//         Gc(i,j)=2;
-//         Gc(j,i)=3;
-//       } else if (Gc(j,i)==1){
-//         Gc(j,i)=2;
-//         Gc(i,j)=3;
-//       }
-//     }
-//   }
-//   
-//   return Gc;
-// }
-
-/*
- * Convert PC amat
- * All directed edges must change: if (i,j)==1 and (j,i)==0, those must be changed to 2 and 3 respectively
- * All undirected edges remain the same (1's)
- * All other unconnected edges also remain the same (0's)
- */
-
-// // [[Rcpp::export]]
-// NumericMatrix convert_pc_amat(NumericMatrix G){
-//   NumericMatrix Gc = clone(G);
-//   int p = Gc.ncol();
-//   for (int i=0;i<p;++i){
-//     for (int j=i+1;j<p;++j){
-//       if (Gc(i,j)==1 && Gc(j,i)==0){
-//         Gc(i,j)=2;
-//         Gc(j,i)=3;
-//       } else if (Gc(j,i)==1 && Gc(i,j)==0){
-//         Gc(j,i)=2;
-//         Gc(i,j)=3;
-//       }
-//     }
-//   }
-//   return Gc;
-// }
 
 void makeNodeNames(int p,StringVector &node_names){
   for (int i=0;i<p;++i){
@@ -445,7 +365,7 @@ bool idAncestors(NumericMatrix reference,int i,int j,bool verbose=true){
   StringVector node_names;
   makeNodeNames(p,node_names);
   
-  DAG g_ref(p,node_names,reference,verbose);
+  DAG g_ref(p,node_names,reference,false,verbose);
   return g_ref.isAncestor(i,j);
 }
 
@@ -459,7 +379,7 @@ bool checkAncestralPath(NumericMatrix reference,NumericVector targets,
   int p = reference.nrow();
   StringVector node_names;
   makeNodeNames(p,node_names);
-  DAG g_ref(p,node_names,reference,verbose);
+  DAG g_ref(p,node_names,reference,false,verbose);
   
   if (!g_ref.isAncestor(desc,anc)){
     if (verbose){
@@ -625,7 +545,9 @@ List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
     _["FPOrientedEdge"]=false_positive_arrow,
     _["AddedConnection"]=added_connection
   );
+  
 }
+
 
 /*
  * A true positive is when the orientation exactly matches in both graphs
@@ -636,7 +558,8 @@ List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
  */
 // [[Rcpp::export]]
 double overallF1(NumericMatrix est,NumericMatrix ref,
-                 NumericVector targets,bool verbose){
+                 NumericVector targets,
+                 bool verbose=false){
   validateInputs(est,ref);
   validateTargets(ref,targets);
 
@@ -683,20 +606,21 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
   double f1 = (2.0 * tp) / (2.0*tp + fp + fn);
   
   return f1;
+  
 }
 
 
 // [[Rcpp::export]]
-DataFrame all_metrics(NumericMatrix est,NumericMatrix ref_graph,
+DataFrame allMetrics(NumericMatrix est,NumericMatrix ref_graph,
                       NumericVector targets,bool verbose=false,
                       std::string algo="pc",std::string ref="sub_cpdag"){
   validateInputs(est,ref_graph);
   validateTargets(ref_graph,targets);
   
   // Get the estimated dag next
-  List est_skeleton = compare_skeletons(est,ref_graph,targets);
-  List est_vstruct = compare_v_structures(est,ref_graph,targets);
-  List est_pra = parent_recovery_accuracy(est,ref_graph,targets);
+  List est_skeleton = compareSkeletons(est,ref_graph,targets);
+  List est_vstruct = compareVStructures(est,ref_graph,targets);
+  List est_pra = parentRecoveryAccuracy(est,ref_graph,targets);
   List est_ancestors = interNeighborhoodEdgeMetrics(est,ref_graph,targets,verbose);
   
   return DataFrame::create(
@@ -721,17 +645,11 @@ DataFrame all_metrics(NumericMatrix est,NumericMatrix ref_graph,
 }
 
 // [[Rcpp::export]]
-DataFrame neighborhood_metrics(NumericMatrix G){
+DataFrame getNeighborhoodMetrics(NumericMatrix G){
+  validateInputs(G,G);
   return DataFrame::create(
     _["size"]=G.ncol(),
-    _["num_edges"]=get_edge_number(G)
+    _["num_edges"]=getEdgeNumber(G)
   );
+  
 }
-
-// TODO: create a function to compare the estimated DAG to the reference DAG
-
-
-
-
-
-

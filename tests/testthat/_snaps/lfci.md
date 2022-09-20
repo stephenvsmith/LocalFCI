@@ -3,11 +3,11 @@
     There is (are) 1 target(s).
     Targets: lung
     Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     Total Neighborhood:
@@ -72,11 +72,11 @@
     There are 1 targets.
     Targets: lung
     Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     Total Neighborhood:
@@ -139,11 +139,11 @@
     There is (are) 1 target(s).
     Targets: lung
     Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     Total Neighborhood:
@@ -281,19 +281,19 @@
     There is (are) 2 target(s).
     Targets: lung bronc
     Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    FUNCTION getNeighbors. Node 4
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 7 is a child.
+    Call from getNeighbors. We are evaluating the following child: 7
+    Call from getNeighbors. Node 5 is a potential spouse of node 4.
     Neighbors of node 4: 2, 5, 7
     
     Total Neighborhood:
@@ -607,11 +607,11 @@
     There are 1 targets.
     Targets: lung
     Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     Total Neighborhood:
@@ -749,19 +749,19 @@
     There are 2 targets.
     Targets: lung bronc
     Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    FUNCTION getNeighbors. Node 4
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 7 is a child.
+    Call from getNeighbors. We are evaluating the following child: 7
+    Call from getNeighbors. Node 5 is a potential spouse of node 4.
     Neighbors of node 4: 2, 5, 7
     
     Total Neighborhood:
@@ -1114,19 +1114,19 @@
     There is (are) 2 target(s).
     Targets: lung bronc
     Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    FUNCTION getNeighbors. Node 4
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 7 is a child.
+    Call from getNeighbors. We are evaluating the following child: 7
+    Call from getNeighbors. Node 5 is a potential spouse of node 4.
     Neighbors of node 4: 2, 5, 7
     
     Total Neighborhood:
@@ -1433,11 +1433,11 @@
     S_{7,1} = 5 S_{7,2} = 3 4 S_{7,3} = 5 S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
     Number of tests so far: 58
     First and last elements of the dataset: -0.641447 0.198884
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     
@@ -1665,11 +1665,11 @@
     1 0 1 0 0 1
     0 0 0 1 1 0
     Conclusion of algorithm.
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    FUNCTION getNeighbors. Node 4
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 7 is a child.
+    Call from getNeighbors. We are evaluating the following child: 7
+    Call from getNeighbors. Node 5 is a potential spouse of node 4.
     Neighbors of node 4: 2, 5, 7
     
     
@@ -1804,6 +1804,7 @@
     Potential k values: either
     k: 4 (either)
     Separation Set: -1 | V-Structure (True Numbering): 1*->5<-*3
+    Rule 0 has been used 1 times.
     j: 3 (bronc)
     j: 5 (dysp)
     Potential k values: either
@@ -1827,6 +1828,7 @@
     Potential k values: dysp
     k: 5 (dysp)
     Separation Set: -1 | V-Structure (True Numbering): 4*->7<-*5
+    Rule 0 has been used 2 times.
     i: 4 (either)
     i: 5 (dysp)
 
@@ -1836,19 +1838,19 @@
     There are 2 targets.
     Targets: lung bronc
     Target: 3
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     Target: 4
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    FUNCTION getNeighbors. Node 4
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 7 is a child.
+    Call from getNeighbors. We are evaluating the following child: 7
+    Call from getNeighbors. Node 5 is a potential spouse of node 4.
     Neighbors of node 4: 2, 5, 7
     
     Total Neighborhood:
@@ -2195,11 +2197,11 @@
     S_{5,1} = nan S_{5,2} = 3 S_{5,3} = nan S_{5,4} = 2 S_{5,5} = nan S_{5,7} = nan 
     S_{7,1} = 3 5 S_{7,2} = 3 4 S_{7,3} = 2 5 S_{7,4} = nan S_{7,5} = nan S_{7,7} = nan 
     Number of tests so far: 70
-    FUNCTION get_neighbors_from_dag. Node 3
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 5 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 5
-    Call from get_neighbors_from_dag. Node 1 is a potential spouse of node 3.
+    FUNCTION getNeighbors. Node 3
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 5 is a child.
+    Call from getNeighbors. We are evaluating the following child: 5
+    Call from getNeighbors. Node 1 is a potential spouse of node 3.
     Neighbors of node 3: 1, 2, 5
     
     
@@ -2427,11 +2429,11 @@
     1 0 1 0 0 1
     0 0 0 1 1 0
     Conclusion of algorithm.
-    FUNCTION get_neighbors_from_dag. Node 4
-    Call from get_neighbors_from_dag. Node 2 is a parent.
-    Call from get_neighbors_from_dag. Node 7 is a child.
-    Call from get_neighbors_from_dag. We are evaluating the following child: 7
-    Call from get_neighbors_from_dag. Node 5 is a potential spouse of node 4.
+    FUNCTION getNeighbors. Node 4
+    Call from getNeighbors. Node 2 is a parent.
+    Call from getNeighbors. Node 7 is a child.
+    Call from getNeighbors. We are evaluating the following child: 7
+    Call from getNeighbors. Node 5 is a potential spouse of node 4.
     Neighbors of node 4: 2, 5, 7
     
     
@@ -2566,6 +2568,7 @@
     Potential k values: either
     k: 4 (either)
     Separation Set: -1 | V-Structure (True Numbering): 1*->5<-*3
+    Rule 0 has been used 1 times.
     j: 3 (bronc)
     j: 5 (dysp)
     Potential k values: either
@@ -2589,6 +2592,7 @@
     Potential k values: dysp
     k: 5 (dysp)
     Separation Set: 2 | V-Structure (True Numbering): 4*->7<-*5
+    Rule 0 has been used 2 times.
     i: 4 (either)
     i: 5 (dysp)
 
