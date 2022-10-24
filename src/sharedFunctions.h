@@ -18,4 +18,5 @@ void printMatrix(NumericMatrix m);
 
 bool isMember(NumericVector x,const size_t &i);
 
+void makeNodeNames(int p,StringVector &node_names);
 #endif

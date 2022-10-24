@@ -314,7 +314,8 @@ test_that("All Rules is correct.",{
                         0,2,1,0,0,0,0,0),nrow = 8,byrow = TRUE)
   adj.mat10orig <- rlang::duplicate(adj.mat10)
   p <- ncol(adj.mat10)
-  expect_snapshot_output(adj.mat10 <- testallRules(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),node_names,adj.mat10))
+  node_names <- paste0("V",seq(0,p-1))
+  expect_snapshot_output(adj.mat10 <- testAllRules(asiaDAG[1:p,1:p],asiadf[,1:p],0,node_names,adj.mat10))
   
   expect_equal(adj.mat10[7,1],2)
   expect_equal(adj.mat10[1,7],3)

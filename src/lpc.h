@@ -9,6 +9,7 @@ class LocalPC : public ConstrainedAlgo {
 public:
   LocalPC(NumericMatrix true_dag,arma::mat df,
            NumericVector targets,
+           NumericVector nodes_interest,
            StringVector names,
            int lmax,
            double signif_level,
@@ -16,6 +17,7 @@ public:
   
   LocalPC(NumericMatrix true_dag, // population version
            NumericVector targets,
+           NumericVector nodes_interest,
            StringVector names,
            int lmax,
            bool verbose);

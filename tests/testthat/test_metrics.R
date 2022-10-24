@@ -178,15 +178,15 @@ test_that("checking metric functions",{
                          verbose = FALSE,m.max=3),"amat")
   pc_asia <- matrix(pc.fit,nrow = 8)
   
-  # lfci_g <- empty.graph(colnames(asiaDAG))
-  # pc_g <- empty.graph(colnames(asiaDAG))
-  # amat(lfci_g) <- est$amat
-  # amat(pc_g) <- pc_asia
-  # par(mfrow=c(1,2))
-  # graphviz.plot(lfci_g)
-  # graphviz.plot(pc_g)
+  lfci_g <- empty.graph(colnames(asiaDAG))
+  pc_g <- empty.graph(colnames(asiaDAG))
+  amat(lfci_g) <- est$amat
+  amat(pc_g) <- pc_asia
+  par(mfrow=c(1,2))
+  graphviz.plot(lfci_g)
+  graphviz.plot(pc_g)
   
-  # skeleton perfect, missing tub -> either <- lung but have either -> dysp <- bronc, have all parents except for tub, which is a potential
+  # skeleton perfect, missing tub -> either <- lung and either -> dysp <- bronc, have all parents except for tub and either, which are both potential
   expect_snapshot_output(allMetrics(est$amat,asiaDAG,t-1,algo="lfci"))
   # skeleton perfect (smoke edges don't count), missing both v-structures and added 1, missing all parents, either got two fp parents
   expect_snapshot_output(allMetrics(pc_asia,asiaDAG,t-1,algo="pc"))

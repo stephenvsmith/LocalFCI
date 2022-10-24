@@ -3,8 +3,6 @@
 
 #include "sharedFunctions.h"
 
-using namespace Rcpp;
-
 class SepSetList {
 public:
   SepSetList(NumericVector &neighbors);

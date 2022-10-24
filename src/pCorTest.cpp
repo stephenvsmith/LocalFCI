@@ -1,7 +1,5 @@
 #include "pCorTest.h"
 
-using namespace Rcpp;
-
 // Here, we are treating C as the correlation matrix
 // [[Rcpp::export]]
 double getPartialCorrelation(arma::mat C,size_t i,size_t j,arma::uvec k){
@@ -15,7 +13,8 @@ double getPartialCorrelation(arma::mat C,size_t i,size_t j,arma::uvec k){
   if (k_size==0){
     return C(i,j);
   } else if (k_size==1){
-    pc = (C(i,j)-C(i,k(0))*C(j,k(0))) / sqrt( (1-pow(C(i,k(0)),2))*(1-pow(C(j,k(0)),2)));
+    pc = (C(i,j)-C(i,k(0))*C(j,k(0))) / 
+      sqrt( (1-pow(C(i,k(0)),2))*(1-pow(C(j,k(0)),2)));
   } else {
     arma::uvec indices(k_size+2);
     indices(0) = i;
@@ -46,7 +45,9 @@ double fisherZ(double pc,size_t n,size_t k_size){
 }
 
 // [[Rcpp::export]]
-List condIndTest(arma::mat &C,const size_t &i,const size_t &j,const arma::uvec &k,const size_t &n,const double &signif_level){
+List condIndTest(arma::mat &C,const size_t &i,const size_t &j,
+                 const arma::uvec &k,const size_t &n,
+                 const double &signif_level){
   double pc = getPartialCorrelation(C,i,j,k);
   double pc_transformed = fisherZ(pc,n,k.size());
 
@@ -56,9 +57,10 @@ List condIndTest(arma::mat &C,const size_t &i,const size_t &j,const arma::uvec &
   
   bool accept_H0 = std::abs(pc_transformed) <= cutoff;
   double pval=2*R::pnorm(pc_transformed,0.0,1.0,lower,false);
-  
+  // The null hypothesis is accepted (p-value large) => H_0: r = 0 
+  // => Conditional independence
   return List::create(
-    _["result"]=accept_H0, // The null hypothesis is accepted (p-value large) => H_0: r = 0 => Conditional independence
+    _["result"]=accept_H0, 
     _["pval"]=pval
   );
   
@@ -66,14 +68,17 @@ List condIndTest(arma::mat &C,const size_t &i,const size_t &j,const arma::uvec &
 
 
 // [[Rcpp::export]]
-List condIndTestPop(NumericMatrix G,const size_t &i,const size_t &j,const arma::uvec &k){
+List condIndTestPop(NumericMatrix G,const size_t &i,const size_t &j,
+                    const arma::uvec &k){
   Function my_dsep("my_dsep");
   NumericVector tmp = my_dsep(G,i,j,k);
   double pval = tmp[0];
   bool accept_H0 = static_cast<bool>(pval);  
 
+  // The null hypothesis is accepted (p-value large) => H_0: r = 0 
+  // => Conditional independence
   return List::create(
-    _["result"]=accept_H0, // The null hypothesis is accepted (p-value large) => H_0: r = 0 => Conditional independence
+    _["result"]=accept_H0, 
     _["pval"]=pval
   );
 }

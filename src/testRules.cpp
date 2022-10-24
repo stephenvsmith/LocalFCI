@@ -3,7 +3,11 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 NumericMatrix testRule1(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m){
-  LocalFCI lfci(td,dummy_df,dummy_t,names,3,0.01,false);
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,dummy_df,dummy_t,nodes_interest,names,3,0.01,false);
   lfci.setAmat(m);
   bool track_changes=false;
   lfci.setVerboseTrue();
@@ -14,7 +18,11 @@ NumericMatrix testRule1(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_
 
 // [[Rcpp::export]]
 NumericMatrix testRule2(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m){
-  LocalFCI lfci(td,dummy_df,dummy_t,names,3,0.01,false);
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,dummy_df,dummy_t,nodes_interest,names,3,0.01,false);
   lfci.setAmat(m);
   bool track_changes=false;
   lfci.setVerboseTrue();
@@ -25,7 +33,11 @@ NumericMatrix testRule2(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_
 
 // [[Rcpp::export]]
 NumericMatrix testRule3(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m){
-  LocalFCI lfci(td,dummy_df,dummy_t,names,3,0.01,false);
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,dummy_df,dummy_t,nodes_interest,names,3,0.01,false);
   lfci.setAmat(m);
   bool track_changes=false;
   lfci.setVerboseTrue();
@@ -36,7 +48,11 @@ NumericMatrix testRule3(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_
 
 // [[Rcpp::export]]
 NumericMatrix testRule4(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m,int i,int j,NumericVector k){
-  LocalFCI lfci(td,dummy_df,dummy_t,names,3,0.01,false);
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,dummy_df,dummy_t,nodes_interest,names,3,0.01,false);
   lfci.setAmat(m);
   lfci.setS(i,j,k);
   lfci.setS(j,i,k);
@@ -49,7 +65,11 @@ NumericMatrix testRule4(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_
 
 // [[Rcpp::export]]
 NumericMatrix testRule8(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m){
-  LocalFCI lfci(td,dummy_df,dummy_t,names,3,0.01,false);
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,dummy_df,dummy_t,nodes_interest,names,3,0.01,false);
   lfci.setAmat(m);
   bool track_changes=false;
   lfci.setVerboseTrue();
@@ -60,7 +80,11 @@ NumericMatrix testRule8(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_
 
 // [[Rcpp::export]]
 NumericMatrix testRule9(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m){
-  LocalFCI lfci(td,dummy_df,dummy_t,names,3,0.01,false);
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,dummy_df,dummy_t,nodes_interest,names,3,0.01,false);
   lfci.setAmat(m);
   bool track_changes=false;
   lfci.setVerboseTrue();
@@ -71,7 +95,11 @@ NumericMatrix testRule9(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_
 
 // [[Rcpp::export]]
 NumericMatrix testRule10(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m){
-  LocalFCI lfci(td,dummy_df,dummy_t,names,3,0.01,false);
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,dummy_df,dummy_t,nodes_interest,names,3,0.01,false);
   lfci.setAmat(m);
   bool track_changes=false;
   lfci.setVerboseTrue();
@@ -81,8 +109,12 @@ NumericMatrix testRule10(NumericMatrix td,arma::mat dummy_df,NumericVector dummy
 }
 
 // [[Rcpp::export]]
-NumericMatrix testallRules(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m){
-  LocalFCI lfci(td,dummy_df,dummy_t,names,3,0.01,false);
+NumericMatrix testAllRules(NumericMatrix td,arma::mat dummy_df,NumericVector dummy_t,StringVector names,NumericMatrix m){
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,dummy_df,dummy_t,nodes_interest,names,3,0.01,false);
   lfci.setAmat(m);
   lfci.setVerboseTrue();
   lfci.allRules();
@@ -91,18 +123,15 @@ NumericMatrix testallRules(NumericMatrix td,arma::mat dummy_df,NumericVector dum
 
 // [[Rcpp::export]]
 NumericMatrix testConvertMixed(NumericMatrix td,NumericVector t,StringVector names,NumericMatrix m,NumericVector v){
-  LocalFCI lfci(td,t,names,3,true);
+  NumericVector nodes_interest;
+  for (int i=0;i<td.ncol();++i){
+    nodes_interest.push_back(i);
+  }
+  LocalFCI lfci(td,t,nodes_interest,names,3,true);
   lfci.setAmat(m);
   lfci.setNeighbors(v);
   lfci.convertMixedGraph();
   return lfci.getAmat();
 }
-
-
-
-
-
-
-
 
 

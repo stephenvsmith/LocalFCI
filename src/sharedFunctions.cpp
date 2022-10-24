@@ -93,4 +93,11 @@ void printMatrix(NumericMatrix m){
   }
 }
 
+void makeNodeNames(int p,StringVector &node_names){
+  for (int i=0;i<p;++i){
+    String node("V");
+    node += i;
+    node_names.push_back(node);
+  }
+}
 

@@ -3,8 +3,6 @@
 
 #include "sharedFunctions.h"
 
-using namespace Rcpp;
-
 // Base class
 class Graph {
 public:
@@ -18,6 +16,12 @@ public:
       stop("Invalid index: negative value");
     } else if (ind >= p){
       stop("Invalid index: too large");
+    }
+  }
+  
+  void validateAdjMatrix(const NumericMatrix adj){
+    if (adj.nrow()!=adj.ncol()){
+      stop("Dimensions of adjacency matrix do not match.");
     }
   }
   
@@ -39,7 +43,6 @@ public:
     return amat(row,_);
   }
   
-  // Tested in graphtests.cpp and test_Graph.R
   NumericVector getAmatCol(const size_t &col){
     validateIndex(col);
     return amat(_,col);
@@ -53,13 +56,18 @@ public:
   // Setters
   void setSize(const size_t &s){ p = s; }
   void setNames(StringVector n){ names = n; }
-  void setAmat(NumericMatrix m){ amat = m; p = m.ncol(); }
+  void setAmat(NumericMatrix m){ 
+    validateAdjMatrix(m); 
+    amat = m; 
+    p = m.ncol(); 
+  }
   double & operator ()(const size_t &i, const size_t &j) {
     return amat(i,j);
   }
   void setAmatVal(const size_t &i,
                   const size_t &j,
                   const size_t &val){
+    validateIndex(i); validateIndex(j);
     amat(i,j) = val;
   }
   

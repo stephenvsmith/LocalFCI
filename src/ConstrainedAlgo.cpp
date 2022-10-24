@@ -3,6 +3,7 @@
 // Sample version
 ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
                                  NumericVector targets,
+                                 NumericVector nodes_interest,
                                  StringVector names,
                                  int lmax,
                                  double signif_level,
@@ -23,13 +24,20 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
   num_tests=0;
   
   // Set DAG object (We use this object to obtain neighborhoods)
-  true_DAG = new DAG(p,names,true_dag,estDAG);
+  true_DAG = new DAG(p,names,true_dag);
   
-  // Find the neighborhood of the target nodes
-  neighborhood = true_DAG -> getNeighborsMultiTargets(targets,verbose); //tested
-  neighborhood = union_(neighborhood,targets); //tested
-  std::sort(neighborhood.begin(),neighborhood.end()); //tested
+  if (estDAG){
+    // We are given a matrix containing Markov Blanket information
+    mb_list = new MBList(nodes_interest,true_dag,verbose);
+  } else {
+    // We are given the true DAG to find actual Markov Blankets
+    mb_list = new MBList(nodes_interest,true_dag,p,verbose);
+  }
   
+  // Find the neighborhoods of the target nodes (targets U nbhd(targets))
+  neighborhood = mb_list -> getMBMultipleTargets(targets); 
+  neighborhood = union_(neighborhood,targets);
+  std::sort(neighborhood.begin(),neighborhood.end());
   N = neighborhood.size();
   
   if (verbose){
@@ -60,10 +68,12 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
 // Population version of the algorithm object
 ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,
                                  NumericVector targets,
+                                 NumericVector nodes_interest,
                                  StringVector names,
                                  int lmax,
-                                 bool verbose) : verbose(verbose),targets(targets),
-                                 lmax(lmax),names(names) {
+                                 bool verbose) : 
+  verbose(verbose),targets(targets),
+  lmax(lmax),names(names) {
   num_targets = targets.length();
   if (verbose){
     Rcout << "Population Version (C++):\n";
@@ -76,11 +86,13 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,
   
   // Set DAG object
   true_DAG = new DAG(p,names,true_dag);
+  // Use the true DAG to find neighborhoods
+  mb_list = new MBList(nodes_interest,true_dag,p,verbose);
   
-  // Find the neighborhood of the target nodes
-  neighborhood = true_DAG -> getNeighborsMultiTargets(targets,verbose); //tested
-  neighborhood = union_(neighborhood,targets); //tested
-  std::sort(neighborhood.begin(),neighborhood.end()); //tested
+  // Find the neighborhoods of the target nodes (targets U nbhd(targets))
+  neighborhood = mb_list -> getMBMultipleTargets(targets);
+  neighborhood = union_(neighborhood,targets);
+  std::sort(neighborhood.begin(),neighborhood.end());
   
   N = neighborhood.size();
   
@@ -95,7 +107,8 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,
   C_tilde = new Graph(N);
   
   if (verbose){
-    Rcout << "Our starting matrix is " << C_tilde->getNRow() << "x" << C_tilde->getNCol() << ".\n";
+    Rcout << "Our starting matrix is ";
+    Rcout << C_tilde->getNRow() << "x" << C_tilde->getNCol() << ".\n";
     C_tilde -> printAmat();
     Rcout << "\n\n";
   }
@@ -123,10 +136,13 @@ void ConstrainedAlgo::print_elements(){
   Rcout << "Nodes under consideration: ";
   printVecElementsNoNames(neighborhood);
   Rcout << std::endl << "Ctilde:\n";
-  Rcout << "Our Ctilde matrix is " << C_tilde->getNRow() << "x" << C_tilde->getNCol() << std::endl;
+  Rcout << "Our Ctilde matrix is ";
+  Rcout << C_tilde->getNRow() << "x" << C_tilde->getNCol() << std::endl;
   C_tilde->printAmat();
   Rcout << "Our DAG matrix is " << std::endl;
   true_DAG->printAmat();
+  Rcout << "Our Markov Blankets are" << std::endl;
+  mb_list->printMBs();
   Rcout << "Separating Set Values:\n";
   S->printSepSetList();
   Rcout << "Number of tests so far: " << num_tests << std::endl;
@@ -154,18 +170,20 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
       NumericMatrix g = true_DAG -> getAmat();
       test_result = condIndTestPop(g,neighborhood(i),neighborhood(j),sep_arma);
     } else {
-      test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
+      test_result = condIndTest(R,neighborhood(i),neighborhood(j),
+                                sep_arma,n,signif_level);
     }
     ++num_tests;
     p_vals.push_back(test_result["pval"]);
     if (verbose){
       Rcout << "The p-value is " << p_vals[p_vals.size()-1] << std::endl;
     }
-    if (test_result["result"]){ // We have statistically significant evidence of conditional independence
+    if (test_result["result"]){ 
+      // We have statistically significant evidence of conditional independence
       if (verbose){
-        Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j));
+        Rcout << names(neighborhood(i)) << " is separated from ";
+        Rcout << names(neighborhood(j));
         Rcout << " (p-value>" << signif_level << ")"<< std::endl;
-        //Rcout << "i = " << i << " | j = " << j << " | N_i = " << neighborhood(i) << " | N_j = " << neighborhood(j) << std::endl;
       }
       S->changeList(i,j);
       S->changeList(j,i);
@@ -177,7 +195,9 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
     k = 0;
     keep_checking_k = true;
     while (keep_checking_k && (k<kp)){
-      sep = kvals( _ , k ); // sep is the vector of the true values of the potential separating nodes (i.e. not efficient numbering)
+      // sep is the vector of the true values of the potential separating nodes
+      // (i.e. not efficient numbering)
+      sep = kvals( _ , k );
       std::sort(sep.begin(),sep.end());
       sep_arma = as<arma::uvec>(sep);
       if (verbose){
@@ -188,9 +208,13 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
         printVecElements(sep,names,"",")\n");
       }
       if (pop){
-        test_result = condIndTestPop(true_DAG->getAmat(),neighborhood(i),neighborhood(j),sep_arma);
+        test_result = condIndTestPop(true_DAG->getAmat(),
+                                     neighborhood(i),neighborhood(j),
+                                     sep_arma);
       } else {
-        test_result = condIndTest(R,neighborhood(i),neighborhood(j),sep_arma,n,signif_level);
+        test_result = condIndTest(R,
+                                  neighborhood(i),neighborhood(j),
+                                  sep_arma,n,signif_level);
       }
       ++num_tests;
       p_vals.push_back(test_result["pval"]);
@@ -200,7 +224,8 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
       }
       if (test_result["result"]){
         if (verbose){
-          Rcout << names(neighborhood(i)) << " is separated from " << names(neighborhood(j)) << " by node(s): ";
+          Rcout << names(neighborhood(i)) << " is separated from ";
+          Rcout << names(neighborhood(j)) << " by node(s): ";
           printVecElements(sep,names,""," ");
           Rcout << " (p-value>" << signif_level << ")"<< std::endl;
         }
@@ -211,7 +236,8 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
         keep_checking_k = false;
       } else {
         if (verbose){
-          Rcout << names(neighborhood(i)) << " is NOT separated from " << names(neighborhood(j)) << " by node(s): ";
+          Rcout << names(neighborhood(i)) << " is NOT separated from ";
+          Rcout << names(neighborhood(j)) << " by node(s): ";
           printVecElements(sep,names,""," ");
           Rcout << " (p-value<" << signif_level << ")"<< std::endl;
         }
@@ -244,7 +270,8 @@ void ConstrainedAlgo::getVStructures() {
   // We are searching for i-k-j where i and j are not adjacent and k is
   // not in the separating set for i and j
   for (size_t i=0;i<N;++i){
-    placeholder = C_tilde->getAmatRow(i); // We will search this vector for nodes connected to node i
+    // We will search this vector for nodes connected to node i
+    placeholder = C_tilde->getAmatRow(i); 
     no_neighbors = (all(placeholder==0)).is_true();
     if (!no_neighbors){ // If there are neighbors to consider
       if (verbose){
@@ -262,9 +289,9 @@ void ConstrainedAlgo::getVStructures() {
         placeholder = C_tilde->getAmatRow(j);
         j_invalid = (all(placeholder==0)).is_true();
         j_invalid = j_invalid || (C_tilde->getAmatVal(j,i)!= 0) ||  j <= i;
-        // j must be in the neighborhood of i for it to make a v-structure with it
-        // TODO: I don't believe the above comment is correct
-        j_invalid = j_invalid || !(true_DAG->inNeighborhood(neighborhood(i),neighborhood(j)));
+        // j must be in the neighborhood of i for it to make a v-structure with it (Local PC)
+        j_invalid = j_invalid || !(mb_list->isInMB(neighborhood(i),
+                                                   neighborhood(j)));
         if (!j_invalid){
           if (verbose){
             Rcout << "j: " << j << " (" << names(neighborhood(j)) << ")"<< std::endl;
@@ -292,7 +319,9 @@ void ConstrainedAlgo::getVStructures() {
                 if (verbose){
                   Rcout << "Separation Set: ";
                   printVecElementsNoNames(sepset_ij);
-                  Rcout << " | V-Structure (True Numbering): " << neighborhood(i) << "*->" << k << "<-*" << neighborhood(j) << std::endl;
+                  Rcout << " | V-Structure (True Numbering): ";
+                  Rcout << neighborhood(i) << "*->" << k << "<-*";
+                  Rcout << neighborhood(j) << std::endl;
                 }
                 C_tilde->setAmatVal(i,k_eff,1);
                 C_tilde->setAmatVal(j,k_eff,1);

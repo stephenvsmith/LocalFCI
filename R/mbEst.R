@@ -1,3 +1,37 @@
+mbEstMessage <- function(method,test,threshold){
+  cat("Estimating Markov Blankets using\n",
+      "Algorithm:",method,"\n",
+      "Test:",test,"\n",
+      "Tolerance:",threshold,"\n")
+}
+
+validateThreshold <- function(threshold){
+  if (threshold<=0 | threshold > 1){
+    stop("MB Estimation threshold is invalid. Threshold must be in (0,1]")
+  }
+}
+
+validateMethod <- function(method){
+  if (!(method %in% c("MMPC","SES","gOMP","pc.sel"))){
+    stop("Invalid MB estimation algorithm")
+  }
+}
+
+validateTarget <- function(target,p){
+  if (!(target %in% seq(p))){
+    stop(paste0("Invalid target index (t=",target,")"))
+  }
+}
+
+# TODO: Try these methods if we need more
+# else if (method=="gOMP"){
+#   mb <- MXM::gomp(target=target,dataset=dataset,test = test)$res[,1] # there are more options here to explore, also need to look closer at output
+# } else if (method=="FBED"){
+# mb <- MXM::fbed.reg(target = target,dataset = dataset,
+#                     test = "testIndFisher",method = "LR",
+#                     threshold = threshold)
+# }# There is also fbed.reg, 
+
 #' Estimate Markov Blanket of Target Node
 #' 
 #' `getMB()` applies a Markov Blanket estimation algorithm to a target node
@@ -10,35 +44,29 @@
 #' @param verbose Whether to provide detailed output
 #' @export
 getMB <- function(target,dataset,threshold=0.01,lmax=3,
-                  method="MMPC",test="testIndFisher",verbose=FALSE){
-  if (verbose) cat("Estimating Markov Blankets using\n",
-                   "Algorithm:",method,"\n",
-                   "Test:",test,"\n",
-                   "Tolerance:",threshold,"\n")
-  
-  if (threshold<=0 | threshold > 1){
-    stop("MB Estimation threshold is invalid. Threshold must be in (0,1]")
+                  method="MMPC",test="testIndFisher",
+                  verbose=FALSE){
+  if (verbose) {
+    mbEstMessage(method,test,threshold)
   }
   
-  if (!(method %in% c("MMPC","SES","gOMP","pc.sel"))){
-    stop("Invalid MB estimation algorithm")
-  }
-  
-  if (!(target %in% seq(1,ncol(dataset)))){
-    stop(paste0("Invalid target index (t=",target,")"))
-  }
+  validateThreshold(threshold)
+  validateMethod(method)
+  validateTarget(target,ncol(dataset))
   
   if (method=="MMPC"){
     mb <- MXM::MMPC(target=target,dataset=dataset,
                     threshold=threshold,test=test,
-                    max_k=lmax,hash = TRUE)
+                    max_k=lmax,hash = FALSE,
+                    backward = FALSE)
     mb_vars <- mb@selectedVars
-    n_tests <- mb@n.tests
+    n_tests <- length(mb_vars)+1 # Must change if we include backward phase
     runtime <- mb@runtime[3]
   } else if (method=="SES"){
     mb <- MXM::SES(target=target,dataset=dataset,
                    threshold=threshold,test=test,
-                   max_k=lmax,hash = TRUE)
+                   max_k=lmax,hash = TRUE,
+                   backward = FALSE)
     mb_vars <- mb@selectedVars
     n_tests <- mb@n.tests
     runtime <- mb@runtime[3]
@@ -46,45 +74,201 @@ getMB <- function(target,dataset,threshold=0.01,lmax=3,
     mb <- MXM::pc.sel(target=dataset[,target],
                       dataset=dataset[,-target],
                       threshold=threshold)
-    mb_vars <- sort(mb$vars)
+    mb_vars <- mb$vars
     n_tests <- sum(mb$n.tests)
     runtime <- mb$runtime[3]
   }
-  # else if (method=="gOMP"){
-  #   mb <- MXM::gomp(target=target,dataset=dataset,test = test)$res[,1] # there are more options here to explore, also need to look closer at output
-  # } # There is also fbed.reg, 
-  if (verbose) cat("Results for target",target,":",paste(mb@selectedVars,collapse = ","),"\n")
-  return(list("mb"=mb_vars,
+  
+  if (verbose) {
+    cat("Results for target",
+        target,":",
+        paste(mb@selectedVars,collapse = ","),"\n")
+  }
+  return(list("mb"=sort(mb_vars),
               "time"=runtime,
               "n_tests"=n_tests))
 }
 
+captureSpouses <- function(dataset,targets,target_mbs,first_order_mbs,
+                           threshold,verbose){
+  C <- cor(dataset)
+  n <- nrow(dataset)
+  p <- ncol(dataset)
+  num_tests <- 0
+  spouses_added <- c()
+  spouse_mbs <- list()
+  # Keep track of which pairs of nodes have been checked
+  pairs_checked <- matrix(0,nrow = p,ncol = p)
+  # For each target, identify the PC set and second-order nbrs
+  for (target in targets){
+    pc_set <- target_mbs[[as.character(target)]][["mb"]]
+    second_order_neighbors <- unique(unlist(
+      lapply(pc_set,function(x){
+        if (as.character(x) %in% names(target_mbs)){
+          return(target_mbs[[as.character(x)]][["mb"]])
+        } else {
+          return(first_order_mbs[[as.character(x)]][["mb"]])
+        }
+      })
+    ))
+    second_order_neighbors_precheck <- sort(setdiff(second_order_neighbors,
+                                           c(target,pc_set)))
+    second_order_neighbors <- c()
+    lapply(second_order_neighbors_precheck,function(x){
+      if (!pairs_checked[target,x]){
+        second_order_neighbors <<- c(
+          second_order_neighbors,x
+        )
+      } 
+    })
+    # Test conditional independence of target and second-order neighbor
+    # given the PC set. If there is dependence, then we have a spouse
+    if (length(second_order_neighbors>0)){
+      lapply(second_order_neighbors,function(x){
+        if (verbose){
+          cat("Checking if node",x,"is a spouse of target",target,"...")
+        }
+        test <- condIndTest(C,target-1,x-1,pc_set-1,n,threshold)
+        num_tests <<- num_tests + 1
+        pairs_checked[target,x] <<- pairs_checked[x,target] <<- 1
+        if (!test$result){
+          # We reject H_0, and conclude in favor of conditional dependence
+          # Add x to the Markov Blanket set
+          if (verbose){
+            cat(" yes. Adding",x,"to MB of",target,". ")
+          }
+          target_mbs[[as.character(target)]][["mb"]] <<- sort(c(
+            target_mbs[[as.character(target)]][["mb"]],x
+          ))
+          if (x %in% targets){
+            if (verbose){
+              cat("Adding",target,"to MB of",
+                  x,"(target node).")
+            }
+            target_mbs[[as.character(x)]][["mb"]] <<- sort(c(
+              target_mbs[[as.character(x)]][["mb"]],target
+            ))
+          } else if (as.character(x) %in% names(first_order_mbs)){
+            if (verbose){
+              cat("Adding",target,"to MB of",
+                  x,"(first-order neighbor).")
+            }
+            first_order_mbs[[as.character(x)]][["mb"]] <<- sort(c(
+              first_order_mbs[[as.character(x)]][["mb"]],target
+            ))
+          } else {
+            if (verbose){
+              cat(x,"is a newly discovered 1st-order neighbor",
+              "(was previously 2nd-order).")
+            }
+            spouses_added <<- c(spouses_added,x)
+            # Add target to MB set for node x
+            spouse_mbs[[as.character(x)]] <<- unique(c(
+              target,first_order_mbs[[as.character(x)]]
+            ))
+          }
+        } else {
+          if (verbose){
+            cat(" no")
+          }
+        }
+        if (verbose){
+          cat("\n")
+        }
+      })
+    }
+  }
+  return(list(
+    "target_mbs"=target_mbs,
+    "f_o_mbs"=first_order_mbs,
+    "spouse_mbs"=spouse_mbs,
+    "num_tests"=num_tests,
+    "spouses_added"=spouses_added))
+}
+
 constructFinalMBList <- function(targets,target_mbs,
-                                 dataset,threshold,lmax,method,test,verbose){
+                                 dataset,threshold,lmax,method,
+                                 test,verbose){
+  # Capture number of conditional independence tests for second-order neighbors
+  second_order_nbrs_tests <- 0
+  # Capture number of conditional independence tests for capturing spouses
+  spouse_num_tests <- 0
   # A vector to identify only the first-order neighbors
   first_order_neighbors <- unique(
     setdiff(
-      getAllMBNodes(target_mbs),targets))
+      getAllMBNodes(target_mbs),targets
+    )
+  )
+  # Number of tests for first-order neighbor identification
+  first_order_nbrs_tests <- sum(unlist(
+    lapply(target_mbs,function(x) return(x[["n_tests"]]))
+  ))
   # Apply MB algorithm again to obtain second-order neighbors
   if (length(first_order_neighbors)>0){
-    second_order_mbs <- lapply(first_order_neighbors,
-                               function(t) 
-                                 getMB(t,dataset,
-                                       threshold,
-                                       lmax,
-                                       method,
-                                       test,verbose))
-    # Combine first-order MBs and second-order MBs in one list
-    final_list <- c(target_mbs,second_order_mbs)
-    names(final_list) <- as.character(c(targets,
-                                        first_order_neighbors))
-    return(final_list)
-  } else {
+    first_order_mbs <- lapply(first_order_neighbors,
+                              function(t) 
+                                getMB(t,dataset,
+                                      threshold,
+                                      lmax,
+                                      method,
+                                      test,verbose))
+    second_order_nbrs_tests <- sum(unlist(
+      lapply(first_order_mbs,function(x) return(x[["n_tests"]]))
+    ))
     names(target_mbs) <- as.character(targets)
-    return(target_mbs)
+    names(first_order_mbs) <- as.character(first_order_neighbors)
+    # For certain algorithms, obtain spouses using additional independence test
+    if (method %in% c("MMPC","SES")){
+      # Find spouses using an additional cond. indep. test
+      result <- captureSpouses(dataset,targets,target_mbs,first_order_mbs,
+                               threshold,verbose)
+      # Updated MB list for target nodes
+      target_mbs <- result$target_mbs
+      first_order_mbs <- result$f_o_mbs
+      spouse_num_tests <- result$num_tests
+      # The spouses added for which MB has not been estimated
+      spouses_added <- result$spouses_added
+      # The list containing information about targets and their spouses
+      spouse_mbs <- result$spouse_mbs
+      if (length(spouses_added)>0){
+        # These are nodes for which we have not yet estimated MB
+        spouses_mb_list <- lapply(spouses_added,function(t){
+          mb_list <- getMB(t,dataset,threshold,lmax,method,test,verbose)
+          if (verbose){
+            cat("Adding target nodes to spouse's MB List:",
+                paste(spouse_mbs[[as.character(t)]],collapse = ", "),
+                "\n")
+          }
+          mb_list$mb <- sort(c(mb_list$mb,
+                               spouse_mbs[[as.character(t)]]))
+          return(mb_list)
+        })
+        names(spouses_mb_list) <- as.character(spouses_added)
+        first_order_mbs <- c(first_order_mbs,spouses_mb_list)
+      }
+    }
+    # Combine first-order MBs and second-order MBs in one list
+    final_list <- c(target_mbs,first_order_mbs)
+  } else {
+    final_list <- target_mbs
+    names(final_list) <- as.character(targets)
   }
+  mb_time <- sum(unlist(
+    lapply(final_list,function(x) return(x[["time"]]))
+  ))
+  return(list(
+    "mb_list"=final_list,
+    "num_tests"=spouse_num_tests+first_order_nbrs_tests+second_order_nbrs_tests,
+    "mb_time"=mb_time))
 }
 
+checkUniqueTargets <- function(targets){
+  if (any(duplicated(targets))){
+    warning("Duplicate targets inputted. Removing duplicates.")
+    targets <- unique(targets)
+  }
+  return(targets)
+}
 
 #' Estimate Markov Blankets of a vector of target nodes
 #' 
@@ -97,28 +281,27 @@ constructFinalMBList <- function(targets,target_mbs,
 getAllMBs <- function(targets,dataset,threshold=0.01,lmax=3,
                       method="MMPC",test="testIndFisher",
                       verbose=TRUE){
-  p <- ncol(dataset)
-  if (!(all(targets %in% seq(p)))){
-    stop("Invalid target values for MB Estimation procedure")
-  }
-  
-  if (any(duplicated(targets))){
-    warning("Duplicate targets inputted. Removing duplicates.")
-    targets <- unique(targets)
-  }
+  start <- Sys.time()
+  targets <- checkUniqueTargets(targets)
   
   # Find the MBs for the target nodes
   target_mbs <- lapply(targets,
                        function(t) 
                          getMB(t,dataset,threshold,lmax,method,test,verbose)
-                       )
+  )
   
-  return(constructFinalMBList(targets,target_mbs,dataset,
-                              threshold,lmax,method,test,verbose))
+  result <- constructFinalMBList(targets,target_mbs,dataset,
+                                 threshold,lmax,method,test,verbose)
+  stop <- Sys.time()
+  diff <- stop - start
+  units(diff) <- "secs"
+  result$time <- as.numeric(diff)
+  
+  return(result)
 }
 
 
-# This function will take a list of Markov Blankets and form an adjacency matrix
+# This function will take a list of Markov Blankets and form an "adjacency matrix"
 # All Markov Blanket nodes will be considered children of the 
 # targets and first-order neighbors for simplicity
 #' Create Initial Graph from MB List
@@ -130,7 +313,9 @@ getAllMBs <- function(targets,dataset,threshold=0.01,lmax=3,
 #' @param p is the number of nodes in the graph
 #' @param verbose 
 getEstInitialDAG <- function(mbList,p,verbose=FALSE){
-  if (verbose) cat("Creating the reference DAG using Markov Blanket list.\n")
+  if (verbose) {
+    cat("Creating the reference DAG using Markov Blanket list.\n")
+  }
   
   if (p <= 0){
     stop("Invalid network size p")
@@ -139,28 +324,30 @@ getEstInitialDAG <- function(mbList,p,verbose=FALSE){
   if (length(mbList)==0){
     stop("MB List is empty")
   }
-  
   adj <- matrix(0,nrow = p,ncol = p)
   all_nodes <- as.numeric(names(mbList))
   nodes_seq <- all_nodes
   lapply(1:length(nodes_seq),function(i){
-    node <- all_nodes[i]
+    node <- nodes_seq[i]
     mb <- mbList[[as.character(node)]][["mb"]]
     if (length(mb)>0){
       sapply(mb,function(x){
         if (node > p | x > p){
           stop("Invalid index. The value for p is too small.\n")
         }
-        if (adj[node,x]==0 & adj[x,node]==0){
+        if (adj[node,x]==0){
           adj[node,x] <<- 1
+          adj[x,node] <<- 1
         }
       })
       all_nodes <<- union(all_nodes,mb)
     }
   })
-  if (verbose) cat("Nodes being considered:",
-                   paste(sort(all_nodes),collapse = ","),
-                   "\n\n")
+  if (verbose) {
+    cat("Nodes being considered:",
+        paste(sort(all_nodes),collapse = ","),
+        "\n\n")
+  }
   return(adj)
 }
 

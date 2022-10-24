@@ -14,8 +14,9 @@ void fillTargetNeighborhood(Graph* C_tilde,
   }
 }
 
-void createInitialAmat(DAG* true_DAG,Graph* C_tilde,
+void createInitialAmat(Graph* C_tilde,
                        std::map<int,int> node_numbering,
+                       MBList* mb_list,
                        NumericVector &targets,
                        NumericVector &neighborhood,
                        const size_t &N,bool verbose){
@@ -33,7 +34,7 @@ void createInitialAmat(DAG* true_DAG,Graph* C_tilde,
     if (verbose){
       Rcout << "Target: " << *it << std::endl;
     }
-    nbhd_t = true_DAG -> getNeighbors(*it,verbose);
+    nbhd_t = mb_list -> getMB(*it);
     nbhd_t.push_back(*it);
     // Fill the target neighborhood
     fillTargetNeighborhood(C_tilde,node_numbering,nbhd_t);
@@ -48,10 +49,11 @@ void createInitialAmat(DAG* true_DAG,Graph* C_tilde,
 // Population version of the constructor
 LocalPC::LocalPC(NumericMatrix true_dag,
                  NumericVector targets,
+                 NumericVector nodes_interest,
                  StringVector names,
                  int lmax,
                  bool verbose) : 
-  ConstrainedAlgo(true_dag,targets,names,
+  ConstrainedAlgo(true_dag,targets,nodes_interest,names,
                   lmax,verbose){
   pop = true;
   
@@ -70,19 +72,20 @@ LocalPC::LocalPC(NumericMatrix true_dag,
   
   // Separate elements not belonging to the same neighborhood
   if (targets.length()>1){
-    createInitialAmat(true_DAG,C_tilde,node_numbering,targets,neighborhood,N,verbose); 
+    createInitialAmat(C_tilde,node_numbering,mb_list,targets,neighborhood,N,verbose); 
   }
 }
 
 // Sample version of the constructor
 LocalPC::LocalPC(NumericMatrix true_dag,arma::mat df,
                  NumericVector targets,
+                 NumericVector nodes_interest,
                  StringVector names,
                  int lmax,
                  double signif_level,
                  bool verbose,bool estDAG) : 
-  ConstrainedAlgo(true_dag,df,targets,names,lmax,
-                  signif_level,verbose,estDAG){
+  ConstrainedAlgo(true_dag,df,targets,nodes_interest,names,lmax,
+                  signif_level,verbose){
   
   // Make a map to relate efficient numbering to true numbering
   // Map: true numbering -> efficient numbering
@@ -99,7 +102,7 @@ LocalPC::LocalPC(NumericMatrix true_dag,arma::mat df,
   
   // Separate elements not belonging to the same neighborhood
   if (targets.length() > 1) {
-    createInitialAmat(true_DAG,C_tilde,node_numbering,targets,neighborhood,N,verbose);
+    createInitialAmat(C_tilde,node_numbering,mb_list,targets,neighborhood,N,verbose);
   }
 }
 
@@ -167,10 +170,11 @@ void LocalPC::getSkeletonTarget(const size_t &t){
           if (l>0){
             // Find neighbors of i and j from the true DAG (or they are estimated)
             // These neighbors are using the true node numbers (check documentation for this function)
-            silencer();
-            neighbors = true_DAG -> getNeighborsMultiTargets(NumericVector::create(neighborhood(i),neighborhood(j)),
-                                                             verbose);
-            removeSilencer();
+            bool tmp = mb_list -> silencer();
+            neighbors = mb_list -> getMBMultipleTargets(
+              NumericVector::create(neighborhood(i),neighborhood(j)),
+              false,true); // don't include target nodes
+            mb_list -> removeSilencer(tmp);
             if (verbose){
               printVecElementsNoNames(neighbors,"Potential separating nodes: ","\n");  
             }
@@ -243,8 +247,4 @@ void LocalPC::run(){
   total_time += std::accumulate(target_skeleton_times.begin(),
                                 target_skeleton_times.end(),0);
 }
-
-
-
-
 

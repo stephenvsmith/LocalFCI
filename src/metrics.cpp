@@ -352,20 +352,12 @@ List parentRecoveryAccuracy(NumericMatrix est,NumericMatrix truth,
   );
 }
 
-void makeNodeNames(int p,StringVector &node_names){
-  for (int i=0;i<p;++i){
-    String node("V");
-    node += i;
-    node_names.push_back(node);
-  }
-}
-
 bool idAncestors(NumericMatrix reference,int i,int j,bool verbose=true){
   int p = reference.nrow();
   StringVector node_names;
   makeNodeNames(p,node_names);
   
-  DAG g_ref(p,node_names,reference,false,verbose);
+  DAG g_ref(p,node_names,reference,verbose);
   return g_ref.isAncestor(i,j);
 }
 
@@ -379,7 +371,7 @@ bool checkAncestralPath(NumericMatrix reference,NumericVector targets,
   int p = reference.nrow();
   StringVector node_names;
   makeNodeNames(p,node_names);
-  DAG g_ref(p,node_names,reference,false,verbose);
+  DAG g_ref(p,node_names,reference,verbose);
   
   if (!g_ref.isAncestor(desc,anc)){
     if (verbose){
@@ -545,7 +537,6 @@ List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
     _["FPOrientedEdge"]=false_positive_arrow,
     _["AddedConnection"]=added_connection
   );
-  
 }
 
 

@@ -1,13 +1,10 @@
 #ifndef CONSTRAINEDALGO_H
 #define CONSTRAINEDALGO_H
 
-#include <algorithm> // Needed for sort
-#include "DAG.h" // Needed for true_DAG
-#include "SepSetList.h" // Needed for S
-#include "pCorTest.h" // Needed for checkSeparation
-#include "sharedFunctions.h" // Needed for printing elements and combn
-#include <RcppArmadillo.h> // Needed for dataframe
-// [[Rcpp::depends(RcppArmadillo)]]
+#include "DAG.h"
+#include "SepSetList.h"
+#include "MBList.h"
+#include "pCorTest.h"
 
 using namespace Rcpp;
 
@@ -15,18 +12,20 @@ class ConstrainedAlgo {
 public:
   ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
                   NumericVector targets,
+                  NumericVector nodes_interest,
                   StringVector names,
                   int lmax,
                   double signif_level,
                   bool verbose,bool estDAG=false);
-  
-  ConstrainedAlgo(NumericMatrix true_dag, // population version
+  // population version
+  ConstrainedAlgo(NumericMatrix true_dag,
                   NumericVector targets,
+                  NumericVector nodes_interest,
                   StringVector names,
                   int lmax,
                   bool verbose);
   
-  ~ConstrainedAlgo(){delete C_tilde; delete true_DAG; delete S;};
+  ~ConstrainedAlgo(){delete C_tilde; delete true_DAG; delete S; delete mb_list; };
   
   //Printing Functions
   void print_elements();
@@ -95,6 +94,7 @@ protected:
   Graph* C_tilde;
   DAG* true_DAG;
   SepSetList* S;
+  MBList* mb_list;
   arma::mat df;
   arma::mat R;
   std::vector<double> p_vals;

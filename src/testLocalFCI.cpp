@@ -3,38 +3,43 @@ using namespace Rcpp;
 
 
 // [[Rcpp::export]]
-void initializeLocalFCI(NumericMatrix td,arma::mat df,NumericVector t,StringVector names){
-  LocalFCI lfci(td,df,t,names,3,0.01,true);
+void initializeLocalFCI(NumericMatrix td,arma::mat df,NumericVector t,
+                        NumericVector nodes_interest,StringVector names){
+  LocalFCI lfci(td,df,t,nodes_interest,names,3,0.01,true);
   Rcout << "\n\n";
   lfci.print_elements();
 }
 
 // [[Rcpp::export]]
-void initializeLocalFCIPop(NumericMatrix td,NumericVector t,StringVector names){
-  LocalFCI lfci(td,t,names,3,true);
+void initializeLocalFCIPop(NumericMatrix td,NumericVector t,
+                           NumericVector nodes_interest,StringVector names){
+  LocalFCI lfci(td,t,nodes_interest,names,3,true);
   Rcout << "\n\n";
   lfci.print_elements();
 }
 
 // [[Rcpp::export]]
-NumericMatrix checkSkeletonTotal(NumericMatrix td,arma::mat df,NumericVector t,StringVector names){
-  LocalFCI lfci(td,df,t,names,3,0.01,true);
+NumericMatrix checkSkeletonTotal(NumericMatrix td,arma::mat df,NumericVector t,
+                                 NumericVector nodes_interest,StringVector names){
+  LocalFCI lfci(td,df,t,nodes_interest,names,3,0.01,true);
   Rcout << "\n\n";
   lfci.getSkeletonTotal();
   return lfci.getAmat();
 }
 
 // [[Rcpp::export]]
-NumericMatrix checkSkeletonTotalPop(NumericMatrix td,NumericVector t,StringVector names){
-  LocalFCI lfci(td,t,names,3,true);
+NumericMatrix checkSkeletonTotalPop(NumericMatrix td,NumericVector t,
+                                    NumericVector nodes_interest,StringVector names){
+  LocalFCI lfci(td,t,nodes_interest,names,3,true);
   Rcout << "\n\n";
   lfci.getSkeletonTotal();
   return lfci.getAmat();
 }
 
 // [[Rcpp::export]]
-NumericMatrix checkVStruct(NumericMatrix td,arma::mat df,NumericVector t,StringVector names){
-  LocalFCI lfci(td,df,t,names,3,0.01,true);
+NumericMatrix checkVStruct(NumericMatrix td,arma::mat df,NumericVector t,
+                           NumericVector nodes_interest,StringVector names){
+  LocalFCI lfci(td,df,t,nodes_interest,names,3,0.01,true);
   Rcout << "\n\n";
   lfci.getSkeletonTotal();
   // Get the skeleton for each target node and its neighborhood
@@ -44,8 +49,9 @@ NumericMatrix checkVStruct(NumericMatrix td,arma::mat df,NumericVector t,StringV
 }
 
 // [[Rcpp::export]]
-NumericMatrix checkVStructPop(NumericMatrix td,NumericVector t,StringVector names){
-  LocalFCI lfci(td,t,names,3,true);
+NumericMatrix checkVStructPop(NumericMatrix td,NumericVector t,
+                              NumericVector nodes_interest,StringVector names){
+  LocalFCI lfci(td,t,nodes_interest,names,3,true);
   Rcout << "\n\n";
   lfci.getSkeletonTotal();
   // Get the skeleton for each target node and its neighborhood
@@ -60,9 +66,10 @@ NumericMatrix checkVStructPop(NumericMatrix td,NumericVector t,StringVector name
  * This needs to be checked more rigorously with an appropriate test graph
  */
 // [[Rcpp::export]]
-NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector t,StringVector names,
+NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector t,
+                                    NumericVector nodes_interest,StringVector names,
                                     NumericMatrix m,NumericVector neighbors){
-  LocalFCI lfci(td,df,t,names,3,0.01,true);
+  LocalFCI lfci(td,df,t,nodes_interest,names,3,0.01,true);
   lfci.setAmat(m);
   lfci.setNeighbors(neighbors);
   lfci.convertMixedGraph();
@@ -74,9 +81,10 @@ NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector 
 }
 
 // [[Rcpp::export]]
-double checkSeparationTest(NumericMatrix td,arma::mat df,NumericVector t,StringVector names,
+double checkSeparationTest(NumericMatrix td,arma::mat df,NumericVector t,
+                           NumericVector nodes_interest,StringVector names,
                            int i,int j,int l,NumericVector nodes_to_skip){ //
-  LocalFCI lfci(td,df,t,names,3,0.01,true);
+  LocalFCI lfci(td,df,t,nodes_interest,names,3,0.01,true);
   NumericVector edges_i = lfci.getAdjacent(i);
   // Find neighbors of i and j from the current graph C
   NumericVector neighbors = setdiff(union_(edges_i,lfci.getAdjacent(j)),NumericVector::create(i,j));
@@ -99,9 +107,10 @@ double checkSeparationTest(NumericMatrix td,arma::mat df,NumericVector t,StringV
 
 // [[Rcpp::export]]
 NumericMatrix checkLocalFCISummary(NumericMatrix td,arma::mat df,
-                                   NumericVector targets,StringVector names){
+                                   NumericVector targets,
+                                   NumericVector nodes_interest,StringVector names){
   // Instantiate the Local FCI object
-  LocalFCI lfci(td,df,targets,names,3,0.05,false);
+  LocalFCI lfci(td,df,targets,nodes_interest,names,3,0.05,false);
   lfci.getSkeletonTotal();
   std::for_each(targets.begin(),
                 targets.end(),
@@ -123,24 +132,25 @@ NumericMatrix checkLocalFCISummary(NumericMatrix td,arma::mat df,
 
 // [[Rcpp::export]]
 NumericMatrix checkLocalFCISummaryPop(NumericMatrix td,
-                                   NumericVector targets,StringVector names){
+                                      NumericVector targets,
+                                      NumericVector nodes_interest,StringVector names){
   // Instantiate the Local FCI object
-  LocalFCI lfci(td,targets,names,3,false);
+  LocalFCI lfci(td,targets,nodes_interest,names,3,false);
   lfci.getSkeletonTotal();
   std::for_each(targets.begin(),
                 targets.end(),
                 [&lfci](int t){ lfci.getSkeletonTarget(t); });
-
+  
   // Rule 0: Obtain V Structures
   lfci.getVStructures();
-
+  
   // Remaining FCI Rules
   lfci.allRules();
-
+  
   lfci.convertMixedGraph();
-
+  
   lfci.convertFinalGraph();
   lfci.print_elements();
-
+  
   return lfci.getAmat();
 }

@@ -426,26 +426,23 @@
     Population Version (C++):
     There are 2 targets.
     Targets: V2 V10
-    Target: 1
-    FUNCTION getNeighbors. Node 1
-    Call from getNeighbors. Node 0 is a parent.
-    Call from getNeighbors. Node 2 is a child.
-    Call from getNeighbors. We are evaluating the following child: 2
-    Call from getNeighbors. Node 3 is a potential spouse of node 1.
-    Neighbors of node 1: 0, 2, 3
-    
-    Target: 9
-    FUNCTION getNeighbors. Node 9
-    Call from getNeighbors. Node 7 is a child.
-    Call from getNeighbors. Node 8 is a child.
-    Call from getNeighbors. Node 11 is a parent.
-    Call from getNeighbors. We are evaluating the following child: 7
-    Call from getNeighbors. Node 6 is a potential spouse of node 9.
-    Call from getNeighbors. We are evaluating the following child: 8
-    Call from getNeighbors. Node 10 is a potential spouse of node 9.
-    Neighbors of node 9: 6, 7, 8, 10, 11
-    
-    Total Neighborhood:
+    MBList Size: 12
+    Markov Blankets:
+    0: 1 4
+    1: 0 2 3
+    2: 1 3 5
+    3: 1 2
+    4: 0 6
+    5: 2 11
+    6: 4 7 9
+    7: 6 9
+    8: 9 10
+    9: 6 7 8 10 11
+    10: 8 9 11
+    11: 5 9 10
+    Node: 1
+    Node: 9
+    All nodes from neighborhoods:
     0, 2, 3, 6, 7, 8, 10, 11
     There are 12 nodes in the DAG.
     There are 10 nodes in the neighborhood.

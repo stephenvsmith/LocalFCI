@@ -181,13 +181,13 @@
 # checking metric functions
 
       lfci_skel_fp lfci_skel_fn lfci_skel_tp lfci_v_fn lfci_v_fp lfci_v_tp
-    1            0            0            6         1         0         1
+    1            0            0            6         2         0         0
       lfci_pra_fn lfci_pra_fp lfci_pra_tp lfci_pra_potential lfci_ancestors_correct
-    1           1           0           4                  1                      0
+    1           2           0           3                  2                      0
       lfci_ancestors_missing lfci_ancestors_fn_orient lfci_ancestors_reverse
     1                      0                        0                      0
       lfci_ancestors_fp_oriented lfci_ancestors_fp_connect lfci_overall_f1
-    1                          0                         0       0.9090909
+    1                          0                         0             0.8
 
 ---
 

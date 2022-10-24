@@ -4,12 +4,12 @@
 #include "ConstrainedAlgo.h"
 
 using namespace std::chrono;
-using namespace Rcpp;
 
 class LocalFCI : public ConstrainedAlgo {
 public:
   LocalFCI(NumericMatrix true_dag,arma::mat df,
            NumericVector targets,
+           NumericVector nodes_interest,
            StringVector names,
            int lmax,
            double signif_level,
@@ -17,6 +17,7 @@ public:
   
   LocalFCI(NumericMatrix true_dag, // population version
            NumericVector targets,
+           NumericVector nodes_interest,
            StringVector names,
            int lmax,
            bool verbose);

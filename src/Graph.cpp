@@ -1,15 +1,12 @@
 #include "Graph.h"
 
-using namespace Rcpp;
-
 Graph::Graph(size_t nodes,StringVector node_names,
              NumericMatrix adj,bool verbose) : 
   p(nodes),names(node_names),amat(adj),verbose(verbose) {
-  if (adj.nrow()!=adj.ncol()){
-    stop("Dimensions of adjacency matrix do not match.");
-  }
+  validateAdjMatrix(adj);
   if (nodes < adj.ncol()){
-    warning("Given number of nodes is smaller than the number given by the rows and columns of the adjacency matrix. Changing the value to match the adj. matrix.");
+    warning("Number of nodes < rows and columns of the adjacency matrix.");
+    warning("Changing the value to match the adj. matrix.");
     p = adj.ncol();
   }
 };
@@ -30,7 +27,7 @@ void Graph::emptyGraph(){
 NumericVector Graph::getAdjacent(const size_t &i){
   validateIndex(i);
   NumericVector adj_nodes;
-  for (int j=0;j<p;++j){
+  for (size_t j=0;j<p;++j){
     if (amat(i,j)!=0 || amat(j,i)!=0){
       adj_nodes.push_back(j);
     }
@@ -43,7 +40,7 @@ NumericVector Graph::getNonAdjacent(const size_t &i){
   validateIndex(i);
   NumericVector non_adj;
   
-  for (int j=0;j<p;++j){
+  for (size_t j=0;j<p;++j){
     if (amat(i,j)==0 && amat(j,i)==0 && j!=i){
       non_adj.push_back(j);
     }

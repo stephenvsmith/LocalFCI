@@ -60,7 +60,7 @@ test_that("Testing Graph and DAG classes using asia data",{
   target <- which(nodes=="asia")-1
   result <- which(nodes=="tub")-1
   expect_equal(check_neighbors_retrieval(p,nodes,asiaDAG,target),result)
-  expect_warning(check_neighbors_retrieval(3,nodes,asiaDAG,target))
+  expect_warning(expect_warning(check_neighbors_retrieval(3,nodes,asiaDAG,target)))
   
   # Neighbors of "either" should be "bronc" (spouse), "dysp" and "xray" (children), and "lung" and "tub" (parents)
   # expect_equal(sort(nodes[get_neighbors_from_dag(which(nodes=="either")-1,p,asiaDAG,verbose=FALSE)+1]),c("bronc","dysp","lung","tub","xray"))

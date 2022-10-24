@@ -4,12 +4,11 @@
 #' network structure and returns an estimated PDAG 
 #' 
 #' @inheritParams localfci
-#' 
 #' @export
 
 localpc <- function(data=NULL,true_dag=NULL,targets,
-                          node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,
-                          method="MMPC",test="testIndFisher",verbose = TRUE){
+                    node_names=NULL,lmax=3,tol=0.01,mb_tol=0.05,
+                    method="MMPC",test="testIndFisher",verbose = TRUE){
   
   if (lmax < 0){
     stop("Invalid lmax value")
@@ -19,7 +18,7 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
   if (is.null(node_names)){
     node_names <- paste0("V",0:(p-1))
   }
-
+  
   data_means <- NA
   data_cov <- NA
   if (!is.null(data)){
@@ -33,11 +32,13 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
     # Scale the data
     data <- scale(data)
   }
-  
+  mb_num_tests <- 0
   if (is.null(true_dag)){
     # Find Markov Blankets (mbEst.R)
-    mbList <- getAllMBs(targets,data,mb_tol,lmax,method,test,verbose)
-    
+    result <- getAllMBs(targets,data,mb_tol,lmax,method,test,verbose)
+    mbList <- result$mb_list
+    nodes_interest <- as.numeric(names(mbList))-1
+    mb_num_tests <- result$num_tests
     # Create adjacency matrix based on Markov Blankets (mbEst.R)
     true_dag <- getEstInitialDAG(mbList,ncol(data),verbose)
     semi_sample_version <- FALSE
@@ -45,6 +46,7 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
   } else {
     mbList <- list()
     semi_sample_version <- TRUE
+    nodes_interest <- seq(0,p-1)
     estDAG <- TRUE
   }
   
@@ -65,7 +67,7 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
     if (verbose){
       cat("Population Version:\n")
     }
-    results <- popLocalPC(true_dag,cpp_targets,
+    results <- popLocalPC(true_dag,cpp_targets,nodes_interest,
                           node_names,lmax,verbose)
   } else {
     if (semi_sample_version & verbose){
@@ -73,7 +75,7 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
     } else {
       if (verbose) cat("Sample Version:\n")
     }
-    results <- sampleLocalPC(true_dag,data,cpp_targets,
+    results <- sampleLocalPC(true_dag,data,cpp_targets,nodes_interest,
                              node_names,lmax,tol,verbose,estDAG)
   }
   
@@ -81,7 +83,8 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
   return(list(
     "amat"=results$G,
     "S"=results$S,
-    "NumTests"=results$NumTests,
+    "NumTests"=results$NumTests+mb_num_tests,
+    "MBNumTests"=mb_num_tests,
     "Nodes"=results$allNodes+1, # to convert to R numbering
     "targetSkeletonTimes"=results$targetSkeletonTimes,
     "totalTime"=results$totalTime,

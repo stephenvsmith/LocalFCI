@@ -9,15 +9,16 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 List sampleLocalFCI(NumericMatrix true_dag,arma::mat df,
-              NumericVector targets,
-              StringVector names,int lmax=3,
-              double signif_level = 0.01,
-              bool verbose=true,bool estDAG=false){
+                    NumericVector targets,
+                    NumericVector nodes_interest,
+                    StringVector names,int lmax=3,
+                    double signif_level = 0.01,
+                    bool verbose=true,bool estDAG=false){
   // Variable to keep track of timing
   auto start = high_resolution_clock::now();
   
   // Instantiate the Local FCI object
-  LocalFCI lfci(true_dag,df,targets,names,lmax,signif_level,verbose,estDAG);
+  LocalFCI lfci(true_dag,df,targets,nodes_interest,names,lmax,signif_level,verbose,estDAG);
   
   lfci.run(); 
   
@@ -41,14 +42,15 @@ List sampleLocalFCI(NumericMatrix true_dag,arma::mat df,
 
 // [[Rcpp::export]]
 List popLocalFCI(NumericMatrix true_dag,
-                  NumericVector targets,
-                  StringVector names,int lmax=3,
-                  bool verbose=true){
+                 NumericVector targets,
+                 NumericVector nodes_interest,
+                 StringVector names,int lmax=3,
+                 bool verbose=true){
   // Variable to keep track of timing
   auto start = high_resolution_clock::now();
   
   // Instantiate the Local FCI object
-  LocalFCI lfci(true_dag,targets,names,lmax,verbose);
+  LocalFCI lfci(true_dag,targets,nodes_interest,names,lmax,verbose);
   
   if (verbose){
     Rcout << "Beginning algorithm over all neighborhoods.\n";
@@ -75,15 +77,16 @@ List popLocalFCI(NumericMatrix true_dag,
 
 // [[Rcpp::export]]
 List sampleLocalPC(NumericMatrix true_dag,arma::mat df,
-             NumericVector targets,
-             StringVector names,int lmax=3,
-             double signif_level = 0.01,
-             bool verbose=true,bool estDAG=false){
+                   NumericVector targets,
+                   NumericVector nodes_interest,
+                   StringVector names,int lmax=3,
+                   double signif_level = 0.01,
+                   bool verbose=true,bool estDAG=false){
   // Variable to keep track of timing
   auto start = high_resolution_clock::now();
   
   // Instantiate the Local PC object
-  LocalPC lpc(true_dag,df,targets,names,lmax,signif_level,verbose);
+  LocalPC lpc(true_dag,df,targets,nodes_interest,names,lmax,signif_level,verbose);
   
   lpc.run(); 
   
@@ -105,14 +108,15 @@ List sampleLocalPC(NumericMatrix true_dag,arma::mat df,
 
 // [[Rcpp::export]]
 List popLocalPC(NumericMatrix true_dag,
-                 NumericVector targets,
-                 StringVector names,int lmax=3,
-                 bool verbose=true){
+                NumericVector targets,
+                NumericVector nodes_interest,
+                StringVector names,int lmax=3,
+                bool verbose=true){
   // Variable to keep track of timing
   auto start = high_resolution_clock::now();
   
   // Instantiate the Local FCI object
-  LocalPC lpc(true_dag,targets,names,lmax,verbose);
+  LocalPC lpc(true_dag,targets,nodes_interest,names,lmax,verbose);
   
   if (verbose){
     Rcout << "Beginning algorithm over all neighborhoods.\n";

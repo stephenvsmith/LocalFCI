@@ -1,5 +1,4 @@
 #include "SepSetList.h"
-using namespace Rcpp;
 
 SepSetList::SepSetList(NumericVector &neighbors):nodes(neighbors){
   N = neighbors.size();

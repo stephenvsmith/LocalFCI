@@ -18,24 +18,25 @@ test_that("Neighborhood Estimation",{
   # Then 8's non-target first-order neighbors: none
   targets <- c(3,5,6,8)
   mbList <- getAllMBs(targets,asiadf)
-  lapply(mbList,function(mb){
+  lapply(mbList$mb_list,function(mb){
     expect_snapshot_output(mb$mb)
   })
+  expect_equal(mbList$num_tests,30)
   
-  adj <- getEstInitialDAG(mbList,p)
+  adj <- getEstInitialDAG(mbList$mb_list,p)
   for (i in 1:length(targets)){
     target <- targets[i]
-    neighbors <- mbList[[i]][["mb"]]
+    neighbors <- mbList$mb_list[[i]][["mb"]]
     for (neighbor in neighbors){
-      expect_equal(adj[target,neighbor]+adj[neighbor,target],1)
+      expect_equal(adj[target,neighbor]+adj[neighbor,target],2)
     }
   }
   
   times <- rep(NA,length(targets))
   for (i in 1:length(targets)){
-    times[i] <- mbList[[i]][["time"]]
+    times[i] <- mbList$mb_list[[i]][["time"]]
   }
-  expect_equal(getTotalMBTime(mbList),sum(times),tolerance = 1e-01)
+  expect_equal(getTotalMBTime(mbList$mb_list),sum(times),tolerance = 1e-01)
 })
 
 
@@ -71,31 +72,32 @@ test_that("All Markov Blankets (multiple targets)",{
 
 test_that("Obtaining Markov Blanket Nodes from List",{
   res <- getAllMBs(targets = c(4,8),asiadf,verbose = FALSE)
-  node_list <- getAllMBNodes(res)
+  node_list <- getAllMBNodes(res$mb_list)
   true_res <- list(
-    "4"=c(3,6),
+    "4"=c(2,3,6),
     "8"=c(5,6),
     "3"=c(4,5),
     "6"=c(2,4,7,8),
-    "5"=c(3,8)
+    "5"=c(3,8),
+    "2"=c(1,4,6)
   )
   expect_setequal(node_list,unique(unlist(true_res)))
 })
 
 test_that("Create adjacency matrix from MB List",{
   res <- getAllMBs(targets = c(4,8),asiadf,verbose = FALSE)
-  node_list <- getAllMBNodes(res)
+  node_list <- getAllMBNodes(res$mb_list)
   true_res <- list(
-    "4"=c(3,6),
+    "4"=c(2,3,6),
     "8"=c(5,6),
     "3"=c(4,5),
     "6"=c(2,4,7,8),
     "5"=c(3,8)
   )
-  adj <- getEstInitialDAG(res,p)
+  adj <- getEstInitialDAG(res$mb_list,p)
   for (i in names(true_res)){
     n <- as.numeric(i)
-    expect_setequal(which(adj[n,]==1 | adj[,n]==1),true_res[[i]])
+    expect_equal(which(adj[n,]==1),true_res[[i]])
   }
   
   remaining_nodes <- setdiff(1:p,node_list)
@@ -132,12 +134,12 @@ test_that("Testing error and warning conditions",{
   # Invalid entries to construct reference graph
   expect_error(getEstInitialDAG(list(),1))
   targets <- c(3,5,6,8)
-  mbList <- getAllMBs(targets,asiadf)
+  mbList <- getAllMBs(targets,asiadf)$mb_list
   expect_error(getEstInitialDAG(mbList,0))
   expect_error(getEstInitialDAG(mbList,-1))
   targets <- c(3,5)
   mbList <- getAllMBs(targets,asiadf)
-  expect_error(getEstInitialDAG(mbList,6))
+  expect_error(getEstInitialDAG(mbList$mb_list,6))
 })
 
 test_that("Misc. Tests for MB Functions",{
@@ -156,7 +158,7 @@ test_that("Misc. Tests for MB Functions",{
                        asiadf,threshold=0.01,method="MMPC",test="testIndFisher",verbose=TRUE)
   
   targets <- c(3,5,6,8)
-  mbList <- getAllMBs(targets,asiadf)
+  mbList <- getAllMBs(targets,asiadf)$mb_list
   expect_equal(getTotalMBTime(mbList),
                sum(unlist(lapply(mbList,
                                  function(x) {return(x$time)}))))
