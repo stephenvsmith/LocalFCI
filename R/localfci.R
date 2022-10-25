@@ -53,9 +53,15 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     data <- scale(data)
   }
   mb_num_tests <- 0
+  mb_time_track <- NA
   if (is.null(true_dag)){
     # Find Markov Blankets (mbEst.R)
+    mb_start <- Sys.time()
     result <- getAllMBs(targets,data,mb_tol,lmax,method,test,verbose)
+    mb_end <- Sys.time()
+    mb_diff <- mb_end - mb_start
+    units(mb_diff) <- "secs"
+    mb_time_track <- as.numeric(mb_diff)
     mbList <- result$mb_list
     nodes_interest <- as.numeric(names(mbList))-1
     mb_num_tests <- result$num_tests
@@ -100,6 +106,7 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     "MBNumTests"=mb_num_tests,
     "RulesUsed"=results$RulesUsed,
     "Nodes"=results$allNodes+1, # to convert to R numbering
+    "mbEstTime"=mb_time_track,
     "totalSkeletonTime"=results$totalSkeletonTime,
     "targetSkeletonTimes"=results$targetSkeletonTimes,
     "totalTime"=results$totalTime,

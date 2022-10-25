@@ -13,7 +13,7 @@ test_that("Wrapper function works (Sample with true DAG)",{
   g <- empty.graph(node_names)
   amat(g) <- results$amat
   graphviz.plot(g)
-  for (result_part in setdiff(names(results),c("totalSkeletonTime","targetSkeletonTimes","totalTime","MBNumTests"))){
+  for (result_part in setdiff(names(results),c("totalSkeletonTime","targetSkeletonTimes","mbEstTime","totalTime","MBNumTests"))){
     expect_snapshot_output(print(results[[result_part]]))
   }
   expect_equal(results[["MBNumTests"]],0)
@@ -23,7 +23,7 @@ test_that("Wrapper function works (Sample with true DAG)",{
   g <- empty.graph(node_names)
   amat(g) <- results$amat
   graphviz.plot(g)
-  for (result_part in setdiff(names(results),c("targetSkeletonTimes","totalTime","MBNumTests"))){
+  for (result_part in setdiff(names(results),c("targetSkeletonTimes","totalTime","mbEstTime","MBNumTests"))){
     expect_snapshot_output(print(results[[result_part]]))
   }
   expect_equal(results[["MBNumTests"]],0)
@@ -35,7 +35,7 @@ test_that("Wrapper function works (Population)",{
   # g <- empty.graph(node_names)
   # amat(g) <- results$amat
   # graphviz.plot(g)
-  for (result_part in setdiff(names(results),c("totalSkeletonTime","targetSkeletonTimes","totalTime","MBNumTests"))){
+  for (result_part in setdiff(names(results),c("totalSkeletonTime","targetSkeletonTimes","mbEstTime","totalTime","MBNumTests"))){
     expect_snapshot_output(print(results[[result_part]]))
   }
   expect_equal(results[["MBNumTests"]],0)
@@ -45,7 +45,7 @@ test_that("Wrapper function works (Population)",{
   # g <- empty.graph(node_names)
   # amat(g) <- results$amat
   # graphviz.plot(g)
-  for (result_part in setdiff(names(results),c("targetSkeletonTimes","totalTime","MBNumTests"))){
+  for (result_part in setdiff(names(results),c("targetSkeletonTimes","totalTime","mbEstTime","MBNumTests"))){
     expect_snapshot_output(print(results[[result_part]]))
   }
   expect_equal(results[["MBNumTests"]],0)
@@ -58,7 +58,7 @@ test_that("Wrapper function works (Sample)",{
   # g <- empty.graph(node_names)
   # amat(g) <- results$amat
   # graphviz.plot(g)
-  for (result_part in setdiff(names(results),c("totalSkeletonTime","targetSkeletonTimes","totalTime","mbList","MBNumTests"))){
+  for (result_part in setdiff(names(results),c("totalSkeletonTime","targetSkeletonTimes","totalTime","mbList","mbEstTime","MBNumTests"))){
     expect_snapshot_output(print(results[[result_part]]))
   }
   results1 <- results[["MBNumTests"]]
@@ -67,7 +67,7 @@ test_that("Wrapper function works (Sample)",{
   # g <- empty.graph(node_names)
   # amat(g) <- results$amat
   # graphviz.plot(g)
-  for (result_part in setdiff(names(results),c("targetSkeletonTimes","totalTime","mbList","MBNumTests"))){
+  for (result_part in setdiff(names(results),c("targetSkeletonTimes","totalTime","mbList","MBNumTests","mbEstTime"))){
     expect_snapshot_output(print(results[[result_part]]))
   }
   expect_snapshot_output(print(results1))
