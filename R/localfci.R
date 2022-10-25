@@ -60,7 +60,7 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     result <- getAllMBs(targets,data,mb_tol,lmax,method,test,verbose)
     mb_end <- Sys.time()
     mb_diff <- mb_end - mb_start
-    units(mb_diff) <- "secs"
+    units(mb_diff) <- "mins"
     mb_time_track <- as.numeric(mb_diff)
     mbList <- result$mb_list
     nodes_interest <- as.numeric(names(mbList))-1
