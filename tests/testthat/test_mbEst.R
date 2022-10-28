@@ -108,6 +108,76 @@ test_that("Create adjacency matrix from MB List",{
   }
 })
 
+mb_mat <- matrix(c(
+  0,1,0,0,0,0,0,0,
+  1,0,0,1,0,1,0,0,
+  0,0,0,1,1,0,0,0,
+  0,1,1,0,0,1,0,0,
+  0,0,1,0,0,1,0,1,
+  0,1,0,1,1,0,1,1,
+  0,0,0,0,0,1,0,0,
+  0,0,0,0,1,1,0,0
+),nrow = 8,ncol = 8,byrow = TRUE)
+
+mb_list <- list(
+  "asia"=list("children"=1,"parents"=0,"spouses"=0),
+  "tub"=list("children"=1,"parents"=1,"spouses"=1),
+  "smoke"=list("children"=2,"parents"=0,"spouses"=0),
+  "lung"=list("children"=1,"parents"=1,"spouses"=1),
+  "bronc"=list("children"=1,"parents"=1,"spouses"=1),
+  "either"=list("children"=2,"parents"=2,"spouses"=1),
+  "xray"=list("children"=0,"parents"=1,"spouses"=0),
+  "dysp"=list("children"=0,"parents"=2,"spouses"=0)
+)
+
+test_that("Testing Markov Blanket Recovery Metrics Function",{
+  
+  for (i in seq(8)){
+    results <- mbRecoveryMetrics(asiaDAG,mb_mat,i)
+    expect_equal(results$mb_children_tp,mb_list[[node_names[i]]]$children)
+    expect_equal(results$mb_parents_tp,mb_list[[node_names[i]]]$parents)
+    expect_equal(results$mb_spouses_tp,mb_list[[node_names[i]]]$spouses)
+    expect_equal(results$mb_children_fn,0)
+    expect_equal(results$mb_parents_fn,0)
+    expect_equal(results$mb_spouses_fn,0)
+    expect_equal(results$mb_total_fp,0)
+  }
+  
+  pairs <- combn(seq(8),2)
+  apply(pairs,2,function(x){
+    results <- mbRecoveryMetrics(asiaDAG,mb_mat,x)
+    true_children <- mb_list[[node_names[x[1]]]]$children+mb_list[[node_names[x[2]]]]$children
+    true_parents <- mb_list[[node_names[x[1]]]]$parents+mb_list[[node_names[x[2]]]]$parents
+    true_spouses <- mb_list[[node_names[x[1]]]]$spouses+mb_list[[node_names[x[2]]]]$spouses
+    expect_equal(results$mb_children_tp,true_children)
+    expect_equal(results$mb_parents_tp,true_parents)
+    expect_equal(results$mb_spouses_tp,true_spouses)
+    expect_equal(results$mb_children_fn,0)
+    expect_equal(results$mb_parents_fn,0)
+    expect_equal(results$mb_spouses_fn,0)
+    expect_equal(results$mb_total_fp,0)
+  })
+  
+  # Remove tub as a child of asia
+  mb_mat[1,2] <- 0
+  expect_warning(mbRecoveryMetrics(asiaDAG,mb_mat,1))
+  mb_mat[2,1] <- 0
+  expect_equal(mbRecoveryMetrics(asiaDAG,mb_mat,1)$mb_children_fn,1)
+  # Remove either as child of lung, tub as spouse of lung
+  # Add dysp as a child of asia
+  mb_mat[4,6] <- mb_mat[6,4] <- 0
+  mb_mat[4,2] <- mb_mat[2,4] <- 0
+  mb_mat[1,8] <- mb_mat[8,1] <- 1
+  expect_equal(mbRecoveryMetrics(asiaDAG,mb_mat,c(1,2,6)),
+               data.frame("mb_children_fn"=1, # tub is not a child of asia
+                          "mb_children_tp"=3, # either is still a child of tub, xray and dysp of either
+                          "mb_parents_fn"=2, # asia is no longer parent of tub, either not a child of tub
+                          "mb_parents_tp"=1, # tub is still parent of either
+                          "mb_spouses_fn"=1, # lung no longer spouse of tub
+                          "mb_spouses_tp"=1, # bronc is still a spouse of either
+                          "mb_total_fp"=1)) # dysp and asia now in each other's mb
+})
+
 test_that("Testing error and warning conditions",{
   # Error for invalid target index
   expect_error(getMB(8,asiadf),NA)
@@ -147,11 +217,13 @@ test_that("Misc. Tests for MB Functions",{
   target_mbs <- list(
     list(
       "mb"=c(3),
-      "time"=0.1
+      "time"=0.1,
+      "n_tests"=3
     ),
     list(
       "mb"=1,
-      "time"=0.3
+      "time"=0.3,
+      "n_tests"=10
     )
   )
   constructFinalMBList(targets,target_mbs,
@@ -162,5 +234,6 @@ test_that("Misc. Tests for MB Functions",{
   expect_equal(getTotalMBTime(mbList),
                sum(unlist(lapply(mbList,
                                  function(x) {return(x$time)}))))
+  expect_equal(getTotalMBTests(mbList),22)
 
 })

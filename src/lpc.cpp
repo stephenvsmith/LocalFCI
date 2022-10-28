@@ -110,7 +110,8 @@ void LocalPC::check(){
   Rcout << getSize() << std::endl;
 }
 
-void validateTarget(NumericVector targets,const size_t &t){
+// [[Rcpp::export]]
+void validateTargetLPC(NumericVector targets,const size_t &t){
   if (!isMember(targets,t)){
     stop("Target %i is not a member of the target vector");
   }
@@ -118,7 +119,7 @@ void validateTarget(NumericVector targets,const size_t &t){
 
 void LocalPC::getSkeletonTarget(const size_t &t){
   // Ensure that t is in targets
-  validateTarget(targets,t);
+  validateTargetLPC(targets,t);
   auto target_skeleton_start = high_resolution_clock::now();
   int l = -1;
   NumericVector neighbors;

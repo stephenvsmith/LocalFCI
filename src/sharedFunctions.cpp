@@ -13,8 +13,6 @@ NumericMatrix combn_cpp(NumericVector x,size_t l){
   
   if (l > x.length()){
     stop("There aren't enough neighbors for the current value of l");
-  } else if (l < 0){
-    stop("The value of l is negative");
   }
   
   if (l==0){

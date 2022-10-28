@@ -6,6 +6,13 @@ df <- as.matrix(asiadf)
 asiaDAG <- as.matrix(asiaDAG)
 p <- ncol(asiaDAG)
 
+test_that("Targets are properly validated",{
+  targets <- c(1,2,4,5,8)
+  expect_error(validateTargetLPC(targets,10))
+  expect_error(validateTargetLPC(targets,5),NA)
+  expect_error(validateTargetLPC(targets,-1))
+})
+
 test_that("Sample Local PC (given true Markov Blankets)",{
   expect_equal(checkInitializeLocalPC(asiaDAG,df,t,seq(0,p-1),names),8)
   
@@ -20,10 +27,23 @@ test_that("Sample Local PC (given true Markov Blankets)",{
 test_that("Population Local PC",{
   pc_dag_pop <- empty.graph(names[c(2,4,5,6,7,8)])
   expect_equal(checkInitializeLocalPCPop(asiaDAG,t,seq(0,p-1),names),8)
-  # amat(pc_dag_pop) <- checkGetTargetSkelPop(asiaDAG,t,seq(0,p-1),names)
-  # graphviz.plot(pc_dag_pop)
+  amat(pc_dag_pop) <- checkGetTargetSkelPop(asiaDAG,t,seq(0,p-1),names)
+  # tub, lung, bronc, either, xray, dysp
+  expect_equal(amat(pc_dag_pop),
+               matrix(c(
+                 0,0,0,1,0,0,
+                 0,0,0,1,0,0,
+                 0,0,0,0,0,1,
+                 1,1,0,0,1,1,
+                 0,0,0,1,0,0,
+                 0,0,1,1,0,0
+               ),nrow = 6,byrow = TRUE,
+               dimnames = list(names[c(2,4,5,6,7,8)],
+                               names[c(2,4,5,6,7,8)]))
+  )
+  graphviz.plot(pc_dag_pop)
   # 
-  # amat(pc_dag_pop) <- checkGetVStructuresPop(asiaDAG,t,seq(0,p-1),names)
+  amat(pc_dag_pop) <- checkGetVStructuresPop(asiaDAG,t,seq(0,p-1),names)
   # graphviz.plot(pc_dag_pop)
 })
 
@@ -72,3 +92,5 @@ test_that("Testing data structure correctness",{
   dag_df <- data.frame(asiaDAG)
   expect_error(tmp <- localpc(true_dag = dag_df,targets = t),NA)
 })
+
+

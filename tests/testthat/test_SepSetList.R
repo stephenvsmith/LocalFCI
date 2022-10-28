@@ -10,10 +10,11 @@ test_that("Get correct neighbors and check separating set update",{
   expect_equal(nodes[target+1],"either")
   expect_equal(setdiff(neighbor_names,c("tub","lung","xray","dysp","bronc","either")),character(0))
   
-  cat("\n\n")
   expect_snapshot_output(printS(neighbors))
-  cat("\n\n")
   
+})
+
+test_that("Checking initialization and member functions",{
   size <- length(neighbors)-1
   for (n in 0:size){
     for (n2 in setdiff(0:size,n)){
@@ -25,8 +26,9 @@ test_that("Get correct neighbors and check separating set update",{
   neighborhood_shuffled <- sample(1:size,size,replace = FALSE)
   expect_equal(setListEmptySet(neighbors,neighborhood_shuffled[1],neighborhood_shuffled[2]),-1)
   expect_equal(setListEmptySet(neighbors,neighborhood_shuffled[2],neighborhood_shuffled[5]),-1)
+})
 
-
+test_that("More member functions to check",{
   i <- 0
   j <- 1
   kvals <- 4:5
@@ -45,14 +47,19 @@ test_that("Get correct neighbors and check separating set update",{
   expect_false(tmp)
   # Corrected Version
   expect_true(checkSeparationFuncCorrected(neighbors,i,j,kvals,5)) 
-  
 })
 
-test_that("Checks for errors in values",{
+test_that("Checks for errors and warnings in values",{
   # Negative values
   expect_error(setListEfficient(neighbors,i=-1,j=0,c(1,2)))
   expect_error(setListEfficient(neighbors,i=0,j=-1,c(1,2)))
   expect_error(setListEfficient(neighbors,i=5,j=0,c(1,2)),NA)
   expect_error(setListEfficient(neighbors,i=6,j=0,c(1,2)))
   expect_error(setListEfficient(neighbors,i=3,j=6,c(1,2)))
+  
+  # Separation sets disagree
+  expect_warning(checkIsSepSetMember(neighbors,0,1,c(3,4),c(4,5),4),NA)
+  expect_warning(checkIsSepSetMember(neighbors,0,1,c(3,4),c(4,5),3))
 })
+
+

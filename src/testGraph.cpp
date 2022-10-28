@@ -21,10 +21,10 @@ StringVector check_names_works(int nodes,StringVector node_names,NumericMatrix a
 }
 
 // [[Rcpp::export]]
-List check_dag_object(int nodes,StringVector node_names,NumericMatrix adj){
+List check_dag_object(int nodes,StringVector node_names,
+                      NumericMatrix adj,bool v = false){
   DAG g(nodes,node_names,adj);
   int i = 3;
-  bool v = false;
   Rcout << "Adjacency Matrix:\n";
   g.printAmat();
   Rcout << "The neighbors of node " << i << " are " << g.getNeighbors(i,v) << std::endl;
@@ -43,9 +43,9 @@ void check_dag_object2(int nodes){
 }
 
 // [[Rcpp::export]]
-NumericVector check_neighbors_retrieval(int nodes,StringVector node_names,NumericMatrix adj,int t){
+NumericVector check_neighbors_retrieval(int nodes,StringVector node_names,
+                                        NumericMatrix adj,int t,bool v = false){
   DAG g(nodes,node_names,adj);
-  bool v = false;
   
   return g.getNeighbors(t,v);
 }

@@ -17,9 +17,12 @@ NumericVector testAccessMB(NumericVector nodes,NumericMatrix mb_mat,size_t i){
 }
 
 // [[Rcpp::export]]
-NumericVector testAccessMultipleMB(NumericVector nodes,NumericMatrix mb_mat,NumericVector v){
-  MBList mb_list = MBList(nodes,mb_mat,false);
-  return mb_list.getMBMultipleTargets(v);
+NumericVector testAccessMultipleMB(NumericVector nodes,NumericMatrix mb_mat,
+                                   NumericVector v,bool include_targets=false,
+                                   bool exclude_targets=false,
+                                   bool verbose=false){
+  MBList mb_list = MBList(nodes,mb_mat,verbose);
+  return mb_list.getMBMultipleTargets(v,include_targets,exclude_targets);
 }
 
 // [[Rcpp::export]]
@@ -28,3 +31,5 @@ bool testIsMBMember(NumericVector nodes,NumericMatrix mb_mat,
   MBList mb_list = MBList(nodes,mb_mat,false);
   return mb_list.isInMB(target,i);
 }
+
+

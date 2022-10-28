@@ -28,6 +28,7 @@ test_that("Checking to make sure the Graph class works",{
   
   # Check to make sure neighbor detection functions work
   expect_equal(check_dag_object(nodes,n_names,adj),list("OneNeighbor"=c(0,1,2),"TwoNeighbors"=c(1,3)))
+  expect_output(check_dag_object(nodes,n_names,adj,TRUE))
   
   # Check to make sure adj. mat. value "getter" is correct
   for (i in 1:nodes){
@@ -60,6 +61,7 @@ test_that("Testing Graph and DAG classes using asia data",{
   target <- which(nodes=="asia")-1
   result <- which(nodes=="tub")-1
   expect_equal(check_neighbors_retrieval(p,nodes,asiaDAG,target),result)
+  expect_output(check_neighbors_retrieval(p,nodes,asiaDAG,5,TRUE))
   expect_warning(expect_warning(check_neighbors_retrieval(3,nodes,asiaDAG,target)))
   
   # Neighbors of "either" should be "bronc" (spouse), "dysp" and "xray" (children), and "lung" and "tub" (parents)

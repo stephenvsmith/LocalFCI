@@ -12,9 +12,7 @@ public:
         NumericMatrix adj,bool verbose=false);
   
   void validateIndex(const size_t &ind) const {
-    if (ind < 0){
-      stop("Invalid index: negative value");
-    } else if (ind >= p){
+    if (ind >= p){
       stop("Invalid index: too large");
     }
   }

@@ -68,6 +68,17 @@ bool checkSeparationFuncCorrected(NumericVector neighbors,int i,int j,NumericVec
   
 }
 
+// [[Rcpp::export]]
+bool checkIsSepSetMember(NumericVector neighbors,size_t i,size_t j,
+                         NumericVector sep1,NumericVector sep2,
+                         size_t val_to_check){
+  SepSetList *S = new SepSetList(neighbors);
+  S -> changeList(i,j,sep1);
+  S -> changeList(j,i,sep2);
+  bool results = S -> isSepSetMember(i,j,val_to_check);
+  delete S;
+  return results;
+}
 
 
 

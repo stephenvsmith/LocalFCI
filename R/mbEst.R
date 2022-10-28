@@ -461,6 +461,9 @@ calcSpouseRecovery <- function(ref,est,target){
 }
 
 getConnections <- function(g,target){
+  if (!setequal(g[target,],g[,target])){
+    warning("Some Markov Blankets don't agree")
+  }
   # Get all target children or parents
   return(which(g[target,]==1 | g[,target]==1))
 }
@@ -469,16 +472,16 @@ getConnections <- function(g,target){
 # and determine which MB nodes were correctly identified
 mbRecoveryMetricsList <- function(ref,est,targets){
   return(lapply(targets,function(target){
-    #cat("Target:",target,"\n")
+    # cat("Target:",target,"\n")
     # Get estimated MB nodes
     mb_nodes <- getConnections(est,target)
-    #cat("Estimated Markov Blanket:",paste(mb_nodes,collapse = " "),"\n")
+    # cat("Estimated Markov Blanket:",paste(mb_nodes,collapse = " "),"\n")
     children <- which(ref[target,]==1 & ref[,target]==0)
-    #cat("True Children:",paste(children,collapse = " "),"\n")
+    # cat("True Children:",paste(children,collapse = " "),"\n")
     parents <- which(ref[,target]==1 & ref[target,]==0) 
-    #cat("True Parents:",paste(parents,collapse = " "),"\n")
+    # cat("True Parents:",paste(parents,collapse = " "),"\n")
     spouses <- getSpouses(ref,children,target)
-    #cat("True Spouses:",paste(spouses,collapse = " "),"\n")
+    # cat("True Spouses:",paste(spouses,collapse = " "),"\n")
     return(data.frame(
       "mb_children_fn"=sum(!(children %in% mb_nodes)),
       "mb_children_tp"=sum(children %in% mb_nodes),

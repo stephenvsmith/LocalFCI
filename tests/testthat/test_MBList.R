@@ -26,6 +26,11 @@ test_that("Access Markov Blanket for a node",{
 test_that("Access Markov Blanket for multiple nodes",{
   expect_equal(testAccessMultipleMB(nodes,mb_mat,c(0,1,2)),c(1,2,3,5,6))
   expect_equal(testAccessMultipleMB(nodes,mb_mat,c(0,2,1)),c(1,2,3,5,6))
+  expect_equal(testAccessMultipleMB(nodes,mb_mat,numeric()),numeric())
+  
+  expect_warning(testAccessMultipleMB(nodes,mb_mat,c(0,2,1),TRUE,TRUE))
+  expect_equal(testAccessMultipleMB(nodes,mb_mat,c(0,2,1),TRUE,FALSE,TRUE),c(0,1,2,3,5,6))
+  expect_equal(testAccessMultipleMB(nodes,mb_mat,c(0,2,1),FALSE,TRUE,TRUE),c(3,5,6))
 })
 
 test_that("Membership in MB function is correct",{
@@ -33,6 +38,8 @@ test_that("Membership in MB function is correct",{
   expect_true(testIsMBMember(nodes,mb_mat,3,6))
   expect_false(testIsMBMember(nodes,mb_mat,4,0))
   expect_false(testIsMBMember(nodes,mb_mat,3,2))
+  
+  expect_error(testIsMBMember(nodes,mb_mat,3,15))
 })
 
 nodes <- seq(0,7)

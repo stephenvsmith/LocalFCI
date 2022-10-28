@@ -11,6 +11,17 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// validateTargetLPC
+void validateTargetLPC(NumericVector targets, const size_t& t);
+RcppExport SEXP _LocalFCI_validateTargetLPC(SEXP targetsSEXP, SEXP tSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< const size_t& >::type t(tSEXP);
+    validateTargetLPC(targets, t);
+    return R_NilValue;
+END_RCPP
+}
 // sampleLocalFCI
 List sampleLocalFCI(NumericMatrix true_dag, arma::mat df, NumericVector targets, NumericVector nodes_interest, StringVector names, int lmax, double signif_level, bool verbose, bool estDAG);
 RcppExport SEXP _LocalFCI_sampleLocalFCI(SEXP true_dagSEXP, SEXP dfSEXP, SEXP targetsSEXP, SEXP nodes_interestSEXP, SEXP namesSEXP, SEXP lmaxSEXP, SEXP signif_levelSEXP, SEXP verboseSEXP, SEXP estDAGSEXP) {
@@ -336,15 +347,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // check_dag_object
-List check_dag_object(int nodes, StringVector node_names, NumericMatrix adj);
-RcppExport SEXP _LocalFCI_check_dag_object(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
+List check_dag_object(int nodes, StringVector node_names, NumericMatrix adj, bool v);
+RcppExport SEXP _LocalFCI_check_dag_object(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP vSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
     Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_dag_object(nodes, node_names, adj));
+    Rcpp::traits::input_parameter< bool >::type v(vSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_dag_object(nodes, node_names, adj, v));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -359,8 +371,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // check_neighbors_retrieval
-NumericVector check_neighbors_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int t);
-RcppExport SEXP _LocalFCI_check_neighbors_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP tSEXP) {
+NumericVector check_neighbors_retrieval(int nodes, StringVector node_names, NumericMatrix adj, int t, bool v);
+RcppExport SEXP _LocalFCI_check_neighbors_retrieval(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP tSEXP, SEXP vSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -368,7 +380,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
     Rcpp::traits::input_parameter< int >::type t(tSEXP);
-    rcpp_result_gen = Rcpp::wrap(check_neighbors_retrieval(nodes, node_names, adj, t));
+    Rcpp::traits::input_parameter< bool >::type v(vSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_neighbors_retrieval(nodes, node_names, adj, t, v));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -847,15 +860,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // testAccessMultipleMB
-NumericVector testAccessMultipleMB(NumericVector nodes, NumericMatrix mb_mat, NumericVector v);
-RcppExport SEXP _LocalFCI_testAccessMultipleMB(SEXP nodesSEXP, SEXP mb_matSEXP, SEXP vSEXP) {
+NumericVector testAccessMultipleMB(NumericVector nodes, NumericMatrix mb_mat, NumericVector v, bool include_targets, bool exclude_targets, bool verbose);
+RcppExport SEXP _LocalFCI_testAccessMultipleMB(SEXP nodesSEXP, SEXP mb_matSEXP, SEXP vSEXP, SEXP include_targetsSEXP, SEXP exclude_targetsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type nodes(nodesSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type mb_mat(mb_matSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type v(vSEXP);
-    rcpp_result_gen = Rcpp::wrap(testAccessMultipleMB(nodes, mb_mat, v));
+    Rcpp::traits::input_parameter< bool >::type include_targets(include_targetsSEXP);
+    Rcpp::traits::input_parameter< bool >::type exclude_targets(exclude_targetsSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(testAccessMultipleMB(nodes, mb_mat, v, include_targets, exclude_targets, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1257,8 +1273,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// checkIsSepSetMember
+bool checkIsSepSetMember(NumericVector neighbors, size_t i, size_t j, NumericVector sep1, NumericVector sep2, size_t val_to_check);
+RcppExport SEXP _LocalFCI_checkIsSepSetMember(SEXP neighborsSEXP, SEXP iSEXP, SEXP jSEXP, SEXP sep1SEXP, SEXP sep2SEXP, SEXP val_to_checkSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type neighbors(neighborsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type i(iSEXP);
+    Rcpp::traits::input_parameter< size_t >::type j(jSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type sep1(sep1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type sep2(sep2SEXP);
+    Rcpp::traits::input_parameter< size_t >::type val_to_check(val_to_checkSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkIsSepSetMember(neighbors, i, j, sep1, sep2, val_to_check));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_LocalFCI_validateTargetLPC", (DL_FUNC) &_LocalFCI_validateTargetLPC, 2},
     {"_LocalFCI_sampleLocalFCI", (DL_FUNC) &_LocalFCI_sampleLocalFCI, 9},
     {"_LocalFCI_popLocalFCI", (DL_FUNC) &_LocalFCI_popLocalFCI, 6},
     {"_LocalFCI_sampleLocalPC", (DL_FUNC) &_LocalFCI_sampleLocalPC, 9},
@@ -1282,9 +1315,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_check_amat_works", (DL_FUNC) &_LocalFCI_check_amat_works, 3},
     {"_LocalFCI_check_amat_works_onepar", (DL_FUNC) &_LocalFCI_check_amat_works_onepar, 1},
     {"_LocalFCI_check_names_works", (DL_FUNC) &_LocalFCI_check_names_works, 3},
-    {"_LocalFCI_check_dag_object", (DL_FUNC) &_LocalFCI_check_dag_object, 3},
+    {"_LocalFCI_check_dag_object", (DL_FUNC) &_LocalFCI_check_dag_object, 4},
     {"_LocalFCI_check_dag_object2", (DL_FUNC) &_LocalFCI_check_dag_object2, 1},
-    {"_LocalFCI_check_neighbors_retrieval", (DL_FUNC) &_LocalFCI_check_neighbors_retrieval, 4},
+    {"_LocalFCI_check_neighbors_retrieval", (DL_FUNC) &_LocalFCI_check_neighbors_retrieval, 5},
     {"_LocalFCI_check_amat_retrieval", (DL_FUNC) &_LocalFCI_check_amat_retrieval, 5},
     {"_LocalFCI_check_amat_retrieval_function", (DL_FUNC) &_LocalFCI_check_amat_retrieval_function, 5},
     {"_LocalFCI_check_amat_row_retrieval", (DL_FUNC) &_LocalFCI_check_amat_row_retrieval, 4},
@@ -1318,7 +1351,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_testInitializeMBList", (DL_FUNC) &_LocalFCI_testInitializeMBList, 2},
     {"_LocalFCI_testInitializeMBListPop", (DL_FUNC) &_LocalFCI_testInitializeMBListPop, 2},
     {"_LocalFCI_testAccessMB", (DL_FUNC) &_LocalFCI_testAccessMB, 3},
-    {"_LocalFCI_testAccessMultipleMB", (DL_FUNC) &_LocalFCI_testAccessMultipleMB, 3},
+    {"_LocalFCI_testAccessMultipleMB", (DL_FUNC) &_LocalFCI_testAccessMultipleMB, 6},
     {"_LocalFCI_testIsMBMember", (DL_FUNC) &_LocalFCI_testIsMBMember, 4},
     {"_LocalFCI_test_union", (DL_FUNC) &_LocalFCI_test_union, 2},
     {"_LocalFCI_test_sort", (DL_FUNC) &_LocalFCI_test_sort, 1},
@@ -1349,6 +1382,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_setListEfficient", (DL_FUNC) &_LocalFCI_setListEfficient, 4},
     {"_LocalFCI_checkSeparationFunc", (DL_FUNC) &_LocalFCI_checkSeparationFunc, 5},
     {"_LocalFCI_checkSeparationFuncCorrected", (DL_FUNC) &_LocalFCI_checkSeparationFuncCorrected, 5},
+    {"_LocalFCI_checkIsSepSetMember", (DL_FUNC) &_LocalFCI_checkIsSepSetMember, 6},
     {NULL, NULL, 0}
 };
 

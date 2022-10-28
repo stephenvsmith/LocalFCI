@@ -25,7 +25,8 @@ void SepSetList::changeList(size_t i,size_t j,
                             NumericVector sep){
   checkInputValues(i,j,N);
   NumericVector sep_new;
-  // since the vector is passed in by reference automatically
+  // since the vector is passed in by reference automatically,
+  // We must clone it to make any changes to `sep` in further steps
   sep_new = clone(sep); 
   List sublist;
   sublist = S[i];
