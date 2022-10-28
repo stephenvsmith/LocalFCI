@@ -4,7 +4,6 @@
 
 ## Installation
 
-```
-devtools::install_github("stephenvsmith/LocalFCI")
-library(LocalFCI)
-```
+    devtools::install_github("stephenvsmith/LocalFCI")
+    library(LocalFCI)
+
