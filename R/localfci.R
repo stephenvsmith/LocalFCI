@@ -17,8 +17,8 @@
 #' @param test The conditional independence test used for all algorithms.
 #' @param verbose A boolean which determines whether or not to print a trace of the output.
 #' 
-#' @returns A list containing various elements computed from or during the algorithm.
-#' @return A list including the estimated adjacency matrix, timing calculations, 
+#' @return A list containing various elements computed from or during the algorithm
+#' including the estimated adjacency matrix, timing calculations, 
 #' the number of conditional independence tests, 
 #' a matrix providing Markov Blanket information, a list containing 
 #' separating sets, and statistics about the original dataset

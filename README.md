@@ -6,6 +6,7 @@
 
 ## Installation
 
+    if (!require("devtools")) {
+      install.packages("devtools") 
+    } 
     devtools::install_github("stephenvsmith/LocalFCI")
-    library(LocalFCI)
-
