@@ -1,7 +1,8 @@
 #include "MBList.h"
 
-// The child of node x in the matrix providing Markov Blanket 
-// information is included in the MB of x.
+// Any node i in the Markov Blanket of node x must be identified
+// by mb_mat[i,x]=mb_mat[x,i]=1, though only one of these equivalences
+// with 1 will be necessary for this function
 NumericVector getMBFromMat(NumericMatrix mb_mat,size_t x){
   size_t p = mb_mat.nrow();
   NumericVector mb_vec = NumericVector::create();
@@ -13,7 +14,7 @@ NumericVector getMBFromMat(NumericMatrix mb_mat,size_t x){
   return mb_vec;
 }
 
-bool MBList::isInMB(size_t target,size_t i){
+bool MBList::inMB(size_t target,size_t i){
   if (mb_list.count(i)==0){
     stop("%i is not an element of the map.\n",i);
   }
@@ -21,6 +22,7 @@ bool MBList::isInMB(size_t target,size_t i){
 }
 
 // Sample version
+// Node i is in MB(j) iff mb_mat[i,j]=mb_mat[j,i]=1
 MBList::MBList(NumericVector node_vec,NumericMatrix mb_mat,bool verbose):
   verbose(verbose){
   std::sort(node_vec.begin(),node_vec.end());
@@ -34,6 +36,7 @@ MBList::MBList(NumericVector node_vec,NumericMatrix mb_mat,bool verbose):
 }
 
 // Population version
+// Node i is in MB(j) iff mb_mat[i,j]=1 or mb_mat[j,i]=1 or if i and j share a child
 MBList::MBList(NumericVector node_vec,NumericMatrix true_dag,size_t p,bool verbose):
   verbose(verbose){
   StringVector node_names = StringVector::create();

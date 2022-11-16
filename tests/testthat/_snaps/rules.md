@@ -8,10 +8,10 @@
 # Rule 2 is correct.
 
     Rule 2:
-    Orient: 0 *-> 1 -> 2 as: 0 *-> 2
+    Orient: 0 *-> 1 -> 2 and 0*-o2 as: 0 *-> 2
     Rule 2 has been used 1 times.
     Rule 2:
-    Orient: 3 -> 4 *-> 5 as: 3 *-> 5
+    Orient: 3 -> 4 *-> 5 and 3*-o5 as: 3 *-> 5
     Rule 2 has been used 2 times.
     Track changes: 1
 
@@ -29,11 +29,13 @@
     Creating path list
     New Path: 3 1
     mpath: 3 1
+    Potential values for the path: 0
     Size of old path list: 1
     Size of new path list: 2
     Path 0: 3 1
     Path 1: 3 1 0
     mpath: 3 1 0
+    Potential values for the path: 6
     Size of old path list: 2
     Size of new path list: 3
     Path 0: 3 1
@@ -55,11 +57,13 @@
     Creating path list
     New Path: 3 1
     mpath: 3 1
+    Potential values for the path: 0
     Size of old path list: 1
     Size of new path list: 2
     Path 0: 3 1
     Path 1: 3 1 0
     mpath: 3 1 0
+    Potential values for the path: 6
     Size of old path list: 2
     Size of new path list: 3
     Path 0: 3 1
@@ -71,6 +75,61 @@
     
     Rule 4
     There is a discriminating path between 6 and 5 for 4 and 4 is NOT in the SepSet of 5 and 6. Orient: 3 <-> 4 <-> 5
+    Rule 4 has been used 1 times.
+    Track changes: 1
+
+# Rule 4 Multiple Options:
+
+    
+    Potential values: 1 2
+    Creating path list
+    New Path: 3 1
+    New Path: 3 2
+    mpath: 3 1
+    Potential values for the path: 0
+    Size of old path list: 2
+    Size of new path list: 3
+    Path 0: 3 1
+    Path 1: 3 2
+    Path 2: 3 1 0
+    mpath: 3 2
+    Minimum Discriminating Path: 2 3 4 5
+    Checking separation of 2 and 5 by 4...finished
+    
+    Rule 4
+    There is a discriminating path between 2 and 5 for 4 and 4 is NOT in the SepSet of 5 and 2. Orient: 3 <-> 4 <-> 5
+    Rule 4 has been used 1 times.
+    Track changes: 1
+
+# Rule 4 Multiple Options (2):
+
+    
+    Potential values: 1 2
+    Creating path list
+    New Path: 3 1
+    New Path: 3 2
+    mpath: 3 1
+    Potential values for the path: 0
+    Size of old path list: 2
+    Size of new path list: 3
+    Path 0: 3 1
+    Path 1: 3 2
+    Path 2: 3 1 0
+    mpath: 3 2
+    mpath: 3 1 0
+    Potential values for the path: 6
+    Size of old path list: 3
+    Size of new path list: 4
+    Path 0: 3 1
+    Path 1: 3 2
+    Path 2: 3 1 0
+    Path 3: 3 1 0 6
+    mpath: 3 1 0 6
+    Minimum Discriminating Path: 6 0 1 3 4 5
+    Checking separation of 6 and 5 by 4...finished
+    
+    Rule 4
+    There is a discriminating path between 6 and 5 for 4 and 4 is in the SepSet of 5 and 6. Orient: 4 -> 5
     Rule 4 has been used 1 times.
     Track changes: 1
 
@@ -90,7 +149,7 @@
 
     
     Rule 8
-    Orient: 0 o-> 1 -> 5 with 0 o-> 5 as 0 -> 5
+    Orient: 0 -o 1 -> 5 with 0 o-> 5 as 0 -> 5
     Rule 8 has been used 1 times.
     
     Rule 8
@@ -135,7 +194,6 @@
     Found a final node on the uncovered p.d. path: 2
     Path: 4 5 7 0 1 2 6
     Final Path: 4 5 7 0 1 2 6
-    Counter: 4 | Number of paths: 4
     Rule 9: There exists an uncovered potentially directed path between 4 and 6
     Orient: 4 -> 6
     Rule 9 has been used 1 times.
@@ -192,42 +250,28 @@
     New Path: 3 0
     New Path: 3 1
     mpath: 3 0
-    Potential New Value in Path: 5
+    Counter: 1 | Number of paths: 2
+    mpath: 3 1
+    Potential New Value in Path: 6
     Size of old path list: 2
     Size of new path list: 3
     Path 0: 3 0
     Path 1: 3 1
-    Path 2: 3 0 5
-    Counter: 1 | Number of paths: 3
-    mpath: 3 1
-    Potential New Value in Path: 6
+    Path 2: 3 1 6
+    Counter: 2 | Number of paths: 3
+    mpath: 3 1 6
+    Potential New Value in Path: 7
     Size of old path list: 3
     Size of new path list: 4
     Path 0: 3 0
     Path 1: 3 1
-    Path 2: 3 0 5
-    Path 3: 3 1 6
-    Counter: 2 | Number of paths: 4
-    mpath: 3 0 5
-    Found a final node on the uncovered p.d. path: 5
-    Path: 2 3 0 5 4
-    This path is invalid because it is covered.
+    Path 2: 3 1 6
+    Path 3: 3 1 6 7
     Counter: 3 | Number of paths: 4
-    mpath: 3 1 6
-    Potential New Value in Path: 7
-    Size of old path list: 4
-    Size of new path list: 5
-    Path 0: 3 0
-    Path 1: 3 1
-    Path 2: 3 0 5
-    Path 3: 3 1 6
-    Path 4: 3 1 6 7
-    Counter: 4 | Number of paths: 5
     mpath: 3 1 6 7
     Found a final node on the uncovered p.d. path: 7
     Path: 2 3 1 6 7 4
     Final Path: 2 3 1 6 7 4
-    Counter: 5 | Number of paths: 5
     Rule 9: There exists an uncovered potentially directed path between 2 and 4
     Orient: 2 -> 4
     Rule 9 has been used 1 times.
@@ -264,6 +308,8 @@
 
 # Rule 10 is correct.
 
+    Potential alpha: 2 | Potential gamma: 4 | Potential beta: 3 | 
+    Potential theta: 5 | Potential mu: 6 | Potential omega: 7
     Checking for paths of 4 or more
     Potential theta: 0
     Creating path list
@@ -272,7 +318,6 @@
     Found a final node on the uncovered p.d. path: 0
     Path: 2 6 0 3
     Final Path: 2 6 0 3
-    Counter: 1 | Number of paths: 1
     t1: 2 6 0 3
     Checking for paths of 4 or more
     Potential theta: 1
@@ -282,16 +327,18 @@
     Found a final node on the uncovered p.d. path: 1
     Path: 2 7 1 5
     Final Path: 2 7 1 5
-    Counter: 1 | Number of paths: 1
+    t2: 2 7 1 5
     
     Rule 10
     Orient: 2 -> 4
     Rule 10 has been used 1 times.
+    
     Track changes: 1
 
 # Rule 10 (simple)
 
-    
+    Potential alpha: 0 | Potential gamma: 2 | Potential beta: 1 | 
+    Potential theta: 3 | 
     Rule 10 [easy]:
     Orient: 0 -> 2
     Rule 10 has been used 1 times.
@@ -299,6 +346,8 @@
 
 # Rule 10 (capture simple unprotected pd paths)
 
+    Potential alpha: 0 | Potential gamma: 2 | Potential beta: 1 | 
+    Potential theta: 3 | Potential mu: 4 | Potential omega: 5
     Checking for paths of 4 or more
     Potential theta: 3
     Creating path list
@@ -313,13 +362,14 @@
     mpath: 4 3 2
     Counter: 2 | Number of paths: 2
     t1: 
-    Checking for paths of 4 or more
+    Potential mu: 5 | Potential omega: 4
     t1: 0 5 1
-    Checking for paths of 4 or more
+    t2: 0 4 3
     
     Rule 10
     Orient: 0 -> 2
     Rule 10 has been used 1 times.
+    
     Track changes: 1
          [,1] [,2] [,3] [,4] [,5] [,6]
     [1,]    0    0    2    0    1    2
@@ -358,7 +408,6 @@
     Found a final node on the uncovered p.d. path: 5
     Path: 2 7 1 5 4
     Final Path: 2 7 1 5 4
-    Counter: 2 | Number of paths: 2
     Rule 9: There exists an uncovered potentially directed path between 2 and 4
     Orient: 2 -> 4
     Rule 9 has been used 1 times.

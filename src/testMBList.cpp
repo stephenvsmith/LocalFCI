@@ -29,7 +29,7 @@ NumericVector testAccessMultipleMB(NumericVector nodes,NumericMatrix mb_mat,
 bool testIsMBMember(NumericVector nodes,NumericMatrix mb_mat,
                     size_t target,size_t i){
   MBList mb_list = MBList(nodes,mb_mat,false);
-  return mb_list.isInMB(target,i);
+  return mb_list.inMB(target,i);
 }
 
 

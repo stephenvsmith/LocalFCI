@@ -78,6 +78,7 @@ public:
   
   void setVerboseTrue(){
     verbose = true;
+    C_tilde->setVerboseTrue();
   }
   
 protected:

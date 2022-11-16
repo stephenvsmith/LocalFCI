@@ -7,6 +7,8 @@ data("asiadf")
 data("andesDAG")
 nodes <- colnames(asiaDAG)
 
+# TODO: Add more tests to ensure that v-structure comparisons are working properly
+
 test_that("Check function to determine mutual neighborhoods",{
   # targets: tub, bronc | checking: either
   expect_true(inTargetNeighborhood(asiaDAG,c(2,5)-1,5))

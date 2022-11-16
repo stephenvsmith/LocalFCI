@@ -1,0 +1,208 @@
+\documentclass[12pt]{article}
+
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+
+\usepackage{tikz}
+\usetikzlibrary{shadows}
+\usetikzlibrary{bayesnet} 
+\usepackage[margin=1in]{geometry}
+
+\setlength\parindent{0pt}
+\begin{document}
+
+\begin{center}
+\Large \underline{Metrics to Assess Algorithm Performance}
+\end{center}
+
+Mixed graph markings:
+\begin{enumerate}
+\item[0] Nothing (no edge exists)
+\item[1] Undetermined 
+\item[2] Arrowhead
+\item[3] Tail
+\end{enumerate}
+Note: The $\ast$ mark used in these rules represents a wildcard that denotes any of the three marks. If this symbol appears in the consequent of a rule, then the remark remains the same as it was in the antecedent.
+
+<<>>=
+library(LocalFCI)
+data("asiaDAG")
+data("asiadf")
+asiadf <- as.matrix(asiadf)
+@
+
+\section*{Introduction}
+For all metrics, we are comparing the adjacency matrix of an estimated graph to a graph regarded as the ``ground truth.'' In our simulations, we regard the subgraph of the CPDAG as the ground truth we will measure our estimates against. The subgraph contains all of the target nodes and the union of their neighborhoods.
+
+\section*{\texttt{allMetrics}}
+In this section, we will check the validity of the constituent functions producing the metrics returned by this function. The implementation for all of these may be found in \texttt{metrics.cpp}.
+\newpage
+\subsection*{Skeleton Estimation Metrics}
+<<>>=
+true_amat <- matrix(c(0,1,0,0,
+                      1,0,1,1,
+                      0,0,0,1,
+                      0,0,0,0),byrow = TRUE,nrow = 4)
+
+perfect_skel <- matrix(c(0,1,0,0,
+                         0,0,0,1,
+                         0,1,0,1,
+                         0,0,0,0),byrow = TRUE,nrow = 4)
+
+false_skel <- matrix(c(0,0,1,1,
+                       0,0,1,1,
+                       0,0,0,0,
+                       0,0,0,0),byrow = TRUE,nrow = 4)
+@
+
+
+<<echo=FALSE,message=FALSE,fig.height=4,fig.cap="From left to right, we have the true graph, the graph with the perfect skeleton, and the graph with an incorrect skeleton.">>=
+par(mfrow=c(1,3))
+g_true <- empty.graph(as.character(1:4))
+g_perfect <- empty.graph(as.character(1:4))
+g_false <- empty.graph(as.character(1:4))
+amat(g_true) <- true_amat
+amat(g_perfect) <- perfect_skel
+amat(g_false) <- false_skel
+graphviz.plot(g_true)
+graphviz.plot(g_perfect)
+graphviz.plot(g_false)
+@
+
+<<>>=
+compareSkeletons(false_skel,true_amat,targets = c(1,3))
+compareSkeletons(false_skel,true_amat,targets = 3)
+compareSkeletons(perfect_skel,true_amat,targets = 3)
+compareSkeletons(perfect_skel,true_amat,targets = c(1,3))
+@
+
+Note the differences in the values for each call are due to the differences in the provided target node. The false skeleton correctly has edges $(2,3)$ and $(2,4)$. It is missing edges $(3,4)$ and $(1,2)$. It adds edges $(1,3)$ and $(1,4)$.
+
+In our implementation, we only count edges from nodes that are found in the same target neighborhood in the ground truth. In this way, we won't wrong penalize any remaining edges from our algorithm that link separate neighborhoods.
+
+\subsection*{V-Structure Estimation Metrics}
+In this implementation, we again only consider those v-structures found within the same target neighborhood in the ground truth graph, so we will not penalize any v-structures found between target neighborhoods. Also note that this implementation only recognizes notation for a typical graph without additional edge marks.\\
+
+We use the same graphs shown above.
+
+<<>>=
+compareVStructures(false_skel,true_amat,targets = c(0,3),TRUE)
+compareVStructures(false_skel,true_amat,targets = 3,TRUE)
+compareVStructures(perfect_skel,true_amat,targets = 1,TRUE)
+compareVStructures(false_skel,true_amat,targets = 1,TRUE)
+@
+
+\subsection*{Parent Recovery Metrics}
+One of the primary goals of this algorithm is to properly identify parents of target nodes so that we can estimate the causal effects on downstream nodes.
+
+In our accounting of target parent recovery, we identify true positives, false negatives, and false positives. In addition, we have another category called ``potential'' parents. These nodes could be 
+\begin{itemize}
+\item An identified parent in the estimated graph where there is an undirected edge in the ground truth
+\item An undirected edge in the estimated graph where there is a parental relationship identified in the ground truth
+\item Undirected edges in both the estimated graph and the true graph
+\end{itemize}
+
+<<>>=
+parentRecoveryAccuracy(perfect_skel,true_amat,targets = 3)
+parentRecoveryAccuracy(false_skel,true_amat,targets = 3)
+parentRecoveryAccuracy(false_skel,true_amat,targets = c(0,3))
+@
+
+Next, we add an undirected edge in the graph with the false skeleton and observe the changes this makes in the reported metrics on parent recovery.
+<<>>=
+# Adding a potential
+false_skel[3,4] <- 1
+false_skel[4,3] <- 1
+parentRecoveryAccuracy(false_skel,true_amat,targets = 3)
+# Using 1-index numbering: 
+# Missing 3 -> 4, correctly has 2->3 and 2->4, has 3-4 as undirected edge, 
+# added 1->4 and 1->3
+parentRecoveryAccuracy(false_skel,true_amat,targets = c(2,3))
+parentRecoveryAccuracy(false_skel,true_amat,targets = c(1,2,3))
+@
+
+Change the edge to a bi-directed edge using the values from mixed graphs to observe the changes once again.
+<<>>=
+false_skel[3,4] <- 2
+false_skel[4,3] <- 2
+parentRecoveryAccuracy(false_skel,true_amat,targets = 3)
+@
+
+\subsection*{Inter-Neighborhood Edge Metrics}
+
+One of the advantages of using the local FCI algorithm is that we are able to retain and orient some of the edges between neighborhoods. These metrics intend to demonstrate the value of this algorithm in identifying these relationships.
+
+\begin{algorithm}[H]
+\footnotesize
+\caption{Inter-Neighborhood Edge Metrics}
+\begin{algorithmic}[1]
+\State \textbf{Input:} Estimated graph adj. matrix \texttt{est}, Ground truth graph adj. matrix \texttt{ref}
+\State Find pairs of nodes $(i,j)$ that are in different target neighborhoods
+\If {Nodes $i$ and $j$ are not connected in the estimated graph}
+\If {Node $j$ (or $i$) is an ancestor of node $i$ ($j$), and the path from $j$ to $i$ ($i$ to $j$) is unmediated by another considered node}
+\State Increment the number of missing ancestral relationships
+\EndIf
+\Else
+\If {The edge is oriented with a proper unmediated ancestral relationship}
+\State Increment the number of true ancestors
+\ElsIf {The edge is undirected or bidirected}
+\State Increment the number of those missing orientation
+\ElsIf {The edge reverses the ancestral relationship and the path is unmediated}
+\State Increment the number with reversed orientations
+\ElsIf {There is a directed edge present without an ancestral relationship}
+\State Increment the number of false positive arrowheads
+\Else 
+\State Increment the number of false positive connections
+\EndIf
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\subsection*{Overall F1 Score}
+\begin{itemize}
+\item A true positive (TP) is when the orientation exactly matches in both graphs
+\item A true negative is when there is no edge in both graphs
+\item A false positive is when there is an edge in the estimated graph but no edge in the true graph
+\item A false negative is whenever there is an edge in the true graph which does not exactly match the edge in the estimated graph
+\end{itemize}
+
+$$ F_1 = \frac{2\times TP}{2\times TP + FP + FN} $$
+
+\section*{Summary of Metrics}
+
+\begin{itemize}
+\item Skeleton Metrics
+\begin{itemize}
+\item False Positives
+\item False Negatives
+\item True Positives
+\end{itemize}
+\item V-Structure Metrics
+\begin{itemize}
+\item False Positives
+\item False Negatives
+\item True Positives
+\end{itemize}
+\item Parent Recovery Accuracy (PRA) Metrics
+\begin{itemize}
+\item False Positives
+\item False Negatives
+\item True Positives
+\item Potential Parents
+\end{itemize}
+\item Ancestral Identification Metrics
+\begin{itemize}
+\item True Ancestors
+\item Missing Ancestors
+\item Missing Orientation
+\item Reversed Orientation
+\item False Positive Ancestors
+\item False Positive Inter-Neighborhood edge
+\end{itemize}
+\end{itemize}
+
+\end{document}
+

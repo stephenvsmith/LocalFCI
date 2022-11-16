@@ -39,7 +39,7 @@ public:
   }
   
   // Determine whether a node is in another node's MB
-  bool isInMB(size_t target,size_t i);
+  bool inMB(size_t target,size_t i);
   
   // Print Markov Blankets
   void printMBs();

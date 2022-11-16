@@ -133,6 +133,9 @@ List compareSkeletons(NumericMatrix est,NumericMatrix truth,NumericVector target
 
 /*
  * These functions serve to find the differences in the v-structures in two mixed graphs
+ * 
+ * checkTriple determines if there is a v-structure with nodes i,j,k and returns them in order
+ * Note: (i,j,k) refers to i->j<-k
  */
 List checkTriple(NumericMatrix g,int i,int j,int k,bool verbose=false){
   // check if i *-> k <-* j, then k *-> j <-* i, and j *-> i <-* k with each set of parents nonadjacent
@@ -174,6 +177,9 @@ List checkTriple(NumericMatrix g,int i,int j,int k,bool verbose=false){
   }
 }
 
+/*
+ * Checks if graph g2 has the same v-structure as it is found in another graph
+ */
 bool checkOtherTriple(NumericMatrix g2,NumericVector v,bool verbose=false){
   // check v(0) -> v(1) <- v(2) with v(0) and v(2) nonadjacent
   if (g2(v(0),v(1))==1 && g2(v(1),v(0))==0 && 
@@ -200,11 +206,12 @@ List compareVStructures(NumericMatrix est,NumericMatrix truth,NumericVector targ
   
   int p = est.nrow();
   List triple_check;
-  bool continue_checking=true;
+  bool continue_checking;
   
   for (int i=0;i<p-2;++i){
     for (int j=i+1;j<p-1;++j){
       for (int k=j+1;k<p;++k){
+        continue_checking=true;
         // only proceed if i, j, and k are all in the same target's neighborhood
         if (sharedNeighborhood(truth,targets,i,j) && 
             sharedNeighborhood(truth,targets,i,k) && 
@@ -215,14 +222,18 @@ List compareVStructures(NumericMatrix est,NumericMatrix truth,NumericVector targ
           }
           triple_check = checkTriple(est,i,j,k,verbose);
           if (triple_check["result"]){
+            // Does contain a v-structure with nodes i,j,k
             if (verbose){
               Rcout << "True Graph:\n";
             }
+            // Check if the same v-structure appears in ground truth
             if (checkOtherTriple(truth,triple_check["order"],verbose)){
-              continue_checking=false; // We don't need to check the true graph since v-structure was correctly identified
+              // We don't need to check for false negatives since v-structure was correctly identified
+              continue_checking=false; 
               ++num_correct;
             } else {
-              ++num_added; // there could be a missing v-structure
+              // We have a false positive
+              ++num_added; 
             }
           }
           
@@ -231,14 +242,16 @@ List compareVStructures(NumericMatrix est,NumericMatrix truth,NumericVector targ
             if (verbose){
               Rcout << "True Graph:\n";
             }
+            // Identify any v-structures in ground truth for nodes i,j,k
             triple_check = checkTriple(truth,i,j,k,verbose);
             if (triple_check["result"]){
               if (verbose){
                 Rcout << "V-structure *not* present in estimated graph\n";
               }
+              // Since we have already checked the estimated graph
+              // Any additional v-structure in the ground truth not previously
+              // accounted for is regarded as a false negative in the estimated graph
               ++num_missing;
-            } else {
-              continue_checking=true;
             }
           }
         }
@@ -253,6 +266,10 @@ List compareVStructures(NumericMatrix est,NumericMatrix truth,NumericVector targ
   );
 }
 
+/*
+ * Tracks the recovery of parents of target nodes in the estimated graph
+ * using the ground truth to identify true parents
+ */
 void oneTargetPRA(NumericMatrix est,NumericMatrix truth,int t,NumericVector &targets,
                    int &correct,int &missing,int &added,int &potential,bool verbose){
   int p = est.nrow();
@@ -338,7 +355,7 @@ List parentRecoveryAccuracy(NumericMatrix est,NumericMatrix truth,
   int num_added=0;
   int num_missing=0;
   int num_potential=0;
-  
+  // Add all of the parent recovery statistics for each of the targets
   std::for_each(targets.begin(),
                 targets.end(),
                 [&](int t) {oneTargetPRA(est,truth,t,targets,
@@ -362,7 +379,7 @@ bool idAncestors(NumericMatrix reference,int i,int j,bool verbose=true){
 }
 
 // Returns true if there is an ancestral path between anc and desc
-// that is not mediated by any node in the target neighborhood
+// that is not mediated by any node in the target neighborhood of either node
 bool checkAncestralPath(NumericMatrix reference,NumericVector targets,
                         int anc,int desc,bool verbose=true){
   if (verbose){
@@ -373,6 +390,7 @@ bool checkAncestralPath(NumericMatrix reference,NumericVector targets,
   makeNodeNames(p,node_names);
   DAG g_ref(p,node_names,reference,verbose);
   
+  // If anc is not an ancestor of desc, return false
   if (!g_ref.isAncestor(desc,anc)){
     if (verbose){
       Rcout << "Node " << desc << " is not a descendant of " << anc << std::endl;
@@ -461,8 +479,12 @@ List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
         if (est(i,j)==3 && est(j,i)==3){
           warning("Adjacency matrix entries for (%i,%i) and (%i,%i) are both 3.",i,j,j,i);
         } 
+        // Check if i is an ancestor of j in the ground truth graph
         is_i_ancestor_j = idAncestors(reference,j,i,verbose);
+        // Check if there is another node in the same neighborhood of i or j that mediates 
+        // The ancestral path between the two
         is_anc_path_unmediated_ij = checkAncestralPath(reference,targets,i,j,verbose);
+        // Repeat same procedure as above, but switch i and j
         is_j_ancestor_i = idAncestors(reference,i,j,verbose);
         is_anc_path_unmediated_ji = checkAncestralPath(reference,targets,j,i,verbose);
         if (!connected){

@@ -487,9 +487,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// checkIfNeighbors
-bool checkIfNeighbors(int nodes, StringVector node_names, NumericMatrix adj, int i, int j);
-RcppExport SEXP _LocalFCI_checkIfNeighbors(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP) {
+// checkIfAdjacent
+bool checkIfAdjacent(int nodes, StringVector node_names, NumericMatrix adj, int i, int j);
+RcppExport SEXP _LocalFCI_checkIfAdjacent(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -498,7 +498,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
     Rcpp::traits::input_parameter< int >::type i(iSEXP);
     Rcpp::traits::input_parameter< int >::type j(jSEXP);
-    rcpp_result_gen = Rcpp::wrap(checkIfNeighbors(nodes, node_names, adj, i, j));
+    rcpp_result_gen = Rcpp::wrap(checkIfAdjacent(nodes, node_names, adj, i, j));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1325,7 +1325,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_check_adjacent_non_adjacent", (DL_FUNC) &_LocalFCI_check_adjacent_non_adjacent, 4},
     {"_LocalFCI_check_non_adjacent_solo", (DL_FUNC) &_LocalFCI_check_non_adjacent_solo, 4},
     {"_LocalFCI_check_amat_setval", (DL_FUNC) &_LocalFCI_check_amat_setval, 6},
-    {"_LocalFCI_checkIfNeighbors", (DL_FUNC) &_LocalFCI_checkIfNeighbors, 5},
+    {"_LocalFCI_checkIfAdjacent", (DL_FUNC) &_LocalFCI_checkIfAdjacent, 5},
     {"_LocalFCI_checkEmptyGraph", (DL_FUNC) &_LocalFCI_checkEmptyGraph, 1},
     {"_LocalFCI_checkAcyclicity", (DL_FUNC) &_LocalFCI_checkAcyclicity, 3},
     {"_LocalFCI_checkIsAncestor", (DL_FUNC) &_LocalFCI_checkIsAncestor, 6},

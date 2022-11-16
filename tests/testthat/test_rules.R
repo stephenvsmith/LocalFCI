@@ -99,14 +99,15 @@ adj.mat4 <- matrix(c(0,2,1,0,0,2,3,
                      3,3,0,3,1,0,0,
                      2,0,1,0,0,0,0),nrow = 7,byrow = TRUE)
 adj.mat4_v2 <- rlang::duplicate(adj.mat4)
+adj.mat4_v2.1 <- rlang::duplicate(adj.mat4)
+adj.mat4_v2.1.1 <- rlang::duplicate(adj.mat4)
 adj.mat4_v3 <- rlang::duplicate(adj.mat4)
 adj.mat4orig <- rlang::duplicate(adj.mat4)
 p <- ncol(adj.mat4)
 
 nodes <- c("a","b","c","alpha","beta","gamma","theta")
-
+sep <- c(4)
 test_that("Rule 4 is correct.",{
-  sep <- c(4)
   expect_snapshot_output(adj.mat4 <- testRule4(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),nodes,adj.mat4,5,6,sep))
   expect_equal(adj.mat4[5,6],2)
   expect_equal(adj.mat4[6,5],3)
@@ -149,6 +150,20 @@ test_that("Rule 4 is correct (beta not in separation set).",{
       }
     }
   }
+})
+
+test_that("Rule 4 Multiple Options:",{
+  adj.mat4_v2.1[3,4] <- 2
+  adj.mat4_v2.1[4,3] <- 2
+  expect_snapshot_output(res <- testRule4(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),nodes,adj.mat4_v2.1,5,6,sep))
+})
+
+test_that("Rule 4 Multiple Options (2):",{
+  adj.mat4_v2.1.1[3,4] <- 2
+  adj.mat4_v2.1.1[4,3] <- 2
+  adj.mat4_v2.1.1[3,6] <- 1
+  adj.mat4_v2.1.1[6,3] <- 3
+  expect_snapshot_output(res <- testRule4(asiaDAG[1:p,1:p],asiadf[,1:p],seq(0,p-1),nodes,adj.mat4_v2.1.1,5,6,sep))
 })
 
 test_that("Rule 4 testing conditions",{

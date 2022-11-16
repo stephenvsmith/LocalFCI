@@ -7,9 +7,10 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
                                  StringVector names,
                                  int lmax,
                                  double signif_level,
-                                 bool verbose,bool estDAG) : verbose(verbose),
-                                 targets(targets),names(names),lmax(lmax),
-                                 df(df),signif_level(signif_level){
+                                 bool verbose,bool estDAG) :
+  lmax(lmax),targets(targets),names(names),df(df),
+  signif_level(signif_level),verbose(verbose){
+  
   num_targets = targets.length();
   if (verbose){
     Rcout << "There is (are) " << num_targets << " target(s).\n";
@@ -72,8 +73,8 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,
                                  StringVector names,
                                  int lmax,
                                  bool verbose) : 
-  verbose(verbose),targets(targets),
-  lmax(lmax),names(names) {
+  lmax(lmax),targets(targets),
+  names(names),verbose(verbose) {
   num_targets = targets.length();
   if (verbose){
     Rcout << "Population Version (C++):\n";
@@ -160,10 +161,10 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
   size_t kp = kvals.cols();
   bool keep_checking_k;
   List test_result;
-
+  
   // Initially assumes we are considering an empty set
   arma::uvec sep_arma;
-
+  
   if (l == 0){
     sep = NA_REAL;
     if (pop){
@@ -187,7 +188,7 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
       }
       S->changeList(i,j);
       S->changeList(j,i);
-
+      
       C_tilde->setAmatVal(i,j,0);
       C_tilde->setAmatVal(j,i,0);
     }
@@ -251,19 +252,19 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
 // Where i and j are not adjacent, and k is not in the separating set of i and j
 void ConstrainedAlgo::getVStructures() {
   size_t k_eff;
-
+  
   bool no_neighbors;
   bool j_invalid;
   NumericVector placeholder;
-
+  
   NumericVector i_adj;
   NumericVector j_adj;
   NumericVector j_vals;
   NumericVector k_vals;
-
+  
   NumericVector sepset_ij;
   NumericVector sepset_ji;
-
+  
   if (verbose){
     Rcout << "Beginning loops to find v-structures.\n";
   }
@@ -290,8 +291,8 @@ void ConstrainedAlgo::getVStructures() {
         j_invalid = (all(placeholder==0)).is_true();
         j_invalid = j_invalid || (C_tilde->getAmatVal(j,i)!= 0) ||  j <= i;
         // j must be in the neighborhood of i for it to make a v-structure with it (Local PC)
-        j_invalid = j_invalid || !(mb_list->isInMB(neighborhood(i),
-                                                   neighborhood(j)));
+        j_invalid = j_invalid || !(mb_list->inMB(neighborhood(i),
+                                                 neighborhood(j)));
         if (!j_invalid){
           if (verbose){
             Rcout << "j: " << j << " (" << names(neighborhood(j)) << ")"<< std::endl;

@@ -1,8 +1,11 @@
-library(tidyverse)
 data("asiaDAG")
 nodes <- colnames(asiaDAG)
 p <- ncol(asiaDAG)
 
+# In this section, we test the following functions:
+# Graph: Constructor (3 args), Constructor (1 arg), getAmat, getNodeNames, parentheses operator, getAmatVal,
+# setAmatVal, getAdjacent, getNonAdjacent, getAmat(Row|Col)
+# DAG: Constructor (4 args), getNeighbors, getNeighborsMultiTargets
 test_that("Checking to make sure the Graph class works",{
   # Create an arbitrary graph
   set.seed(123)
@@ -27,6 +30,8 @@ test_that("Checking to make sure the Graph class works",{
   expect_equal(check_names_works(nodes,n_names,adj),n_names)
   
   # Check to make sure neighbor detection functions work
+  # Returns the neighbors of node 3, as well as the neighbors of 0 and 2, excluding those nodes even
+  # though they are neighbors
   expect_equal(check_dag_object(nodes,n_names,adj),list("OneNeighbor"=c(0,1,2),"TwoNeighbors"=c(1,3)))
   expect_output(check_dag_object(nodes,n_names,adj,TRUE))
   
@@ -47,8 +52,8 @@ test_that("Checking to make sure the Graph class works",{
   adj_test <- adj
   for (i in 1:nodes){
     for (j in 1:nodes){
-      expect_equal(check_amat_retrieval(nodes,n_names,adj,i-1,j-1),adj_test[i,j])
-      val <- sample(1:6,1)
+      expect_equal(check_amat_retrieval_function(nodes,n_names,adj,i-1,j-1),adj_test[i,j])
+      val <- sample(2:6,1)
       adj_test[i,j] <- val
       expect_equal(check_amat_setval(nodes,n_names,adj,i-1,j-1,val),adj_test[i,j])
     }
@@ -68,17 +73,19 @@ test_that("Testing Graph and DAG classes using asia data",{
   # expect_equal(sort(nodes[get_neighbors_from_dag(which(nodes=="either")-1,p,asiaDAG,verbose=FALSE)+1]),c("bronc","dysp","lung","tub","xray"))
   
   # Check if adjacent nodes are properly detected
-  expect_false(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="asia")-1,which(nodes=="dysp")-1))
-  expect_true(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="asia")-1,which(nodes=="tub")-1))
-  expect_false(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="bronc")-1,which(nodes=="lung")-1))
-  expect_true(checkIfNeighbors(p,nodes,asiaDAG,which(nodes=="bronc")-1,which(nodes=="smoke")-1))
+  expect_false(checkIfAdjacent(p,nodes,asiaDAG,which(nodes=="asia")-1,which(nodes=="dysp")-1))
+  expect_true(checkIfAdjacent(p,nodes,asiaDAG,which(nodes=="asia")-1,which(nodes=="tub")-1))
+  expect_false(checkIfAdjacent(p,nodes,asiaDAG,which(nodes=="bronc")-1,which(nodes=="lung")-1))
+  expect_true(checkIfAdjacent(p,nodes,asiaDAG,which(nodes=="bronc")-1,which(nodes=="smoke")-1))
 })
 
+# Graph: emptyGraph
 test_that("Testing miscellaneous graph functions",{
   expect_equal(checkEmptyGraph(10),matrix(0,ncol = 10,nrow = 10))
   expect_snapshot_output(check_dag_object2(10))
 })
 
+# DAG: constructor (2 args), isAcyclic
 test_that("Testing acyclicity",{
   expect_true(checkAcyclicity(p,nodes,asiaDAG))
   
@@ -94,6 +101,7 @@ test_that("Testing acyclicity",{
   expect_true(checkAcyclicity(0,nodes,matrix(nrow = 0,ncol = 0)))
 })
 
+# DAG: isAncestor
 test_that("Test for identifying ancestors",{
   checkIsAncestor(p,nodes,asiaDAG,7,0,TRUE)
   g <- empty.graph(nodes)
@@ -113,6 +121,7 @@ test_that("Test for identifying ancestors",{
   }
 })
 
+# Graph: validateAdjMatrix, validateIndex
 test_that("Testing for correct errors and warnings",{
   # different numbers of rows and columns
   expect_error(check_amat_works(5,paste0("V",1:5),matrix(0,nrow = 5,ncol = 4)))
@@ -157,7 +166,9 @@ test_that("Testing for correct errors and warnings",{
   expect_error(check_amat_col_retrieval(p,n_names,asiaDAG,-1))
 })
 
+# DAG: inNeighborhood
 test_that("Testing inNeighborhood function",{
+  library(tidyverse)
   true_amat <- matrix(c(
     0,0,0,0,0,0,
     1,0,0,0,0,0,

@@ -11,8 +11,7 @@ public:
   DAG(size_t nodes,bool verbose=false);
   DAG(size_t nodes,StringVector node_names,
       NumericMatrix adj,bool verbose=false);
-  
-  void getNonIncidentNodes(std::vector<size_t> &v);
+
   bool isAcyclic();
   
   // Obtain the neighbors of a (multiple) target node(s)

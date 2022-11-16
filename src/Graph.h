@@ -69,19 +69,38 @@ public:
     amat(i,j) = val;
   }
   
+  void setVerboseTrue(){
+    verbose = true;
+  }
+  
   // Fills the adjacency matrix with zeros
   void emptyGraph(); 
   void printAmat();
-  // Determines if two nodes are neighbors
-  bool areNeighbors(const size_t &i,const size_t &j){
+  // Determines if two nodes are adjacent
+  bool areAdjacent(const size_t &i,const size_t &j){
     validateIndex(i); validateIndex(j);
     return amat(i,j)!=0 || amat(j,i)!=0;
   }
-
+  
+  // Functions to identify graph features
+  // 1. Minimum Discriminating Path
+  // 2. Minimum Uncovered Partially Directed Path
+  NumericVector get_d_vals(size_t a,LogicalVector &visited);
+  NumericVector get_r_vals(size_t d,LogicalVector &visited);
+  NumericVector minDiscPath(size_t a,size_t b,size_t c);
+  bool isPathUncovered(NumericVector p);
+  bool areEdgesPotentiallyDirected(size_t alpha,size_t beta);
+  NumericVector idThetaVals(size_t alpha,size_t beta,
+                            const std::vector<bool> &visited);
+  NumericVector idUncovPdPath(size_t alpha,size_t beta,size_t gamma,
+                              size_t d,NumericVector mpath);
+  NumericVector uncovPdPath(size_t alpha,size_t beta,size_t gamma);
+  NumericVector minUncovPdPath(size_t alpha,size_t beta,size_t gamma);
+  
 protected:
   NumericMatrix amat;
   bool verbose;
-   
+  
 private:
   size_t p;
   StringVector names;

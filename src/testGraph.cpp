@@ -11,7 +11,7 @@ NumericMatrix check_amat_works(int nodes,StringVector node_names,NumericMatrix a
 // [[Rcpp::export]]
 NumericMatrix check_amat_works_onepar(int nodes){
   Graph g(nodes);
-  return g.getAmat();
+  return g.getAmat(); // returns the adjacency matrix for a complete graph
 }
 
 // [[Rcpp::export]]
@@ -99,9 +99,9 @@ int check_amat_setval(int nodes,StringVector node_names,NumericMatrix adj,int i,
 }
 
 // [[Rcpp::export]]
-bool checkIfNeighbors(int nodes,StringVector node_names,NumericMatrix adj,int i,int j){
+bool checkIfAdjacent(int nodes,StringVector node_names,NumericMatrix adj,int i,int j){
   Graph g(nodes,node_names,adj);
-  return g.areNeighbors(i,j);
+  return g.areAdjacent(i,j);
 }
 
 // [[Rcpp::export]]

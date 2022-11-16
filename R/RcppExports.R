@@ -137,8 +137,8 @@ check_amat_setval <- function(nodes, node_names, adj, i, j, val) {
     .Call(`_LocalFCI_check_amat_setval`, nodes, node_names, adj, i, j, val)
 }
 
-checkIfNeighbors <- function(nodes, node_names, adj, i, j) {
-    .Call(`_LocalFCI_checkIfNeighbors`, nodes, node_names, adj, i, j)
+checkIfAdjacent <- function(nodes, node_names, adj, i, j) {
+    .Call(`_LocalFCI_checkIfAdjacent`, nodes, node_names, adj, i, j)
 }
 
 checkEmptyGraph <- function(p) {

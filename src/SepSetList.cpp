@@ -2,7 +2,7 @@
 
 SepSetList::SepSetList(NumericVector &neighbors):nodes(neighbors){
   N = neighbors.size();
-  for (size_t i : neighbors){
+   for (size_t i : neighbors){
     List subset = List::create();
     for (size_t j : neighbors){
       subset.push_back(NumericVector::create(NA_REAL));

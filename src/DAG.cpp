@@ -13,11 +13,10 @@ DAG::DAG(size_t nodes,bool verbose) :
 
 // Helpers for function determining acyclicity
 // Adds nodes to v which have no incoming edges in the DAG
-void DAG::getNonIncidentNodes(std::vector<size_t> &v){
-  size_t p = size();
+void getNonIncidentNodes(DAG* d,std::vector<size_t> &v){
+  size_t p = d->size();
   for (size_t j=0;j<p;++j){
-    Rcout << "j = " << j << std::endl;
-    if (is_true(all(getAmatCol(j)==0))){
+    if (is_true(all(d->getAmatCol(j)==0))){
       v.push_back(j);
     }
   }
@@ -49,7 +48,7 @@ bool DAG::isAcyclic(){
   std::vector<size_t> L; // records checked nodes
   std::vector<size_t> S; // records nodes without incoming edges
   
-  getNonIncidentNodes(S);
+  getNonIncidentNodes(this,S);
   
   while (!S.empty()){
     n = S.back();
@@ -163,8 +162,7 @@ NumericVector DAG::getNeighbors(const size_t &i,bool verbose){
 NumericVector DAG::getNeighborsMultiTargets(const NumericVector &targets,
                                             bool verbose){
   NumericVector neighbors;
-  size_t num_targets = targets.length();
-  
+
   for (auto t : targets){
     validateIndex(t);
     if (verbose){
@@ -195,7 +193,7 @@ bool DAG::inNeighborhood(const size_t &i,
     return true;
   }
   // This checks for adjacency
-  if (Graph::areNeighbors(i,j)){
+  if (Graph::areAdjacent(i,j)){
     return true;
   }
   // Check for spouses 

@@ -347,6 +347,7 @@ getAllMBs <- function(targets,dataset,threshold=0.01,lmax=3,
                       method="MMPC",test="testIndFisher",
                       verbose=TRUE){
   start <- Sys.time()
+  # Ensure target vector is without duplicates
   targets <- checkUniqueTargets(targets)
   
   # Find the MBs for the target nodes
@@ -355,6 +356,8 @@ getAllMBs <- function(targets,dataset,threshold=0.01,lmax=3,
                          getMB(t,dataset,threshold,lmax,method,test,verbose)
   )
   names(target_mbs) <- as.character(targets)
+  # Find the MBs for first-order neighbors and identify spouses 
+  # (along with their neighborhoods if necessary)
   result <- constructFinalMBList(targets,target_mbs,dataset,
                                  threshold,lmax,method,test,verbose)
   stop <- Sys.time()

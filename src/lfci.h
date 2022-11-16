@@ -32,10 +32,6 @@ public:
   double getTotalSkeletonTime() { return total_skeleton_time; };
   NumericVector getRulesCount() { return rules_used; };
   
-  // Orientation Rules Helpers
-  NumericVector minDiscPath(size_t a,size_t b,size_t c);
-  NumericVector minUncovPdPath(size_t alpha,size_t beta,size_t gamma);
-  
   // Orientation Rules
   // Rule 1
   void rule1search(size_t beta,size_t alpha,bool &track_changes);
@@ -57,6 +53,10 @@ public:
   // Rule 9
   bool rule9(bool &track_changes);
   // Rule 10
+  bool rule10simple(const size_t &alpha,
+                              const size_t &beta,
+                              const size_t &gamma,
+                              const size_t &d);
   bool rule10(bool &track_changes);
   // All rules
   void allRules();
