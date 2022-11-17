@@ -10,3 +10,15 @@
       install.packages("devtools") 
     } 
     devtools::install_github("stephenvsmith/LocalFCI")
+
+## Simple Example
+
+```
+library(LocalFCI)
+data("asiaDAG")
+data("asiadf")
+asiadf <- as.matrix(asiadf)
+
+# Run the local FCI algorithm on targets 1 (asia) and 6 (either)
+localfci(data = asiadf,targets = c(1,6),verbose = FALSE)
+```

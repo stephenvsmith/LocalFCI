@@ -449,6 +449,14 @@ getAllMBNodes <- function(mbList){
 
 # Measurement Functions ----------------------------------------------------
 
+getConnections <- function(g,target){
+  if (!setequal(g[target,],g[,target])){
+    warning("Some Markov Blankets don't agree")
+  }
+  # Get all target children or parents or undirected
+  return(which(g[target,]==1 | g[,target]==1))
+}
+
 calcParentRecovery <- function(ref,est,target){
   # Get all the parent nodes in both graphs
   parent_ref <- which(ref[,target]==1 & ref[target,]!=1) 
@@ -512,13 +520,7 @@ calcSpouseRecovery <- function(ref,est,target){
   ))
 }
 
-getConnections <- function(g,target){
-  if (!setequal(g[target,],g[,target])){
-    warning("Some Markov Blankets don't agree")
-  }
-  # Get all target children or parents
-  return(which(g[target,]==1 | g[,target]==1))
-}
+
 
 ### Input the initial matrix from the MB estimation algorithm
 # and determine which MB nodes were correctly identified
@@ -572,7 +574,7 @@ mbRecoveryTarget <- function(ref,est,target){
   ref_nodes <- getConnections(ref,target)
   est_nodes <- getConnections(est,target)
   
-  # Obtain spouse nodes from reference
+  # Add spouse nodes from reference graph
   ref_nodes <- c(ref_nodes,spouseRecovery(ref,target))
   
   # Compare MB recovery

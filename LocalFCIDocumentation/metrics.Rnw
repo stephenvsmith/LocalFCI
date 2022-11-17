@@ -171,9 +171,31 @@ One of the advantages of using the local FCI algorithm is that we are able to re
 
 $$ F_1 = \frac{2\times TP}{2\times TP + FP + FN} $$
 
+\section*{Markov Blanket Recovery Metrics}
+
+\subsection*{Recovery Accuracy}
+We obtain the target's parents, children, and nodes connected via undirected edges from the ground truth graph, and we obtain the estimated Markov Blanket (MB) nodes from the estimation procedure. We also identify spouses to the target node in the ground truth graph. We will denote the set of nodes from the ground truth graph as $V_{G}$ and the set of nodes from the estimation procedure as $V_E$. We can then define the following metrics:
+\begin{itemize}
+\item MB True Positives - Correctly identified nodes in the estimated MB
+$$ TP_{MB} = | V_G \cap V_E | $$
+\item MB False Negatives - Nodes in the true MB which are not found in the estimated MB
+$$ FN_{MB} = | V_G \setminus V_E | $$
+\item MB False Positives - Nodes in the estimated MB which are not found in the true MB
+$$ FP_{MB} = | V_E \setminus V_G | $$
+\end{itemize}
+
+When we have multiple targets, we add the results from the procedure outlined above when found for each target.
+
+\subsection*{Specific Recovery Accuracy}
+Sometimes, it may be better for us to identify which components of the MB are being identified. Therefore, we also find the number of false negatives and true positives for children, parents, and spouses of the target nodes.
+
 \section*{Summary of Metrics}
 
 \begin{itemize}
+\item Number of nodes in the union of the target neighborhoods
+\item Number of nodes in the network
+\item Number of edges in the union of the target neighborhoods
+\item Number of edges in the network
 \item Skeleton Metrics
 \begin{itemize}
 \item False Positives
@@ -202,6 +224,34 @@ $$ F_1 = \frac{2\times TP}{2\times TP + FP + FN} $$
 \item False Positive Ancestors
 \item False Positive Inter-Neighborhood edge
 \end{itemize}
+\item Markov Blanket Recovery
+\begin{itemize}
+\item Total True Positives
+\item Total False Negatives
+\item Total False Positives
+\item Children True Positives
+\item Children False Negatives
+\item Parents True Positives
+\item Parents False Negatives
+\item Spouses True Positives
+\item Spouses False Negatives
+\end{itemize}
+\item Timing
+\begin{itemize}
+\item Markov Blanket Estimation - The sum of the elapsed times for finding each estimated MB
+\item Markov Blanket Estimation - The total elapsed time running the MB estimation procedure
+\item Local PC/Local FCI - The elapsed time for each algorithm function to run in full
+\item Local FCI Skeleton - The time it took for the first stage of the local FCI skeleton estimation procedure
+\item Local FCI Target Skeletons - A vector of times for how long it took for each target's skeleton estimation of the second stage of the local FCI skeleton estimation procedure
+\item C++ time - the elapsed time for running the C++ function
+\end{itemize}
+\item Testing
+\begin{itemize}
+\item Markov Blanket Estimation - The sum of the number of conditional independence tests to find each estimated MB
+\item Local PC/Local FCI - The number of conditional independence tests in each algorithm
+\end{itemize}
+\item The number of times each FCI rule was used in the graph estimation algorithm
+\item The maximum size of a separating set considered by the algorithm
 \end{itemize}
 
 \end{document}
