@@ -895,7 +895,7 @@ bool LocalFCI::rule10(bool &track_changes){
                     }
                   }
                 }
-                Rcout << std::endl;
+                if (verbose) Rcout << std::endl;
               }
             }
           }
