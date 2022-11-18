@@ -590,6 +590,7 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
     for (int j=i+1;j<p;++j){
       if (sharedNeighborhood(ref,targets,i,j)){
         e_ij = est(i,j); e_ji = est(j,i); t_ij = ref(i,j); t_ji = ref(j,i);
+        // Both entries match in each graph and there is an edge present -> TP
         if ((e_ij==t_ij) && (e_ji==t_ji) && (e_ij!=0 || e_ji!=0)){
           tp += 1;
           if (verbose){
@@ -597,6 +598,8 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
             Rcout << tp << std::endl;
           }
         } else if ((e_ij!=t_ij) || (e_ji!=t_ji)){
+          // At least one of the entries differs from est. to true graph
+          // where an edge is present in true graph -> FN
           if (t_ij!=0 || t_ji != 0){
             fn += 1;
             if (verbose){
@@ -605,6 +608,8 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
               Rcout << " FN=" << fn << std::endl;
             }
           } else {
+            // An edge is present in the est. graph, but there is no edge
+            // in the true graph -> FP
             fp += 1;
             if (verbose){
               Rcout << "Edge between " << i << " and " << j;

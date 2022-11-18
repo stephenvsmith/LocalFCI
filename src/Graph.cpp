@@ -245,8 +245,11 @@ NumericVector Graph::idThetaVals(size_t alpha,size_t beta,
 // uncovered p.d. path. If so, returns that path. If not, returns empty path.
 NumericVector Graph::idUncovPdPath(size_t alpha,size_t beta,size_t gamma,
                                    size_t d,NumericVector mpath){
+  // Ensure that the last part of the path is uncovered
+  size_t d_1 = mpath(mpath.size()-2);
+  bool uncovered = amat(d_1,gamma)==0 && amat(gamma,d_1)==0;
   // Check that d fulfills p.d. requirements
-  if (areEdgesPotentiallyDirected(d,gamma)){
+  if (areEdgesPotentiallyDirected(d,gamma) && uncovered){
     if (verbose) {
       Rcout << "Found a final node on the uncovered p.d. path: ";
       Rcout << d << std::endl; 
@@ -276,7 +279,6 @@ NumericVector Graph::idUncovPdPath(size_t alpha,size_t beta,size_t gamma,
 
 // Identify an uncovered potentially directed path <alpha,beta,...,gamma>
 NumericVector Graph::minUncovPdPath(size_t alpha,size_t beta,size_t gamma){
-  
   NumericVector final_path(0);
   // Check if conditions are met for alpha and beta
   if (!areEdgesPotentiallyDirected(alpha,beta)){

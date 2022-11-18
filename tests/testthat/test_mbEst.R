@@ -160,7 +160,6 @@ test_that("Testing Markov Blanket Recovery Metrics Function",{
   
   # Remove tub as a child of asia
   mb_mat[1,2] <- 0
-  expect_warning(mbRecoveryMetrics(asiaDAG,mb_mat,1))
   mb_mat[2,1] <- 0
   expect_equal(mbRecoveryMetrics(asiaDAG,mb_mat,1)$mb_children_fn,1)
   # Remove either as child of lung, tub as spouse of lung

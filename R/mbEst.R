@@ -450,9 +450,6 @@ getAllMBNodes <- function(mbList){
 # Measurement Functions ----------------------------------------------------
 
 getConnections <- function(g,target){
-  if (!setequal(g[target,],g[,target])){
-    warning("Some Markov Blankets don't agree")
-  }
   # Get all target children or parents or undirected
   return(which(g[target,]==1 | g[,target]==1))
 }
