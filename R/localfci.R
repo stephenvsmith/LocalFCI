@@ -32,12 +32,13 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
   if (lmax < 0){
     stop("Invalid lmax value")
   }
-  
+  # Create node names if they aren't given
   p <- ifelse(is.null(data),ncol(true_dag),ncol(data))
   if (is.null(node_names)){
     node_names <- paste0("V",0:(p-1))
   }
-  
+  # Find the sample means of each variable and the covariance matrix of the 
+  # inputted dataset
   data_means <- NA
   data_cov <- NA
   if (!is.null(data)){
@@ -60,9 +61,12 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     result <- getAllMBs(targets,data,mb_tol,lmax,method,test,verbose)
     mb_end <- Sys.time()
     mb_diff <- mb_end - mb_start
-    units(mb_diff) <- "mins"
+    units(mb_diff) <- "secs"
+    # Track the time needed to estimate MB's
     mb_time_track <- as.numeric(mb_diff)
     mbList <- result$mb_list
+    # Store all of the nodes estimated to be needed (targets and first-order neighbors)
+    # Subtract 1 for conversion from C++ numbering scheme
     nodes_interest <- as.numeric(names(mbList))-1
     mb_num_tests <- result$num_tests
     # Create adjacency matrix based on Markov Blankets (mbEst.R)
@@ -75,7 +79,7 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
     estDAG <- FALSE
   }
   
-  # Convert any data frame to a matrix
+  # Convert any data.frame to a matrix
   if (is.data.frame(true_dag)){
     true_dag <- as.matrix(true_dag)
   }
@@ -102,7 +106,7 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
   return(list(
     "amat"=results$G,
     "S"=results$S,
-    "NumTests"=results$NumTests+mb_num_tests,
+    "NumTests"=results$NumTests,
     "MBNumTests"=mb_num_tests,
     "RulesUsed"=results$RulesUsed,
     "Nodes"=results$allNodes+1, # to convert to R numbering

@@ -21,7 +21,7 @@ test_that("Neighborhood Estimation",{
   lapply(mbList$mb_list,function(mb){
     expect_snapshot_output(mb$mb)
   })
-  expect_equal(mbList$num_tests,30)
+  expect_equal(mbList$num_tests,8)
   
   adj <- getEstInitialDAG(mbList$mb_list,p)
   for (i in 1:length(targets)){
@@ -233,6 +233,6 @@ test_that("Misc. Tests for MB Functions",{
   expect_equal(getTotalMBTime(mbList),
                sum(unlist(lapply(mbList,
                                  function(x) {return(x$time)}))))
-  expect_equal(getTotalMBTests(mbList),22)
+  expect_equal(getTotalMBTests(mbList),0)
 
 })

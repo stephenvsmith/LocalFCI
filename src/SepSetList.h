@@ -5,15 +5,15 @@
 
 class SepSetList {
 public:
-  SepSetList(NumericVector &neighbors);
+  SepSetList(NumericVector &neighbors); // tested
 
   void changeList(size_t i,size_t j,
-                  NumericVector sep=NumericVector::create(-1));
+                  NumericVector sep=NumericVector::create(-1)); // tested
 
-  NumericVector getSepSet(size_t i,size_t j); 
+  NumericVector getSepSet(size_t i,size_t j); // tested
 
-  bool isPotentialVStruct(size_t i, size_t j,size_t k);
-  bool isSepSetMember(size_t i,size_t j,size_t k);
+  bool isPotentialVStruct(size_t i, size_t j,size_t k);// implicitly tested with isSepSetMember
+  bool isSepSetMember(size_t i,size_t j,size_t k); // tested
   
   void printSepSetList();
   List getS() { return S; };

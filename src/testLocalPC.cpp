@@ -6,7 +6,7 @@ int checkInitializeLocalPC(NumericMatrix td,arma::mat df,
                            NumericVector nodes_interest,
                            StringVector names){
   LocalPC lpc(td,df,t,nodes_interest,names,3,0.01,true);
-  lpc.check();
+  Rcout << lpc.getSize() << std::endl;
   return lpc.getSize();
 }
 
@@ -34,7 +34,7 @@ NumericMatrix checkGetVStructures(NumericMatrix td,arma::mat df,
 int checkInitializeLocalPCPop(NumericMatrix td,NumericVector t,
                               NumericVector nodes_interest,StringVector names){
   LocalPC lpc(td,t,nodes_interest,names,3,true);
-  lpc.check();
+  Rcout << lpc.getSize() << std::endl;
   return lpc.getSize();
 }
 

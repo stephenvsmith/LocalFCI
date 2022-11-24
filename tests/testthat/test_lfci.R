@@ -188,11 +188,11 @@ test_that("Local FCI (Putting it all together, sample)",{
   
 })
 
-test_that("Local FCI (Putting it all together, population",{
+test_that("Local FCI (Putting it all together, population)",{
   pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(0,5),seq(0,p-1),node_names)
   expect_snapshot_output(amat(pop_g))
-  # graphviz.plot(pop_g)
+  graphviz.plot(pop_g)
   
   # pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(2,7),seq(0,p-1),node_names)

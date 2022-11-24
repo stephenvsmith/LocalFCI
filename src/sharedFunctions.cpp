@@ -5,6 +5,7 @@ using namespace Rcpp;
  * This function generates all possible combinations of a vector x of length l and puts them in a matrix
  * It uses the R function combn to produce the results.
  * Tested: 12/16/20
+ * Confirmed: 11/23/22
  */
 // [[Rcpp::export]]
 NumericMatrix combn_cpp(NumericVector x,size_t l){
@@ -30,6 +31,7 @@ NumericMatrix combn_cpp(NumericVector x,size_t l){
 }
 
 // Determines whether or not i is in vector x
+// Tested: 11/23/22
 // [[Rcpp::export]]
 bool isMember(NumericVector x,const size_t &i){
   NumericVector::iterator it = x.begin();

@@ -42,12 +42,12 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
     # Create adjacency matrix based on Markov Blankets (mbEst.R)
     true_dag <- getEstInitialDAG(mbList,ncol(data),verbose)
     semi_sample_version <- FALSE
-    estDAG <- FALSE
+    estDAG <- TRUE
   } else {
     mbList <- list()
     semi_sample_version <- TRUE
     nodes_interest <- seq(0,p-1)
-    estDAG <- TRUE
+    estDAG <- FALSE
   }
   
   # Convert any data frame to a matrix

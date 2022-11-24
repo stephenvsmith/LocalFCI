@@ -49,18 +49,19 @@ List condIndTest(arma::mat &C,const size_t &i,const size_t &j,
                  const arma::uvec &k,const size_t &n,
                  const double &signif_level){
   double pc = getPartialCorrelation(C,i,j,k);
-  double pc_transformed = fisherZ(pc,n,k.size());
+  double statistic = fisherZ(pc,n,k.size());
 
-  bool lower = pc_transformed < 0;
+  bool lower = statistic < 0;
   
   double cutoff = R::qnorm(1-signif_level/2,0.0,1.0,true,false);
   
-  bool accept_H0 = std::abs(pc_transformed) <= cutoff;
-  double pval=2*R::pnorm(pc_transformed,0.0,1.0,lower,false);
+  bool accept_H0 = std::abs(statistic) <= cutoff;
+  double pval=2*R::pnorm(statistic,0.0,1.0,lower,false);
   // The null hypothesis is accepted (p-value large) => H_0: r = 0 
   // => Conditional independence
   return List::create(
-    _["result"]=accept_H0, 
+    _["result"]=accept_H0,
+    _["statistic"]=statistic,
     _["pval"]=pval
   );
   

@@ -167,6 +167,7 @@
     Creating path list
     New Path: 5 7
     mpath: 5 7
+    Current Path = <5 7> does not complete uncovered p.d. path.
     Potential New Value in Path: 0
     Size of old path list: 1
     Size of new path list: 2
@@ -174,6 +175,7 @@
     Path 1: 5 7 0
     Counter: 1 | Number of paths: 2
     mpath: 5 7 0
+    Current Path = <5 7 0> does not complete uncovered p.d. path.
     Potential New Value in Path: 1
     Size of old path list: 2
     Size of new path list: 3
@@ -182,6 +184,7 @@
     Path 2: 5 7 0 1
     Counter: 2 | Number of paths: 3
     mpath: 5 7 0 1
+    Current Path = <5 7 0 1> does not complete uncovered p.d. path.
     Potential New Value in Path: 2
     Size of old path list: 3
     Size of new path list: 4
@@ -206,8 +209,10 @@
     New Path: 4 3
     New Path: 4 6
     mpath: 4 3
+    Current Path = <4 3> does not complete uncovered p.d. path.
     Counter: 1 | Number of paths: 2
     mpath: 4 6
+    Current Path = <4 6> does not complete uncovered p.d. path.
     Potential New Value in Path: 2
     Size of old path list: 2
     Size of new path list: 3
@@ -216,6 +221,7 @@
     Path 2: 4 6 2
     Counter: 2 | Number of paths: 3
     mpath: 4 6 2
+    Current Path = <4 6 2> does not complete uncovered p.d. path.
     Potential New Value in Path: 1
     Size of old path list: 3
     Size of new path list: 4
@@ -225,6 +231,7 @@
     Path 3: 4 6 2 1
     Counter: 3 | Number of paths: 4
     mpath: 4 6 2 1
+    Current Path = <4 6 2 1> does not complete uncovered p.d. path.
     Potential New Value in Path: 0
     Size of old path list: 4
     Size of new path list: 5
@@ -235,6 +242,7 @@
     Path 4: 4 6 2 1 0
     Counter: 4 | Number of paths: 5
     mpath: 4 6 2 1 0
+    Current Path = <4 6 2 1 0> does not complete uncovered p.d. path.
     Counter: 5 | Number of paths: 5
     Track changes: 1
 
@@ -250,8 +258,10 @@
     New Path: 3 0
     New Path: 3 1
     mpath: 3 0
+    Current Path = <3 0> does not complete uncovered p.d. path.
     Counter: 1 | Number of paths: 2
     mpath: 3 1
+    Current Path = <3 1> does not complete uncovered p.d. path.
     Potential New Value in Path: 6
     Size of old path list: 2
     Size of new path list: 3
@@ -260,6 +270,7 @@
     Path 2: 3 1 6
     Counter: 2 | Number of paths: 3
     mpath: 3 1 6
+    Current Path = <3 1 6> does not complete uncovered p.d. path.
     Potential New Value in Path: 7
     Size of old path list: 3
     Size of new path list: 4
@@ -284,12 +295,14 @@
     Creating path list
     New Path: 5 4
     mpath: 5 4
+    Current Path = <5 4> does not complete uncovered p.d. path.
     Counter: 1 | Number of paths: 1
     Checking for paths of 4 or more
     Potential theta: 4
     Creating path list
     New Path: 2 4
     mpath: 2 4
+    Current Path = <2 4> does not complete uncovered p.d. path.
     Counter: 1 | Number of paths: 1
     Checking for paths of 4 or more
     Potential alpha: 7 | Potential gamma: 4
@@ -353,6 +366,7 @@
     Creating path list
     New Path: 4 3
     mpath: 4 3
+    Current Path = <4 3> does not complete uncovered p.d. path.
     Potential New Value in Path: 2
     Size of old path list: 1
     Size of new path list: 2
@@ -360,10 +374,13 @@
     Path 1: 4 3 2
     Counter: 1 | Number of paths: 2
     mpath: 4 3 2
+    Current Path = <4 3 2> does not complete uncovered p.d. path.
     Counter: 2 | Number of paths: 2
     t1: 
     Potential mu: 5 | Potential omega: 4
+    Inputted values already form an uncovered p.d. path
     t1: 0 5 1
+    Inputted values already form an uncovered p.d. path
     t2: 0 4 3
     
     Rule 10
@@ -398,6 +415,7 @@
     Creating path list
     New Path: 7 1
     mpath: 7 1
+    Current Path = <7 1> does not complete uncovered p.d. path.
     Potential New Value in Path: 5
     Size of old path list: 1
     Size of new path list: 2
@@ -420,8 +438,10 @@
     New Path: 2 4
     New Path: 2 6
     mpath: 2 4
+    Current Path = <2 4> does not complete uncovered p.d. path.
     Counter: 1 | Number of paths: 2
     mpath: 2 6
+    Current Path = <2 6> does not complete uncovered p.d. path.
     Potential New Value in Path: 0
     Size of old path list: 2
     Size of new path list: 3
@@ -430,6 +450,7 @@
     Path 2: 2 6 0
     Counter: 2 | Number of paths: 3
     mpath: 2 6 0
+    Current Path = <2 6 0> does not complete uncovered p.d. path.
     Potential New Value in Path: 3
     Size of old path list: 3
     Size of new path list: 4
@@ -439,6 +460,7 @@
     Path 3: 2 6 0 3
     Counter: 3 | Number of paths: 4
     mpath: 2 6 0 3
+    Current Path = <2 6 0 3> does not complete uncovered p.d. path.
     Counter: 4 | Number of paths: 4
     Potential alpha: 7 | Potential gamma: 1
     Potential beta: 2
@@ -449,8 +471,10 @@
     New Path: 2 4
     New Path: 2 6
     mpath: 2 4
+    Current Path = <2 4> does not complete uncovered p.d. path.
     Counter: 1 | Number of paths: 2
     mpath: 2 6
+    Current Path = <2 6> does not complete uncovered p.d. path.
     Potential New Value in Path: 0
     Size of old path list: 2
     Size of new path list: 3
@@ -459,6 +483,7 @@
     Path 2: 2 6 0
     Counter: 2 | Number of paths: 3
     mpath: 2 6 0
+    Current Path = <2 6 0> does not complete uncovered p.d. path.
     Potential New Value in Path: 3
     Size of old path list: 3
     Size of new path list: 4
@@ -468,6 +493,7 @@
     Path 3: 2 6 0 3
     Counter: 3 | Number of paths: 4
     mpath: 2 6 0 3
+    Current Path = <2 6 0 3> does not complete uncovered p.d. path.
     Counter: 4 | Number of paths: 4
 
 # Test conversion of Mixed Graph
@@ -475,6 +501,7 @@
     Population Version (C++):
     There are 2 targets.
     Targets: V2 V10
+    Using the true DAG for the MB List.
     MBList Size: 12
     Markov Blankets:
     0: 1 4
@@ -552,10 +579,10 @@
          [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
     [1,]    0    0    1    2    0    0    0    0
     [2,]    0    0    1    0    0    0    0    0
-    [3,]    0    0    0    2    0    0    1    1
+    [3,]    0    0    0    2    0    0    1    2
     [4,]    2    0    1    0    1    0    0    1
     [5,]    0    0    0    1    0    0    0    0
     [6,]    0    0    0    0    0    0    0    0
     [7,]    0    0    3    0    0    1    0    0
-    [8,]    0    0    0    1    1    1    0    0
+    [8,]    0    0    3    1    1    1    0    0
 

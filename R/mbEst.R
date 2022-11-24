@@ -24,15 +24,6 @@ validateTarget <- function(target,p){
   }
 }
 
-# TODO: Try these methods if we need more
-# else if (method=="gOMP"){
-#   mb <- MXM::gomp(target=target,dataset=dataset,test = test)$res[,1] # there are more options here to explore, also need to look closer at output
-# } else if (method=="FBED"){
-# mb <- MXM::fbed.reg(target = target,dataset = dataset,
-#                     test = "testIndFisher",method = "LR",
-#                     threshold = threshold)
-# }# There is also fbed.reg, 
-
 #' Estimate Markov Blanket of Target Node
 #' 
 #' `getMB()` applies a Markov Blanket estimation algorithm to a target node
@@ -65,7 +56,7 @@ getMB <- function(target,dataset,threshold=0.01,lmax=3,
                     max_k=lmax,hash = FALSE,
                     backward = FALSE)
     mb_vars <- mb@selectedVars
-    n_tests <- length(mb_vars)+1 # Must change if we include backward phase
+    n_tests <- mb@n.tests # Must change if we include backward phase
     runtime <- mb@runtime[3]
   } else if (method=="SES"){
     mb <- MXM::SES(target=target,dataset=dataset,

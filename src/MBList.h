@@ -11,13 +11,14 @@ using std::endl;
 class MBList{
 public:
   // Sample version constructor with vector of nodes and matrix of nodes in MB
-  MBList(NumericVector node_vec,NumericMatrix mb_mat,bool verbose=false);
+  MBList(NumericVector node_vec,NumericMatrix mb_mat,bool verbose=false); // tested
   
   // Population version constructor with true DAG
-  MBList(NumericVector node_vec,NumericMatrix true_dag,size_t p,bool verbose=false);
+  MBList(NumericVector node_vec,DAG* true_DAG,bool verbose=false); // tested
   
   // Accessors
-  NumericVector getMB(size_t i){
+  // Obtains the MB for node i
+  NumericVector getMB(size_t i){ // tested
     if (mb_list.count(i)==0){
       stop("%i is not an element of the map.\n",i);
     }
@@ -32,14 +33,14 @@ public:
    */
   NumericVector getMBMultipleTargets(NumericVector targets,
                                      bool include_targets=false,
-                                     bool exclude_targets=false);
+                                     bool exclude_targets=false); // tested
   
   size_t getSize(){
     return size;
   }
   
   // Determine whether a node is in another node's MB
-  bool inMB(size_t target,size_t i);
+  bool inMB(size_t target,size_t i); // tested
   
   // Print Markov Blankets
   void printMBs();

@@ -92,9 +92,14 @@ NumericVector check_non_adjacent_solo(int nodes,StringVector node_names,NumericM
 // [[Rcpp::export]]
 int check_amat_setval(int nodes,StringVector node_names,NumericMatrix adj,int i,int j,int val){
   Graph g(nodes,node_names,adj);
+  g(i,j)=val;
+  return g.getAmatVal(i,j);
+}
+
+// [[Rcpp::export]]
+int check_amat_setval_function(int nodes,StringVector node_names,NumericMatrix adj,int i,int j,int val){
+  Graph g(nodes,node_names,adj);
   g.setAmatVal(i,j,val);
-  //g(i,j)=val;
-  
   return g.getAmatVal(i,j);
 }
 
@@ -131,4 +136,39 @@ bool checkInNeighborhood(int nodes,StringVector node_names,NumericMatrix adj,
   DAG g(nodes,node_names,adj,verbose);
   return g.inNeighborhood(i,j);
 }
+
+// [[Rcpp::export]]
+NumericMatrix check_set_amat(int nodes,StringVector node_names,NumericMatrix adj){
+  Graph g(nodes);
+  g.setAmat(adj);
+  return g.getAmat();
+}
+
+// [[Rcpp::export]]
+NumericVector check_disc_path(int nodes,StringVector node_names,NumericMatrix adj,
+                              size_t c,size_t d,size_t e){
+  Graph g(nodes,node_names,adj);
+  g.setVerboseTrue();
+  return g.minDiscPath(c,d,e);
+}
+
+// [[Rcpp::export]]
+NumericVector check_upd_path(int nodes,StringVector node_names,NumericMatrix adj,
+                              size_t a,size_t b,size_t e){
+  Graph g(nodes,node_names,adj);
+  g.setVerboseTrue();
+  return g.minUncovPdPath(a,b,e);
+}
+
+// [[Rcpp::export]]
+List checkNeighborhoodId(int nodes,StringVector node_names,NumericMatrix adj,
+                         int i,bool verbose=false){
+  DAG g(nodes,node_names,adj,verbose);
+  return List::create(
+    _["parents"]=g.getParents(i),
+    _["children"]=g.getChildren(i),
+    _["neighborhood"]=g.getNeighbors(i)
+  );
+}
+
 

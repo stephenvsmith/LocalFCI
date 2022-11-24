@@ -1,4 +1,4 @@
-#include<RcppArmadillo.h>
+#include <RcppArmadillo.h>
 
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp;
@@ -7,9 +7,7 @@ using namespace Rcpp;
 NumericVector test_union(NumericVector x, NumericVector y) {
   x = union_(x,y);
   return x;
-  
 }
-
 
 // [[Rcpp::export]]
 NumericVector test_sort(NumericVector x) {

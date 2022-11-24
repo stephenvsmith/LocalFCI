@@ -61,7 +61,7 @@ bool checkSeparationFunc(NumericVector neighbors,int i,int j,NumericVector sep,i
 bool checkSeparationFuncCorrected(NumericVector neighbors,int i,int j,NumericVector sep,int val_to_check){
   SepSetList *S = new SepSetList(neighbors);
   S -> changeList(i,j,sep);
-  S -> changeList(j,i,sep);
+  S -> changeList(j,i,sep); // correction from previous function
   bool results = S -> isSepSetMember(i,j,val_to_check);
   delete S;
   return results;

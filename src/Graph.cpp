@@ -1,5 +1,6 @@
 #include "Graph.h"
 
+// Constructor for graph with adj. mat. given by user
 Graph::Graph(size_t nodes,StringVector node_names,
              NumericMatrix adj,bool verbose) : 
   amat(adj),verbose(verbose),names(node_names),p(nodes) {
@@ -60,11 +61,11 @@ void Graph::printAmat(){
  */
 
 // Obtain values "d" that haven't been visited and d*->a
-NumericVector Graph::get_d_vals(size_t a,LogicalVector &visited){
+NumericVector Graph::get_d_vals(size_t a,const std::vector<bool> &visited){
   NumericVector d_vals;
   for (size_t i=0;i<p;++i){
     // We need d *-> a
-    if (amat(a,i)!=0 && amat(i,a)==2 && !visited(i)){
+    if (amat(a,i)!=0 && amat(i,a)==2 && !visited[i]){
       d_vals.push_back(i);
     }
   }
@@ -72,11 +73,11 @@ NumericVector Graph::get_d_vals(size_t a,LogicalVector &visited){
   return d_vals;
 }
 
-NumericVector Graph::get_r_vals(size_t d,LogicalVector &visited){
+NumericVector Graph::get_r_vals(size_t d,const std::vector<bool> &visited){
   NumericVector r_vals;
   for (size_t i=0;i<p;++i){
     // We need r *-> d
-    if (amat(d,i)!=0 && amat(i,d)==2 && !visited(i)){
+    if (amat(d,i)!=0 && amat(i,d)==2 && !visited[i]){
       r_vals.push_back(i);  
     }
   }
@@ -134,12 +135,14 @@ List updatePathList(NumericVector mpath,NumericVector &set,List &old_paths,
   return new_paths;
 }
 
-// Identify the minimum discriminating path from to c for 
+// Identify the minimum discriminating path from a to c for b
+// Return a vector (-1) if no discriminating path is found
 NumericVector Graph::minDiscPath(size_t a,size_t b,size_t c){
-  LogicalVector visited(p);
-  visited(a) = true;
-  visited(b) = true;
-  visited(c) = true;
+  std::vector<bool> visited;
+  visited.assign(p,false);
+  visited[a] = true;
+  visited[b] = true;
+  visited[c] = true;
   // Obtain values that are colliders on a path from the nodes to c
   NumericVector d_vals = get_d_vals(a,visited); 
   if (d_vals.length()>0){
@@ -171,11 +174,11 @@ NumericVector Graph::minDiscPath(size_t a,size_t b,size_t c){
       
       pred = mpath(m-2);
       ++counter;
-      
+
       // d is connected to c, so we search iteratively
       if (amat(d,c)==2 && amat(c,d)==3 && 
-      amat(pred,d)==2){
-        visited(d) = true;
+      amat(d,pred)==2){
+        visited[d] = true;
         // Find all neighbors of d not visited yet
         NumericVector r_vals = get_r_vals(d,visited);
         if (r_vals.length()>0){
@@ -242,7 +245,9 @@ NumericVector Graph::idThetaVals(size_t alpha,size_t beta,
 }
 
 // Determines if node d is the final node necessary for the 
-// uncovered p.d. path. If so, returns that path. If not, returns empty path.
+// uncovered p.d. path
+// p = <alpha,beta,...,d_1,d,gamma>
+// If so, returns that path. If not, returns empty path.
 NumericVector Graph::idUncovPdPath(size_t alpha,size_t beta,size_t gamma,
                                    size_t d,NumericVector mpath){
   // Ensure that the last part of the path is uncovered
@@ -273,6 +278,8 @@ NumericVector Graph::idUncovPdPath(size_t alpha,size_t beta,size_t gamma,
     return final_path;
   } else {
     // we have to keep looking
+    if (verbose) printVecElementsNoNames(mpath,
+        "Current Path = <","> does not complete uncovered p.d. path.\n");
     return NumericVector(0);
   }
 }
@@ -288,6 +295,9 @@ NumericVector Graph::minUncovPdPath(size_t alpha,size_t beta,size_t gamma){
   // If <alpha,beta,gamma> is uncovered p.d., return this path
   final_path = uncovPdPath(alpha,beta,gamma);
   if (final_path.length()>0){
+    if (verbose){
+      Rcout << "Inputted values already form an uncovered p.d. path\n";
+    }
     return final_path;
   }
   

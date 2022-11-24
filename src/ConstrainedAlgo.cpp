@@ -15,9 +15,6 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
   if (verbose){
     Rcout << "There is (are) " << num_targets << " target(s).\n";
     printVecElements(targets,names,"Targets: ","\n");
-    if (estDAG){
-      Rcout << "Using estimated Markov Blankets\n";
-    }
   }
   p = true_dag.ncol();
   R = arma::cor(df);
@@ -32,7 +29,7 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,arma::mat df,
     mb_list = new MBList(nodes_interest,true_dag,verbose);
   } else {
     // We are given the true DAG to find actual Markov Blankets
-    mb_list = new MBList(nodes_interest,true_dag,p,verbose);
+    mb_list = new MBList(nodes_interest,true_DAG,verbose);
   }
   
   // Find the neighborhoods of the target nodes (targets U nbhd(targets))
@@ -88,7 +85,7 @@ ConstrainedAlgo::ConstrainedAlgo(NumericMatrix true_dag,
   // Set DAG object
   true_DAG = new DAG(p,names,true_dag);
   // Use the true DAG to find neighborhoods
-  mb_list = new MBList(nodes_interest,true_dag,p,verbose);
+  mb_list = new MBList(nodes_interest,true_DAG,verbose);
   
   // Find the neighborhoods of the target nodes (targets U nbhd(targets))
   neighborhood = mb_list -> getMBMultipleTargets(targets);
@@ -251,7 +248,6 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
 // We are trying to identify structures i -> k <- j
 // Where i and j are not adjacent, and k is not in the separating set of i and j
 void ConstrainedAlgo::getVStructures() {
-  size_t k_eff;
   
   bool no_neighbors;
   bool j_invalid;
@@ -261,9 +257,6 @@ void ConstrainedAlgo::getVStructures() {
   NumericVector j_adj;
   NumericVector j_vals;
   NumericVector k_vals;
-  
-  NumericVector sepset_ij;
-  NumericVector sepset_ji;
   
   if (verbose){
     Rcout << "Beginning loops to find v-structures.\n";
@@ -299,25 +292,24 @@ void ConstrainedAlgo::getVStructures() {
           }
           j_adj = C_tilde->getAdjacent(j);
           k_vals = intersect(i_adj,j_adj); // k must be a neighbor of i and j
-          std::sort(k_vals.begin(),k_vals.end());
-          if (verbose && k_vals.length()>0){
-            Rcout << "Potential k values: ";
-            printVecElements(k_vals,names[neighborhood],"","\n");
-          }
           // If there are no common neighbors, move to next j
           if (k_vals.length()!=0){
+            if (verbose){
+              Rcout << "Potential k values: ";
+              printVecElements(k_vals,names[neighborhood],"","\n");
+            }
+            std::sort(k_vals.begin(),k_vals.end());
             // We loop through all of the common neighbors
-            sepset_ij = S->getSepSet(i,j);
-            sepset_ji = S->getSepSet(j,i);
             for (auto k : k_vals){
               if (verbose){
                 Rcout << "k: " << k << " (" << names(neighborhood(k)) << ")\n";
               }
               // Verify if k is in separating set for i and j
-              k_eff = k;
+              size_t k_eff = k; // efficient numbering of k
               k = neighborhood(k); // Switch k to true numbering
               if (S->isPotentialVStruct(i,j,k)){
                 if (verbose){
+                  NumericVector sepset_ij = S->getSepSet(i,j);
                   Rcout << "Separation Set: ";
                   printVecElementsNoNames(sepset_ij);
                   Rcout << " | V-Structure (True Numbering): ";

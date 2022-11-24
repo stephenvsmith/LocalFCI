@@ -20,6 +20,9 @@ test_that("Checking to make sure the Graph class works",{
   # Check to make sure that the adjacency matrix is properly saved
   expect_equal(check_amat_works(nodes,n_names,adj),adj)
   
+  # Check to make sure that we are correctly setting the adj. mat
+  expect_equal(check_set_amat(nodes,n_names,adj),adj)
+  
   # Should give us a complete graph if we only supply the nodes
   complete_graph <- matrix(1,nrow = nodes,ncol = nodes)
   diag(complete_graph) <- 0
@@ -42,6 +45,8 @@ test_that("Checking to make sure the Graph class works",{
     cat("Row",i,":",unlist(check_adjacent_non_adjacent(nodes,n_names,adj,i-1)['adj'],use.names = FALSE))
     expect_equal(unlist(check_adjacent_non_adjacent(nodes,n_names,adj,i-1)['adj'],use.names = FALSE),
                  sort(union(which(adj[i,]!=0)-1,which(adj[,i]!=0)-1)))
+    expect_equal(unlist(check_adjacent_non_adjacent(nodes,n_names,adj,i-1)['nonadj'],use.names = FALSE),
+                 sort(setdiff(intersect(which(adj[i,]==0)-1,which(adj[,i]==0)-1),i-1)))
     for (j in 1:nodes){
       expect_equal(check_amat_retrieval(nodes,n_names,adj,i-1,j-1),adj[i,j])
       expect_equal(check_amat_col_retrieval(nodes,n_names,adj,j-1),adj[,j])
@@ -56,10 +61,12 @@ test_that("Checking to make sure the Graph class works",{
       val <- sample(2:6,1)
       adj_test[i,j] <- val
       expect_equal(check_amat_setval(nodes,n_names,adj,i-1,j-1,val),adj_test[i,j])
+      expect_equal(check_amat_setval_function(nodes,n_names,adj,i-1,j-1,val),adj_test[i,j])
     }
   }
   
 })
+
 
 test_that("Testing Graph and DAG classes using asia data",{
   # Neighbor of "asia" should be "tub"
@@ -80,6 +87,7 @@ test_that("Testing Graph and DAG classes using asia data",{
 })
 
 # Graph: emptyGraph
+# DAG: Constructor (1 arg)
 test_that("Testing miscellaneous graph functions",{
   expect_equal(checkEmptyGraph(10),matrix(0,ncol = 10,nrow = 10))
   expect_snapshot_output(check_dag_object2(10))
@@ -87,6 +95,7 @@ test_that("Testing miscellaneous graph functions",{
 
 # DAG: constructor (2 args), isAcyclic
 test_that("Testing acyclicity",{
+  # No cycles in graph `asia`
   expect_true(checkAcyclicity(p,nodes,asiaDAG))
   
   amat <- matrix(c(
@@ -96,6 +105,9 @@ test_that("Testing acyclicity",{
     0,0,0,0,0,
     0,1,0,0,0
   ),nrow = 5,ncol=5,byrow = TRUE)
+  # This graph has at least one cycle -> *not* acyclic
+  g <- empty.graph(LETTERS[1:5])
+  expect_error(amat(g) <- amat)
   expect_false(checkAcyclicity(5,LETTERS[1:5],amat))
   
   expect_true(checkAcyclicity(0,nodes,matrix(nrow = 0,ncol = 0)))
@@ -204,6 +216,69 @@ test_that("Testing inNeighborhood function",{
   }
 })
 
+test_that("Discriminating paths identified",{
+  # Simple example
+  p <- 5
+  adj <- matrix(c(
+    0,2,0,0,0,
+    1,0,2,0,2,
+    0,1,0,2,2,
+    0,0,2,0,1,
+    0,3,3,1,0
+  ),ncol = p,byrow = TRUE)
+  expect_equal(check_disc_path(p,letters[1:p],adj,2,3,4),0:4)
+  
+  # Add an edge from a to e (should return no path)
+  adj[1,5] <- 2
+  adj[5,1] <- 3
+  expect_equal(check_disc_path(p,letters[1:p],adj,2,3,4),-1)
+  
+  # More complicated example
+  p <- 9
+  adj2 <- matrix(c(
+    0,2,0,0,2,0,0,0,0,
+    2,0,2,0,2,0,0,0,0,
+    0,2,0,2,2,2,0,0,0,
+    0,0,2,0,2,0,0,0,0,
+    3,3,3,2,0,3,3,3,0,
+    0,0,2,0,2,0,1,1,0,
+    0,0,0,0,2,2,0,3,0,
+    0,0,0,0,2,1,2,0,2,
+    0,0,0,0,0,0,0,2,0
+  ),ncol = p,byrow = TRUE)
+  expect_equal(check_disc_path(p,letters[1:p],adj2,2,3,4),c(8,7,6,5,2,3,4))
+})
 
+test_that("Uncovered p.d. paths identified",{
+  # Simple example
+  p <- 5
+  adj <- matrix(c(
+    0,1,0,1,0,
+    1,0,2,0,0,
+    0,1,0,2,0,
+    1,0,3,0,1,
+    0,0,0,1,0
+  ),ncol = p,byrow = TRUE)
+  expect_equal(check_upd_path(p,letters[1:p],adj,0,1,4),0:4)
+  expect_equal(check_upd_path(p,letters[1:p],adj,1,0,3),c(1,0,3))
+  
+  # Remove uncovered condition from the graph. Should return empty vector.
+  adj[5,3] <- 2
+  adj[3,5] <- 3
+  expect_equal(check_upd_path(p,letters[1:p],adj,0,1,4),numeric(0))
+})
 
+# Test DAG Neighborhood identification
+test_that("Proper neighborhood identification for DAG class",{
+  # Node either
+  # parents: tub (1), lung (3)
+  # children: xray (6), dysp (7)
+  # spouses: bronc (4)
+  expect_equal(checkNeighborhoodId(p,nodes,asiaDAG,5),
+               list(
+                 "parents"=c(1,3),
+                 "children"=c(6,7),
+                 "neighborhood"=c(1,3,4,6,7)
+               ))
+})
 

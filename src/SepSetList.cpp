@@ -1,5 +1,9 @@
 #include "SepSetList.h"
 
+/*
+ * Initializes a list containing separating sets for all pairs of nodes
+ * Each separating set is set to NA initially
+ */
 SepSetList::SepSetList(NumericVector &neighbors):nodes(neighbors){
   N = neighbors.size();
    for (size_t i : neighbors){
@@ -21,12 +25,15 @@ void checkInputValues(size_t i,size_t j,
   }
 }
 
+// Manually set Sep(i,j) to sep
+// If no vector is provided, it is automatically set to -1 (empty set)
 void SepSetList::changeList(size_t i,size_t j,
                             NumericVector sep){
   checkInputValues(i,j,N);
   NumericVector sep_new;
   // since the vector is passed in by reference automatically,
   // We must clone it to make any changes to `sep` in further steps
+  // without affecting the current separating set
   sep_new = clone(sep); 
   List sublist;
   sublist = S[i];
@@ -35,7 +42,9 @@ void SepSetList::changeList(size_t i,size_t j,
 
 /*
  * Takes the efficient numbering for two nodes (i and j)
- * and returns the nodes in the sep set according to efficient numbering
+ * and returns the nodes in the sep set (these nodes are given using true numbering)
+ * We use true numbering because not all possible separating nodes are included
+ * in the efficient numbering scheme (e.g. second-order neighbors)
  */
 NumericVector SepSetList::getSepSet(size_t i,size_t j){
   // Identify separating sets for nodes i and j
@@ -43,14 +52,14 @@ NumericVector SepSetList::getSepSet(size_t i,size_t j){
   return sublist_i[j];
 }
 
-// k is assumed to be according to the true Graph numbering
+// Checks if node k is in the separating set of nodes i and j
+// k is assumed to be according to the true graph numbering
 bool SepSetList::isSepSetMember(size_t i,size_t j,size_t k){
   checkInputValues(i,j,N);
   NumericVector sepset_ji;
   NumericVector sepset_ij;
   bool is_member;
   bool is_member_check;
-
   
   sepset_ji = getSepSet(j,i);
   sepset_ij = getSepSet(i,j);
@@ -66,6 +75,10 @@ bool SepSetList::isSepSetMember(size_t i,size_t j,size_t k){
   return is_member && is_member_check;
 }
 
+/*
+ * Checks if node k (true numbering) is in the separating sets 
+ * for nodes i and j (efficient numbering)
+ */
 bool SepSetList::isPotentialVStruct(size_t i,size_t j,size_t k) {
   return !isSepSetMember(i,j,k);
 }

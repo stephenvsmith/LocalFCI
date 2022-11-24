@@ -61,3 +61,11 @@ test_that("Testing combn",{
   expect_error(combn_cpp(2,-1))
 })
 
+test_that("Testing membership identification function",{
+  set.seed(123)
+  x <- sample(1:100,10)
+  for (i in 1:100){
+    expect_equal(as.numeric(isMember(x,i)),length(intersect(x,i)))
+  }
+})
+

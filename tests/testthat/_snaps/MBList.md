@@ -1,5 +1,6 @@
 # Initialization of Markov Blanket Object works (Sample)
 
+    Using estimated MB's to form list.
     MBList Size: 7
     Markov Blankets:
     0: 3
@@ -12,6 +13,7 @@
 
 # Initialization for Population Version works
 
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1

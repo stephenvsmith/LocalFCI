@@ -17,11 +17,11 @@ test_that("Sample Local PC (given true Markov Blankets)",{
   expect_equal(checkInitializeLocalPC(asiaDAG,df,t,seq(0,p-1),names),8)
   
   pc_dag <- empty.graph(names[c(2,4,5,6,7,8)])
-  amat(pc_dag) <- checkGetTargetSkel(asiaDAG,df,t,seq(0,p-1),names)
-  #graphviz.plot(pc_dag)
+  expect_snapshot_output(amat(pc_dag) <- checkGetTargetSkel(asiaDAG,df,t,seq(0,p-1),names))
+  # graphviz.plot(pc_dag)
   
-  amat(pc_dag) <- checkGetVStructures(asiaDAG,df,t,seq(0,p-1),names)
-  #graphviz.plot(pc_dag) 
+  expect_snapshot_output(amat(pc_dag) <- checkGetVStructures(asiaDAG,df,t,seq(0,p-1),names))
+  # graphviz.plot(pc_dag)
 })
 
 test_that("Population Local PC",{
@@ -41,14 +41,18 @@ test_that("Population Local PC",{
                dimnames = list(names[c(2,4,5,6,7,8)],
                                names[c(2,4,5,6,7,8)]))
   )
-  graphviz.plot(pc_dag_pop)
+  # graphviz.plot(pc_dag_pop)
   # 
-  amat(pc_dag_pop) <- checkGetVStructuresPop(asiaDAG,t,seq(0,p-1),names)
+  expect_snapshot_output(amat(pc_dag_pop) <- checkGetVStructuresPop(asiaDAG,t,seq(0,p-1),names))
   # graphviz.plot(pc_dag_pop)
 })
 
+test_that("Initializing for multiple targets",{
+  expect_snapshot_output(checkInitializeLocalPCPop(asiaDAG,c(0,7),seq(0,p-1),names))
+})
+
 test_that("Multiple Targets",{
-  # lpc_test <- empty.graph(names)
+  lpc_test <- empty.graph(names)
   amat_test <- checkLocalPC(asiaDAG,df,c(3,4),seq(0,p-1),names)
   # amat(lpc_test) <- amat_test
   # graphviz.plot(lpc_test)
@@ -58,9 +62,9 @@ test_that("Multiple Targets",{
   amat_pop <- checkLocalPCPop(asiaDAG,c(3,4),seq(0,p-1),names)
   # amat(lpc_test_pop) <- amat_pop
   # graphviz.plot(lpc_test_pop)
-  # expect_output(cat(amat_pop))
+  expect_output(cat(amat_pop))
   
-  # lpc_test_pop2 <- empty.graph(names)
+  lpc_test_pop2 <- empty.graph(names)
   amat_pop2 <- checkLocalPCPop(asiaDAG,c(0,5),seq(0,p-1),names)
   # amat(lpc_test_pop2) <- amat_pop2
   # graphviz.plot(lpc_test_pop2)

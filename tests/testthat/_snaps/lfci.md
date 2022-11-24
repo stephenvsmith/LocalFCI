@@ -2,6 +2,7 @@
 
     There is (are) 1 target(s).
     Targets: lung
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1
@@ -85,6 +86,7 @@
     Population Version (C++):
     There are 1 targets.
     Targets: lung
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1
@@ -166,6 +168,7 @@
 
     There is (are) 1 target(s).
     Targets: lung
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1
@@ -325,6 +328,7 @@
 
     There is (are) 2 target(s).
     Targets: lung bronc
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1
@@ -661,6 +665,7 @@
     Population Version (C++):
     There are 1 targets.
     Targets: lung
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1
@@ -820,6 +825,7 @@
     Population Version (C++):
     There are 2 targets.
     Targets: lung bronc
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1
@@ -1204,6 +1210,7 @@
 
     There is (are) 2 target(s).
     Targets: lung bronc
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1
@@ -1926,6 +1933,7 @@
     Population Version (C++):
     There are 2 targets.
     Targets: lung bronc
+    Using the true DAG for the MB List.
     MBList Size: 8
     Markov Blankets:
     0: 1
@@ -2702,7 +2710,7 @@
     xray      0   0     0    0     0      0    0    0
     dysp      0   0     0    0     0      0    0    0
 
-# Local FCI (Putting it all together, population
+# Local FCI (Putting it all together, population)
 
            asia tub smoke lung bronc either xray dysp
     asia      0   1     0    0     0      0    0    0

@@ -13,29 +13,30 @@ public:
            StringVector names,
            int lmax,
            double signif_level,
-           bool verbose,bool estDAG=false);
+           bool verbose,bool estDAG=false); // tested
   
   LocalFCI(NumericMatrix true_dag, // population version
            NumericVector targets,
            NumericVector nodes_interest,
            StringVector names,
            int lmax,
-           bool verbose);
+           bool verbose); // tested
+  
+  void getSkeletonTotal(); // tested
+  void getSkeletonTarget(const size_t &t); // tested
+  void getVStructures(); // tested
   
   // Accessors
-  void getSkeletonTotal();
-  void getSkeletonTarget(const size_t &t);
-  void getVStructures();
   std::vector<double> getTargetSkeletonTimes() { 
     return target_skeleton_times; 
   };
   double getTotalSkeletonTime() { return total_skeleton_time; };
   NumericVector getRulesCount() { return rules_used; };
   
-  // Orientation Rules
+  // Orientation Rules (tested)
   // Rule 1
   void rule1search(size_t beta,size_t alpha,bool &track_changes);
-  bool rule1(bool &track_changes);
+  bool rule1(bool &track_changes); 
   // Rule 2
   void rule2search(size_t beta,size_t alpha,
                    bool condition1,bool condition2,bool &track_changes);
@@ -62,11 +63,11 @@ public:
   void allRules();
   
   // Function to run the algorithm
-  void run();
+  void run(); // tested in wrapper test
   
   // Graph conversion
-  void convertMixedGraph();
-  void convertFinalGraph();
+  void convertMixedGraph(); // tested
+  void convertFinalGraph(); // tested
   
 private:
   std::map<int,int> node_numbering;

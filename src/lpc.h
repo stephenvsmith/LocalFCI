@@ -13,24 +13,22 @@ public:
            StringVector names,
            int lmax,
            double signif_level,
-           bool verbose,bool estDAG=false);
+           bool verbose,bool estDAG=false); // tested
   
   LocalPC(NumericMatrix true_dag, // population version
            NumericVector targets,
            NumericVector nodes_interest,
            StringVector names,
            int lmax,
-           bool verbose);
+           bool verbose); // tested
   
-  void getSkeletonTarget(const size_t &t);
+  void getSkeletonTarget(const size_t &t); // tested
   
-  using ConstrainedAlgo::getVStructures;
+  using ConstrainedAlgo::getVStructures; // tested
   
-  void convertFinalGraph();
+  void convertFinalGraph(); // tested
   
-  void run();
-  
-  void check();
+  void run(); // tested
   
   // Accessors
   std::vector<double> getTargetSkeletonTimes() { return target_skeleton_times; };

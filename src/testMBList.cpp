@@ -7,7 +7,13 @@ void testInitializeMBList(NumericVector nodes,NumericMatrix mb_mat){
 
 // [[Rcpp::export]]
 void testInitializeMBListPop(NumericVector nodes,NumericMatrix amat){
-  MBList my_mb_list = MBList(nodes,amat,amat.nrow(),true);
+  StringVector node_names = StringVector::create();
+  size_t p = amat.nrow();
+  makeNodeNames(p,node_names);
+  DAG* my_dag = new DAG(p,node_names,amat,false);
+  MBList my_mb_list = MBList(nodes,my_dag,true);
+  delete my_dag;
+  my_dag = nullptr;
 }
 
 // [[Rcpp::export]]

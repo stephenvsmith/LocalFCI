@@ -2,10 +2,12 @@ data("asiadf")
 C <- cor(asiadf)
 
 test_that("Partial Correlation function is accurate",{
+  # Test for empty set being conditioned on
   true_result <- C[1,3]
   est_result <- getPartialCorrelation(cor(asiadf),0,2,double())
   expect_equal(est_result,true_result)
   
+  # Test for being conditioned on the remaining nodes
   true_result <- ppcor::pcor(asiadf)
   for (i in 0:7){
     for (j in 0:7){
@@ -14,6 +16,33 @@ test_that("Partial Correlation function is accurate",{
       est_test_list <- condIndTest(C,i,j,setdiff(0:7,c(i,j)),500,0.05)
       expect_equal(est_test_list$pval,
                    true_result$p.value[i+1,j+1],tolerance = 0.001)
+    }
+  }
+  
+  # Test for being conditioned on one other node
+  for (i in 0:7){
+    for (j in setdiff(0:7,i)){
+      for (k in setdiff(0:7,c(i,j))){
+        est_result <- getPartialCorrelation(C,i,j,k)
+        test_result <- condIndTest(C,i,j,k,500,0.05)
+        true_result <- ppcor::pcor.test(asiadf[,i+1],asiadf[,j+1],asiadf[,k+1])
+        expect_equal(est_result,true_result$estimate,tolerance = 0.0001)
+        expect_equal(test_result$pval,true_result$p.value,tolerance = 0.01)
+      }
+    }
+  }
+  
+  # Test for being conditioned on two nodes
+  for (i in 0:7){
+    for (j in setdiff(0:7,i)){
+      vals <- combn(setdiff(0:7,c(i,j)),2)
+      apply(vals,2,function(x){
+        est_result <- getPartialCorrelation(C,i,j,x)
+        test_result <- condIndTest(C,i,j,x,500,0.05)
+        true_result <- ppcor::pcor.test(asiadf[,i+1],asiadf[,j+1],list(asiadf[,x[1]+1],asiadf[,x[2]+1]))
+        expect_equal(est_result,true_result$estimate,tolerance = 0.0001)
+        expect_equal(test_result$pval,true_result$p.value,tolerance = 0.01)
+      })
     }
   }
 })

@@ -317,12 +317,6 @@ void LocalFCI::getVStructures() {
  */
 
 /*
- * TODO:
- * - don't check anything if all values are 0
- * 
- */
-
-/*
  * For R1, we search for alpha *-> beta o-* gamma. 
  * If alpha and gamma are not adjacent, then orient the triple: alpha *-> beta -> gamma
  */
@@ -550,69 +544,66 @@ bool LocalFCI::check_sep_r4(size_t beta,NumericVector md_path){
 bool LocalFCI::rule4(bool &track_changes){
   bool cond1;
   bool cond2;
-  bool done;
   NumericVector md_path;
+  // Looking for beta o-* gamma
   for (size_t beta=0;beta<N;++beta){
     for (size_t gamma=0;gamma<N;++gamma){
       if (C_tilde->getAmatVal(beta,gamma)!=0 && 
           C_tilde->getAmatVal(gamma,beta)==1){
+        // Begin looking for disc. path <theta,...,alpha,beta,gamma>
+        // First, look for possible values of alpha
         for (size_t alpha=0;alpha<N;++alpha){
+          // Need alpha *-> beta
           cond1 = C_tilde->getAmatVal(beta,alpha)==2 && 
             C_tilde->getAmatVal(alpha,beta)!=0;
           // triangle structure exists but is not oriented
+          // alpha -> gamma
           cond2 = C_tilde->getAmatVal(gamma,alpha)==3 && 
             C_tilde->getAmatVal(alpha,gamma)==2; 
           if (cond1 && cond2){
-            done = false;
-            // I do believe this makes sense to be an if statement.
-            // if gamma and beta have already been adjusted, then we don't need
-            // to keep searching through the various values of alpha
-            // This could be optimized, but it is accurate and works for now.
-            if(C_tilde->getAmatVal(gamma,beta)==1){ 
-              // TODO: Why all these additional conditions?
-              while(!done && C_tilde->getAmatVal(alpha,beta)!=0 && 
-                    C_tilde->getAmatVal(alpha,gamma)!=0 && 
-                    C_tilde->getAmatVal(beta,gamma)!=0){
-                md_path = C_tilde->minDiscPath(alpha,beta,gamma);
-                if (md_path(0)==-1){
-                  Rcout << "No discriminating path for these nodes.\n";
-                  done = true; // We are done with this triangle  
-                } else {
-                  if(check_sep_r4(beta,md_path)){
-                    if (verbose){
-                      Rcout << "\nRule 4\nThere is a discriminating path between ";
-                      Rcout << md_path(0) << " and " << gamma << " for " << beta;
-                      Rcout << " and " << beta << " is in the SepSet of " << gamma;
-                      Rcout << " and " << md_path(0) << ". Orient: ";
-                      Rcout << beta << " -> " << gamma << std::endl;
-                    }
-                    C_tilde->setAmatVal(beta,gamma,2);
-                    C_tilde->setAmatVal(gamma,beta,3);
-                  } else {
-                    // b is not in sepset
-                    if (verbose){
-                      Rcout << "\nRule 4\nThere is a discriminating path between ";
-                      Rcout << md_path(0) << " and " << gamma << " for " << beta;
-                      Rcout << " and " << beta << " is NOT in the SepSet of ";
-                      Rcout << gamma << " and " << md_path(0) << ". Orient: ";
-                      Rcout << alpha << " <-> " << beta << " <-> " << gamma << std::endl;
-                    }
-                    C_tilde->setAmatVal(beta,gamma,2);
-                    C_tilde->setAmatVal(gamma,beta,2);
-                    if (C_tilde->getAmatVal(alpha,beta)==3){
-                      // This shouldn't be a problem if it comes up.
-                      warning("Contradiction in Rule 4b"); 
-                    }
-                    C_tilde->setAmatVal(alpha,beta,2);
-                  }
-                  done = true;
-                  track_changes = true;
-                  ++rules_used(4);
+            // Only continue to check if the edge between gamma and beta hasn't
+            // already been modified
+            if(C_tilde->getAmatVal(gamma,beta)==1){
+              // Check for a discriminating path <theta,...,alpha,beta,gamma>
+              md_path = C_tilde->minDiscPath(alpha,beta,gamma);
+              if (md_path(0)==-1){
+                Rcout << "No discriminating path for these nodes.\n";
+              } else {
+                // Check if beta separates theta and gamma
+                if(check_sep_r4(beta,md_path)){
                   if (verbose){
-                    Rcout << "Rule 4 has been used " << rules_used(4) << " times.\n";
+                    Rcout << "\nRule 4\nThere is a discriminating path between ";
+                    Rcout << md_path(0) << " and " << gamma << " for " << beta;
+                    Rcout << " and " << beta << " is in the SepSet of " << gamma;
+                    Rcout << " and " << md_path(0) << ". Orient: ";
+                    Rcout << beta << " -> " << gamma << std::endl;
                   }
+                  C_tilde->setAmatVal(beta,gamma,2);
+                  C_tilde->setAmatVal(gamma,beta,3);
+                } else {
+                  // beta is not in the separating set
+                  if (verbose){
+                    Rcout << "\nRule 4\nThere is a discriminating path between ";
+                    Rcout << md_path(0) << " and " << gamma << " for " << beta;
+                    Rcout << " and " << beta << " is NOT in the SepSet of ";
+                    Rcout << gamma << " and " << md_path(0) << ". Orient: ";
+                    Rcout << alpha << " <-> " << beta << " <-> " << gamma << std::endl;
+                  }
+                  C_tilde->setAmatVal(beta,gamma,2);
+                  C_tilde->setAmatVal(gamma,beta,2);
+                  if (C_tilde->getAmatVal(alpha,beta)==3){
+                    // This shouldn't be a problem if it comes up.
+                    warning("Contradiction in Rule 4b"); 
+                  }
+                  C_tilde->setAmatVal(alpha,beta,2);
+                }
+                track_changes = true;
+                ++rules_used(4);
+                if (verbose){
+                  Rcout << "Rule 4 has been used " << rules_used(4) << " times.\n";
                 }
               }
+              
             } 
           }  
         }
@@ -803,7 +794,7 @@ NumericVector nextPathNodeSearch(Graph *C_tilde,
  * distinct, and not adjacent, then orient alpha -> gamma.
  */
 bool LocalFCI::rule10(bool &track_changes){
-
+  
   size_t counter_x1;
   size_t counter_x2;
   size_t x1;
@@ -923,63 +914,62 @@ void LocalFCI::allRules(){
 /*
  * Because of the special circumstances of our algorithm,
  * we are able to reassign certain edges because of our knowledge of targets
+ * and their neighborhoods.
  * <-> => - ([2,2] to [1,1]) DONE
  * o-> => -> (decrement both i and j by 1) DONE
  * -> => -> (no change, but adj. matrix has to account differently, [3,2] to [0,1]) DONE 
  * o-o => - (no change in adj. matrix) DONE
  * -o => -> ([3,1] to [0,1]) DONE
  */
-
 void LocalFCI::convertMixedGraph(){
-  size_t G_ij;
-  size_t G_ji;
-  bool sep_nbhd;
+  size_t G_ij; // (i,j) element of adj. mat
+  size_t G_ji; // (j,i) element of adj. mat
+  bool sep_nbhd; // are the nodes in separate neighborhoods?
   for (size_t i=0;i<N;++i){
     for (size_t j=0;j<N;++j){
       sep_nbhd = false;
       // First check to see if i and j are in the same neighborhood
       // If i and j are not neighbors, 
       // then we should not change the orientations from the ancestral graph
-      // TODO: CHECK THIS BECAUSE IT LOOKS THE SAME
       sep_nbhd = !(mb_list -> inMB(neighborhood(i),neighborhood(j)));
-      
       G_ij = C_tilde -> getAmatVal(i,j);
       G_ji = C_tilde -> getAmatVal(j,i);
-      if (G_ij==2 && G_ji==2 && !sep_nbhd){
-        // Convert bidirected edge to undirected
-        C_tilde->setAmatVal(i,j,1);
-        C_tilde->setAmatVal(j,i,1);
-      } else if (G_ij==2 && G_ji==1 && !sep_nbhd){ 
-        // Convert o-> to -> if i and j are in same nbhd
-        C_tilde->setAmatVal(i,j,1);
-        C_tilde->setAmatVal(j,i,0);
-      } else if (G_ij==2 && G_ji==3){ // change no matter what
-        // Convert -> [3,2] to -> [0,1]
-        C_tilde->setAmatVal(i,j,1);
-        C_tilde->setAmatVal(j,i,0);
-      } else if (G_ij==1 && G_ji==3 && !sep_nbhd){
-        // Convert -o [3,1] to -> [0,1]
-        C_tilde->setAmatVal(j,i,0);
+      if (!sep_nbhd){ // only convert edge notation w/in neighborhoods
+        if (G_ij==2 && G_ji==2){
+          // Convert bidirected edge to undirected
+          C_tilde->setAmatVal(i,j,1);
+          C_tilde->setAmatVal(j,i,1);
+        } else if (G_ij==2 && G_ji==1){ 
+          // Convert o-> to -> if i and j are in same nbhd
+          C_tilde->setAmatVal(i,j,1);
+          C_tilde->setAmatVal(j,i,0);
+        } else if (G_ij==2 && G_ji==3){
+          // Convert -> [3,2] to -> [0,1]
+          C_tilde->setAmatVal(i,j,1);
+          C_tilde->setAmatVal(j,i,0);
+        } else if (G_ij==1 && G_ji==3){
+          // Convert -o [3,1] to -> [0,1]
+          C_tilde->setAmatVal(j,i,0);
+        }
       }
     }
   }
 }
 
+// Convert the final graph after using efficient notation to the full
+// adjacency matrix
 void LocalFCI::convertFinalGraph(){
+  // Create a graph with the full number of nodes
   Graph* g = new Graph(p);
+  // Start with an empty graph
   g -> emptyGraph();
   size_t current_val = 0;
-  size_t nrow = C_tilde -> getNRow();
-  size_t ncol = C_tilde -> getNCol();
-  for (size_t i=0;i<nrow;++i){
-    for (size_t j=0;j<ncol;++j){
-      //Rcout << "(" << neighborhood(i) << "," << neighborhood(j) << "): ";
+  for (size_t i=0;i<N;++i){
+    for (size_t j=0;j<N;++j){
       current_val = C_tilde -> getAmatVal(i,j);
-      //Rcout << current_val << std::endl;
       g -> setAmatVal(neighborhood(i),neighborhood(j),current_val);  
     }
   }
-  
   delete C_tilde;
   C_tilde = g;
   g = nullptr;
@@ -1004,7 +994,6 @@ void LocalFCI::run(){
   std::for_each(targets.begin(),
                 targets.end(),
                 [this](size_t t){ getSkeletonTarget(t); });
-  
   
   // Rule 0: Obtain V Structures
   getVStructures();

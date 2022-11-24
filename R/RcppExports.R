@@ -137,6 +137,10 @@ check_amat_setval <- function(nodes, node_names, adj, i, j, val) {
     .Call(`_LocalFCI_check_amat_setval`, nodes, node_names, adj, i, j, val)
 }
 
+check_amat_setval_function <- function(nodes, node_names, adj, i, j, val) {
+    .Call(`_LocalFCI_check_amat_setval_function`, nodes, node_names, adj, i, j, val)
+}
+
 checkIfAdjacent <- function(nodes, node_names, adj, i, j) {
     .Call(`_LocalFCI_checkIfAdjacent`, nodes, node_names, adj, i, j)
 }
@@ -155,6 +159,22 @@ checkIsAncestor <- function(nodes, node_names, adj, desc, anc, verbose = FALSE) 
 
 checkInNeighborhood <- function(nodes, node_names, adj, i, j, verbose = FALSE) {
     .Call(`_LocalFCI_checkInNeighborhood`, nodes, node_names, adj, i, j, verbose)
+}
+
+check_set_amat <- function(nodes, node_names, adj) {
+    .Call(`_LocalFCI_check_set_amat`, nodes, node_names, adj)
+}
+
+check_disc_path <- function(nodes, node_names, adj, c, d, e) {
+    .Call(`_LocalFCI_check_disc_path`, nodes, node_names, adj, c, d, e)
+}
+
+check_upd_path <- function(nodes, node_names, adj, a, b, e) {
+    .Call(`_LocalFCI_check_upd_path`, nodes, node_names, adj, a, b, e)
+}
+
+checkNeighborhoodId <- function(nodes, node_names, adj, i, verbose = FALSE) {
+    .Call(`_LocalFCI_checkNeighborhoodId`, nodes, node_names, adj, i, verbose)
 }
 
 initializeLocalFCI <- function(td, df, t, nodes_interest, names) {

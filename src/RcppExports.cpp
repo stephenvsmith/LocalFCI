@@ -487,6 +487,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// check_amat_setval_function
+int check_amat_setval_function(int nodes, StringVector node_names, NumericMatrix adj, int i, int j, int val);
+RcppExport SEXP _LocalFCI_check_amat_setval_function(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP, SEXP valSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< int >::type val(valSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_amat_setval_function(nodes, node_names, adj, i, j, val));
+    return rcpp_result_gen;
+END_RCPP
+}
 // checkIfAdjacent
 bool checkIfAdjacent(int nodes, StringVector node_names, NumericMatrix adj, int i, int j);
 RcppExport SEXP _LocalFCI_checkIfAdjacent(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP jSEXP) {
@@ -555,6 +571,66 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type j(jSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     rcpp_result_gen = Rcpp::wrap(checkInNeighborhood(nodes, node_names, adj, i, j, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_set_amat
+NumericMatrix check_set_amat(int nodes, StringVector node_names, NumericMatrix adj);
+RcppExport SEXP _LocalFCI_check_set_amat(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_set_amat(nodes, node_names, adj));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_disc_path
+NumericVector check_disc_path(int nodes, StringVector node_names, NumericMatrix adj, size_t c, size_t d, size_t e);
+RcppExport SEXP _LocalFCI_check_disc_path(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP cSEXP, SEXP dSEXP, SEXP eSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< size_t >::type c(cSEXP);
+    Rcpp::traits::input_parameter< size_t >::type d(dSEXP);
+    Rcpp::traits::input_parameter< size_t >::type e(eSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_disc_path(nodes, node_names, adj, c, d, e));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_upd_path
+NumericVector check_upd_path(int nodes, StringVector node_names, NumericMatrix adj, size_t a, size_t b, size_t e);
+RcppExport SEXP _LocalFCI_check_upd_path(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP aSEXP, SEXP bSEXP, SEXP eSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< size_t >::type a(aSEXP);
+    Rcpp::traits::input_parameter< size_t >::type b(bSEXP);
+    Rcpp::traits::input_parameter< size_t >::type e(eSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_upd_path(nodes, node_names, adj, a, b, e));
+    return rcpp_result_gen;
+END_RCPP
+}
+// checkNeighborhoodId
+List checkNeighborhoodId(int nodes, StringVector node_names, NumericMatrix adj, int i, bool verbose);
+RcppExport SEXP _LocalFCI_checkNeighborhoodId(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP iSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkNeighborhoodId(nodes, node_names, adj, i, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1325,11 +1401,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_check_adjacent_non_adjacent", (DL_FUNC) &_LocalFCI_check_adjacent_non_adjacent, 4},
     {"_LocalFCI_check_non_adjacent_solo", (DL_FUNC) &_LocalFCI_check_non_adjacent_solo, 4},
     {"_LocalFCI_check_amat_setval", (DL_FUNC) &_LocalFCI_check_amat_setval, 6},
+    {"_LocalFCI_check_amat_setval_function", (DL_FUNC) &_LocalFCI_check_amat_setval_function, 6},
     {"_LocalFCI_checkIfAdjacent", (DL_FUNC) &_LocalFCI_checkIfAdjacent, 5},
     {"_LocalFCI_checkEmptyGraph", (DL_FUNC) &_LocalFCI_checkEmptyGraph, 1},
     {"_LocalFCI_checkAcyclicity", (DL_FUNC) &_LocalFCI_checkAcyclicity, 3},
     {"_LocalFCI_checkIsAncestor", (DL_FUNC) &_LocalFCI_checkIsAncestor, 6},
     {"_LocalFCI_checkInNeighborhood", (DL_FUNC) &_LocalFCI_checkInNeighborhood, 6},
+    {"_LocalFCI_check_set_amat", (DL_FUNC) &_LocalFCI_check_set_amat, 3},
+    {"_LocalFCI_check_disc_path", (DL_FUNC) &_LocalFCI_check_disc_path, 6},
+    {"_LocalFCI_check_upd_path", (DL_FUNC) &_LocalFCI_check_upd_path, 6},
+    {"_LocalFCI_checkNeighborhoodId", (DL_FUNC) &_LocalFCI_checkNeighborhoodId, 5},
     {"_LocalFCI_initializeLocalFCI", (DL_FUNC) &_LocalFCI_initializeLocalFCI, 5},
     {"_LocalFCI_initializeLocalFCIPop", (DL_FUNC) &_LocalFCI_initializeLocalFCIPop, 4},
     {"_LocalFCI_checkSkeletonTotal", (DL_FUNC) &_LocalFCI_checkSkeletonTotal, 5},

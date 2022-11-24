@@ -83,7 +83,7 @@ NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector 
 // [[Rcpp::export]]
 double checkSeparationTest(NumericMatrix td,arma::mat df,NumericVector t,
                            NumericVector nodes_interest,StringVector names,
-                           int i,int j,int l,NumericVector nodes_to_skip){ //
+                           int i,int j,int l,NumericVector nodes_to_skip){ 
   LocalFCI lfci(td,df,t,nodes_interest,names,3,0.01,true);
   NumericVector edges_i = lfci.getAdjacent(i);
   // Find neighbors of i and j from the current graph C

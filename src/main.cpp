@@ -86,7 +86,7 @@ List sampleLocalPC(NumericMatrix true_dag,arma::mat df,
   auto start = high_resolution_clock::now();
   
   // Instantiate the Local PC object
-  LocalPC lpc(true_dag,df,targets,nodes_interest,names,lmax,signif_level,verbose);
+  LocalPC lpc(true_dag,df,targets,nodes_interest,names,lmax,signif_level,verbose,estDAG);
   
   lpc.run(); 
   
