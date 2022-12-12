@@ -73,7 +73,7 @@ NumericVector Graph::get_d_vals(size_t a,const std::vector<bool> &visited){
   return d_vals;
 }
 
-NumericVector Graph::get_r_vals(size_t d,const std::vector<bool> &visited){
+NumericVector Graph:: get_r_vals(size_t d,const std::vector<bool> &visited){
   NumericVector r_vals;
   for (size_t i=0;i<p;++i){
     // We need r *-> d
@@ -143,7 +143,7 @@ NumericVector Graph::minDiscPath(size_t a,size_t b,size_t c){
   visited[a] = true;
   visited[b] = true;
   visited[c] = true;
-  // Obtain values that are colliders on a path from the nodes to c
+  // Obtain values that are colliders (or first node) on a path from the nodes to c
   NumericVector d_vals = get_d_vals(a,visited); 
   if (d_vals.length()>0){
     List path_list = createPathList(a,d_vals,verbose);
@@ -151,13 +151,14 @@ NumericVector Graph::minDiscPath(size_t a,size_t b,size_t c){
     size_t list_length = path_list.length();
     NumericVector mpath; // tracks the potential minimum discriminating path
     size_t m; // tracks the current length of the minimum discriminating path
-    size_t d; // gives the last value in the path
-    size_t pred;
+    size_t d; // tracks the current last value in the path
+    size_t pred; // tracks second-last
     while (counter < list_length){
       mpath = path_list[counter];
       if (verbose) printVecElementsNoNames(mpath,"mpath: ","\n");
       m = mpath.length();
       d = mpath(m-1);
+      // If node d is not connected to c, then it is the first node on the path
       if (amat(c,d)==0 && amat(d,c)==0){
         NumericVector minDiscPath;
         for (int i=m-1;i>=0;--i){
@@ -171,13 +172,13 @@ NumericVector Graph::minDiscPath(size_t a,size_t b,size_t c){
         }
         return minDiscPath;
       }
-      
+      // Otherwise, we must continue to search for a path
       pred = mpath(m-2);
       ++counter;
-
-      // d is connected to c, so we search iteratively
+      // d is connected to c, but it must be an ancestor
+      // we must also go back and check to make sure d is a collider on the path
       if (amat(d,c)==2 && amat(c,d)==3 && 
-      amat(d,pred)==2){
+      amat(pred,d)==2){
         visited[d] = true;
         // Find all neighbors of d not visited yet
         NumericVector r_vals = get_r_vals(d,visited);

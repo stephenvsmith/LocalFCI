@@ -553,7 +553,7 @@ bool LocalFCI::rule4(bool &track_changes){
         // Begin looking for disc. path <theta,...,alpha,beta,gamma>
         // First, look for possible values of alpha
         for (size_t alpha=0;alpha<N;++alpha){
-          // Need alpha *-> beta
+          // Need alpha <-* beta
           cond1 = C_tilde->getAmatVal(beta,alpha)==2 && 
             C_tilde->getAmatVal(alpha,beta)!=0;
           // triangle structure exists but is not oriented

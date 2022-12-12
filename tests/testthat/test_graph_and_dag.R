@@ -226,6 +226,10 @@ test_that("Discriminating paths identified",{
     0,0,2,0,1,
     0,3,3,1,0
   ),ncol = p,byrow = TRUE)
+  expect_equal(check_disc_path(p,letters[1:p],adj,2,3,4),-1)
+  
+  # Make node 2 a collider 
+  adj[3,2] <- 2
   expect_equal(check_disc_path(p,letters[1:p],adj,2,3,4),0:4)
   
   # Add an edge from a to e (should return no path)
@@ -246,7 +250,20 @@ test_that("Discriminating paths identified",{
     0,0,0,0,2,1,2,0,2,
     0,0,0,0,0,0,0,2,0
   ),ncol = p,byrow = TRUE)
+  expect_equal(check_disc_path(p,letters[1:p],adj2,2,3,4),-1)
+  
+  # Make nodes 7 and 8 colliders
+  adj2[6,7] <- 2
+  adj2[7,8] <- 2
   expect_equal(check_disc_path(p,letters[1:p],adj2,2,3,4),c(8,7,6,5,2,3,4))
+  
+  # Change last node to ensure it still works
+  adj2[8,9] <- 1
+  expect_equal(check_disc_path(p,letters[1:p],adj2,2,3,4),c(8,7,6,5,2,3,4))
+  
+  # Remove last collider
+  adj2[9,8] <- 1
+  expect_equal(check_disc_path(p,letters[1:p],adj2,2,3,4),-1)
 })
 
 test_that("Uncovered p.d. paths identified",{

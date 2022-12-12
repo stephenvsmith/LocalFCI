@@ -95,7 +95,7 @@ public:
   NumericVector idUncovPdPath(size_t alpha,size_t beta,size_t gamma,
                               size_t d,NumericVector mpath);
   NumericVector uncovPdPath(size_t alpha,size_t beta,size_t gamma); 
-  NumericVector minUncovPdPath(size_t alpha,size_t beta,size_t gamma); // Tested
+  NumericVector minUncovPdPath(size_t alpha,size_t beta,size_t gamma); // tested
   
 protected:
   NumericMatrix amat;

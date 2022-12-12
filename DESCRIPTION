@@ -5,9 +5,9 @@ Version: 1.0
 Date: 2021-10-20
 Author: Stephen Smith
 Maintainer: Stephen Smith <stephensmith13424@gmail.com>
-Description: For a set of target nodes, the Local FCI algorithm will estimate the neighborhood and the structure of each target node. In addition, the algorithm will try to set up ancestral relationships between each target neighborhood. To do this, we treat the nodes not included in the target set or the target neighborhoods as latent variables, which allows us to apply FCI rules to further orient the edges that we have.
+Description: For a set of target nodes, the Local FCI algorithm will estimate the neighborhood and the structure of each target node. In addition, by using the algorithm the user also attempts to identify ancestral relationships between each target neighborhood. To do this, we treat the nodes not included in the target set or the target neighborhoods as latent variables, which allows us to apply FCI rules to further orient the edges that we have.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.5),MXM (>= 1.5.1),stats (>= 4.0.3),pcalg (>= 2.7),tidyverse(>= 1.3.0),microbenchmark(>= 1.4.9),ppcor (>= 1.1)
+Imports: Rcpp (>= 1.0.5),MXM (>= 1.5.1),stats (>= 4.0.3),pcalg (>= 2.7),tidyverse(>= 1.3.0)
 LinkingTo: Rcpp, RcppArmadillo
 LazyData: true
 Depends: bnlearn (>= 4.6.1)
