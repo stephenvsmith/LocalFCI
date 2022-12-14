@@ -200,7 +200,6 @@ bool DAG::inNeighborhood(const size_t &i,
   
   // Find children of both nodes
   size_t p = Graph::size();
-  
   // Determining if i and j are spouses
   // Don't need to check for adjacency since that has already been checked
   for (size_t k = 0;k<p;++k){

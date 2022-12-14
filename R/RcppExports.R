@@ -49,8 +49,8 @@ overallF1 <- function(est, ref, targets, verbose = FALSE) {
     .Call(`_LocalFCI_overallF1`, est, ref, targets, verbose)
 }
 
-allMetrics <- function(est, ref_graph, targets, verbose = FALSE, algo = "pc", ref = "sub_cpdag") {
-    .Call(`_LocalFCI_allMetrics`, est, ref_graph, targets, verbose, algo, ref)
+allMetrics <- function(est, ref_graph, targets, verbose = FALSE, algo = "pc", which_nodes = "narrow") {
+    .Call(`_LocalFCI_allMetrics`, est, ref_graph, targets, verbose, algo, which_nodes)
 }
 
 getNeighborhoodMetrics <- function(G) {

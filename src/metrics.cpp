@@ -57,7 +57,6 @@ bool sharedNeighborhood(NumericMatrix reference,NumericVector targets,
   }
   
   DAG g_ref(p,node_names,reference);
-  
   for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
     // Check if i and j share a neighborhood with a particular target
     if (g_ref.inNeighborhood(*it,i) && g_ref.inNeighborhood(*it,j)){
@@ -75,10 +74,10 @@ bool sharedNeighborhood(NumericMatrix reference,NumericVector targets,
   return false;
 }
 
+/*
 // [[Rcpp::export]]
-bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
-                          int i,bool verbose = false){
-  validateTargets(reference,targets);
+bool sharedNeighborhood(NumericMatrix reference,NumericVector targets,
+                        int i,int j,int k,bool verbose = false){
   int p = reference.nrow();
   StringVector node_names;
   for (int i=0;i<p;++i){
@@ -87,6 +86,42 @@ bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
     node_names.push_back(node);
   }
   
+  DAG g_ref(p,node_names,reference);
+  
+  for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
+    // Check if i and j share a neighborhood with a particular target
+    if (g_ref.inNeighborhood(*it,i) && 
+        g_ref.inNeighborhood(*it,j) &&
+        g_ref.inNeighborhood(*it,k)){
+      if (verbose){
+        Rcout << i << ", " << j << ", and " << k << " are in the neighborhood of target " << *it << std::endl;
+      }
+      return true;
+    }
+  }
+  
+  // Otherwise, return false
+  if (verbose){
+    Rcout << "Nodes " << i << " and " << j << " don't share the same target neighborhood\n";
+  }
+  return false;
+}
+ */
+
+/*
+ * Checks if node i is in any of the target neighborhoods
+ */
+// [[Rcpp::export]]
+bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
+                          int i,bool verbose = false){
+  validateTargets(reference,targets);
+  int p = reference.nrow();
+  StringVector node_names;
+  for (int j=0;j<p;++j){
+    String node("V");
+    node += j;
+    node_names.push_back(node);
+  }
   DAG g_ref(p,node_names,reference);
   for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
     // Check if i is in target neighborhood
@@ -97,7 +132,6 @@ bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
       return true;
     }
   }
-  
   // Otherwise, return false
   return false;
 }
@@ -212,47 +246,45 @@ List compareVStructures(NumericMatrix est,NumericMatrix truth,NumericVector targ
     for (int j=i+1;j<p-1;++j){
       for (int k=j+1;k<p;++k){
         continue_checking=true;
-        // only proceed if i, j, and k are all in the same target's neighborhood
-        if (sharedNeighborhood(truth,targets,i,j) && 
-            sharedNeighborhood(truth,targets,i,k) && 
-            sharedNeighborhood(truth,targets,j,k)){
+        if (verbose){
+          Rcout << "Checking: " << i << ", " << j << ", and " << k << std::endl;
+          Rcout << "Estimated Graph:\n";
+        }
+        // v-structure in estimated graph only counts if they are 
+        // identified in same neighborhood and properly oriented
+        // we do not consider ancestral v-structures for our metrics
+        triple_check = checkTriple(est,i,j,k,verbose);
+        if (triple_check["result"]){
+          // Does contain a v-structure with nodes i,j,k
           if (verbose){
-            Rcout << "Checking: " << i << ", " << j << ", and " << k << std::endl;
-            Rcout << "Estimated Graph:\n";
+            Rcout << "True Graph:\n";
           }
-          triple_check = checkTriple(est,i,j,k,verbose);
+          // Check if the same v-structure appears in ground truth
+          if (checkOtherTriple(truth,triple_check["order"],verbose)){
+            // We don't need to check for false negatives since v-structure was correctly identified
+            continue_checking=false; 
+            ++num_correct;
+          } else {
+            // We have a false positive
+            ++num_added; 
+          }
+        }
+        
+        // Now, we check if we missed any v-structures
+        if (continue_checking){
+          if (verbose){
+            Rcout << "True Graph:\n";
+          }
+          // Identify any v-structures in ground truth for nodes i,j,k
+          triple_check = checkTriple(truth,i,j,k,verbose);
           if (triple_check["result"]){
-            // Does contain a v-structure with nodes i,j,k
             if (verbose){
-              Rcout << "True Graph:\n";
+              Rcout << "V-structure *not* present in estimated graph\n";
             }
-            // Check if the same v-structure appears in ground truth
-            if (checkOtherTriple(truth,triple_check["order"],verbose)){
-              // We don't need to check for false negatives since v-structure was correctly identified
-              continue_checking=false; 
-              ++num_correct;
-            } else {
-              // We have a false positive
-              ++num_added; 
-            }
-          }
-          
-          // Now, we check if we missed any v-structures
-          if (continue_checking){
-            if (verbose){
-              Rcout << "True Graph:\n";
-            }
-            // Identify any v-structures in ground truth for nodes i,j,k
-            triple_check = checkTriple(truth,i,j,k,verbose);
-            if (triple_check["result"]){
-              if (verbose){
-                Rcout << "V-structure *not* present in estimated graph\n";
-              }
-              // Since we have already checked the estimated graph
-              // Any additional v-structure in the ground truth not previously
-              // accounted for is regarded as a false negative in the estimated graph
-              ++num_missing;
-            }
+            // Since we have already checked the estimated graph
+            // Any additional v-structure in the ground truth not previously
+            // accounted for is regarded as a false negative in the estimated graph
+            ++num_missing;
           }
         }
       }
@@ -271,7 +303,7 @@ List compareVStructures(NumericMatrix est,NumericMatrix truth,NumericVector targ
  * using the ground truth to identify true parents
  */
 void oneTargetPRA(NumericMatrix est,NumericMatrix truth,int t,NumericVector &targets,
-                   int &correct,int &missing,int &added,int &potential,bool verbose){
+                  int &correct,int &missing,int &added,int &potential,bool verbose){
   int p = est.nrow();
   for (int i=0;i<p;++i){
     if (i==t){
@@ -436,7 +468,7 @@ bool checkAncestralPath(NumericMatrix reference,NumericVector targets,
     Rcout << "There is an unmediated ancestral path between " << anc << " and " << desc << std::endl;
   }
   return true;
-
+  
 }
 
 // [[Rcpp::export]]
@@ -469,7 +501,6 @@ List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
       if (!sharedNeighborhood(reference,targets,i,j,verbose) && 
           inTargetNeighborhood(reference,targets,i,verbose) && 
           inTargetNeighborhood(reference,targets,j,verbose)){
-        
         if (verbose){
           Rcout << "Looking at nodes " << i << " and " << j << std::endl;
         }
@@ -575,7 +606,6 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
                  bool verbose=false){
   validateInputs(est,ref);
   validateTargets(ref,targets);
-
   double tp = 0;
   double fp = 0;
   double fn = 0.;
@@ -622,32 +652,31 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
     }
   }
   double f1 = (2.0 * tp) / (2.0*tp + fp + fn);
-  
-  return f1;
-  
+
+    return f1;
 }
 
 
 // [[Rcpp::export]]
 DataFrame allMetrics(NumericMatrix est,NumericMatrix ref_graph,
-                      NumericVector targets,bool verbose=false,
-                      std::string algo="pc",std::string ref="sub_cpdag"){
+                     NumericVector targets,
+                     bool verbose=false,
+                     std::string algo="pc",std::string which_nodes="narrow"){
   validateInputs(est,ref_graph);
   validateTargets(ref_graph,targets);
   
-  // Get the estimated dag next
+  // Find the metrics for comparing the graphs
   List est_skeleton = compareSkeletons(est,ref_graph,targets);
   List est_vstruct = compareVStructures(est,ref_graph,targets);
   List est_pra = parentRecoveryAccuracy(est,ref_graph,targets);
   List est_ancestors = interNeighborhoodEdgeMetrics(est,ref_graph,targets,verbose);
-  
   return DataFrame::create(
-    _[algo+"_skel_fp"]=est_skeleton["skel_fp"],
-    _[algo+"_skel_fn"]=est_skeleton["skel_fn"],
-    _[algo+"_skel_tp"]=est_skeleton["skel_correct"],
-    _[algo+"_v_fn"] = est_vstruct["missing"],
-    _[algo+"_v_fp"] = est_vstruct["added"],
-    _[algo+"_v_tp"] = est_vstruct["correct"],
+    _[algo+"_"+which_nodes+"_skel_fp"]=est_skeleton["skel_fp"],
+    _[algo+"_"+which_nodes+"_skel_fn"]=est_skeleton["skel_fn"],
+    _[algo+"_"+which_nodes+"_skel_tp"]=est_skeleton["skel_correct"],
+    _[algo+"_"+which_nodes+"_v_fn"] = est_vstruct["missing"],
+    _[algo+"_"+which_nodes+"_v_fp"] = est_vstruct["added"],
+    _[algo+"_"+which_nodes+"_v_tp"] = est_vstruct["correct"],
     _[algo+"_pra_fn"]=est_pra["missing"],
     _[algo+"_pra_fp"] = est_pra["added"],
     _[algo+"_pra_tp"] = est_pra["correct"],
@@ -659,7 +688,7 @@ DataFrame allMetrics(NumericMatrix est,NumericMatrix ref_graph,
     _[algo+"_ancestors_fp_oriented"]=est_ancestors["FPOrientedEdge"],
     _[algo+"_ancestors_fp_connect"]=est_ancestors["AddedConnection"],
     _[algo+"_overall_f1"]=overallF1(est,ref_graph,targets,verbose)                                             
-  );
+);
 }
 
 // [[Rcpp::export]]

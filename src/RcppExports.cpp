@@ -191,8 +191,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // allMetrics
-DataFrame allMetrics(NumericMatrix est, NumericMatrix ref_graph, NumericVector targets, bool verbose, std::string algo, std::string ref);
-RcppExport SEXP _LocalFCI_allMetrics(SEXP estSEXP, SEXP ref_graphSEXP, SEXP targetsSEXP, SEXP verboseSEXP, SEXP algoSEXP, SEXP refSEXP) {
+DataFrame allMetrics(NumericMatrix est, NumericMatrix ref_graph, NumericVector targets, bool verbose, std::string algo, std::string which_nodes);
+RcppExport SEXP _LocalFCI_allMetrics(SEXP estSEXP, SEXP ref_graphSEXP, SEXP targetsSEXP, SEXP verboseSEXP, SEXP algoSEXP, SEXP which_nodesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -201,8 +201,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type targets(targetsSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< std::string >::type algo(algoSEXP);
-    Rcpp::traits::input_parameter< std::string >::type ref(refSEXP);
-    rcpp_result_gen = Rcpp::wrap(allMetrics(est, ref_graph, targets, verbose, algo, ref));
+    Rcpp::traits::input_parameter< std::string >::type which_nodes(which_nodesSEXP);
+    rcpp_result_gen = Rcpp::wrap(allMetrics(est, ref_graph, targets, verbose, algo, which_nodes));
     return rcpp_result_gen;
 END_RCPP
 }

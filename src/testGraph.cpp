@@ -46,7 +46,6 @@ void check_dag_object2(int nodes){
 NumericVector check_neighbors_retrieval(int nodes,StringVector node_names,
                                         NumericMatrix adj,int t,bool v = false){
   DAG g(nodes,node_names,adj);
-  
   return g.getNeighbors(t,v);
 }
 
