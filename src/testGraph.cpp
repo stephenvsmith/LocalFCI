@@ -1,4 +1,5 @@
 #include "DAG.h"
+#include "PDAG.h"
 
 using namespace Rcpp;
 
@@ -37,8 +38,30 @@ List check_dag_object(int nodes,StringVector node_names,
 }
 
 // [[Rcpp::export]]
+List check_pdag_object(int nodes,StringVector node_names,
+                       NumericMatrix adj,bool v = false){
+  PDAG g(nodes,node_names,adj);
+  int i = 3;
+  Rcout << "Adjacency Matrix:\n";
+  g.printAmat();
+  Rcout << "The neighbors of node " << i << " are " << g.getNeighbors(i,v) << std::endl;
+  NumericVector t {0,2};
+  Rcout << "The neighbors of nodes " << t << " are " << g.getNeighborsMultiTargets(t,v) << std::endl;
+  return List::create(
+    _["OneNeighbor"]=g.getNeighbors(i,v),
+    _["TwoNeighbors"]=g.getNeighborsMultiTargets(t,v)
+  );
+}
+
+// [[Rcpp::export]]
 void check_dag_object2(int nodes){
   DAG g(nodes);
+  g.printAmat();
+}
+
+// [[Rcpp::export]]
+void check_pdag_object2(int nodes){
+  PDAG g(nodes);
   g.printAmat();
 }
 
@@ -46,6 +69,13 @@ void check_dag_object2(int nodes){
 NumericVector check_neighbors_retrieval(int nodes,StringVector node_names,
                                         NumericMatrix adj,int t,bool v = false){
   DAG g(nodes,node_names,adj);
+  return g.getNeighbors(t,v);
+}
+
+// [[Rcpp::export]]
+NumericVector check_pdag_neighbors_retrieval(int nodes,StringVector node_names,
+                                             NumericMatrix adj,int t,bool v = false){
+  PDAG g(nodes,node_names,adj);
   return g.getNeighbors(t,v);
 }
 
@@ -137,6 +167,13 @@ bool checkInNeighborhood(int nodes,StringVector node_names,NumericMatrix adj,
 }
 
 // [[Rcpp::export]]
+bool check_pdag_inNeighborhood(int nodes,StringVector node_names,NumericMatrix adj,
+                               int i,int j,bool verbose=false){
+  PDAG g(nodes,node_names,adj,verbose);
+  return g.inNeighborhood(i,j);
+}
+
+// [[Rcpp::export]]
 NumericMatrix check_set_amat(int nodes,StringVector node_names,NumericMatrix adj){
   Graph g(nodes);
   g.setAmat(adj);
@@ -153,7 +190,7 @@ NumericVector check_disc_path(int nodes,StringVector node_names,NumericMatrix ad
 
 // [[Rcpp::export]]
 NumericVector check_upd_path(int nodes,StringVector node_names,NumericMatrix adj,
-                              size_t a,size_t b,size_t e){
+                             size_t a,size_t b,size_t e){
   Graph g(nodes,node_names,adj);
   g.setVerboseTrue();
   return g.minUncovPdPath(a,b,e);

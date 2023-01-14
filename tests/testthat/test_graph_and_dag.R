@@ -1,6 +1,8 @@
 data("asiaDAG")
 nodes <- colnames(asiaDAG)
 p <- ncol(asiaDAG)
+asia_graph <- empty.graph(nodes)
+amat(asia_graph) <- asiaDAG
 
 # In this section, we test the following functions:
 # Graph: Constructor (3 args), Constructor (1 arg), getAmat, getNodeNames, parentheses operator, getAmatVal,
@@ -297,5 +299,31 @@ test_that("Proper neighborhood identification for DAG class",{
                  "children"=c(6,7),
                  "neighborhood"=c(1,3,4,6,7)
                ))
+})
+
+asia_cpdag <- cpdag(asia_graph)
+test_that("Checking PDAG class",{
+  expect_equal(check_pdag_object(8,nodes,amat(asia_cpdag)),
+               list(
+                 "OneNeighbor"=c(1,2,5),
+                 "TwoNeighbors"=c(1,3,4)
+               )
+  )
+  expect_snapshot_output(check_pdag_object2(8))
+  expect_equal(check_pdag_neighbors_retrieval(8,nodes,amat(asia_cpdag),4),
+               c(2,5,7))
+  expect_true(check_pdag_inNeighborhood(8,nodes,amat(asia_cpdag),3,2))
+  expect_true(check_pdag_inNeighborhood(8,nodes,amat(asia_cpdag),4,5))
+  expect_true(check_pdag_inNeighborhood(8,nodes,amat(asia_cpdag),2,3))
+  expect_true(check_pdag_inNeighborhood(8,nodes,amat(asia_cpdag),5,4))
+  
+  # Here, we see why we need the PDAG class. In the CPDAG, we have 
+  # lung - smoke - bronc
+  # The DAG class will mistakenly classify lung and bronc as being in the
+  # same neighborhood, but the PDAG will correctly identify that they are
+  # not in the same neighborhood.
+  expect_false(check_pdag_inNeighborhood(8,nodes,amat(asia_cpdag),3,4))
+  expect_true(checkInNeighborhood(8,nodes,amat(asia_cpdag),3,4))
+  expect_true(check_pdag_inNeighborhood(8,nodes,amat(asia_cpdag),0,1))
 })
 

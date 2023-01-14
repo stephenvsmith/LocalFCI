@@ -3,7 +3,7 @@
 // Constructor for graph with adj. mat. given by user
 Graph::Graph(size_t nodes,StringVector node_names,
              NumericMatrix adj,bool verbose) : 
-  amat(adj),verbose(verbose),names(node_names),p(nodes) {
+  amat(adj),verbose(verbose),p(nodes),names(node_names) {
   validateAdjMatrix(adj);
   if (nodes < adj.ncol()){
     warning("Number of nodes < rows and columns of the adjacency matrix.");

@@ -21,6 +21,10 @@ popLocalPC <- function(true_dag, targets, nodes_interest, names, lmax = 3L, verb
     .Call(`_LocalFCI_popLocalPC`, true_dag, targets, nodes_interest, names, lmax, verbose)
 }
 
+getEdgeNumber <- function(G) {
+    .Call(`_LocalFCI_getEdgeNumber`, G)
+}
+
 sharedNeighborhood <- function(reference, targets, i, j, verbose = FALSE) {
     .Call(`_LocalFCI_sharedNeighborhood`, reference, targets, i, j, verbose)
 }
@@ -29,27 +33,27 @@ inTargetNeighborhood <- function(reference, targets, i, verbose = FALSE) {
     .Call(`_LocalFCI_inTargetNeighborhood`, reference, targets, i, verbose)
 }
 
-compareSkeletons <- function(est, truth, targets) {
-    .Call(`_LocalFCI_compareSkeletons`, est, truth, targets)
+compareSkeletons <- function(est, truth, verbose = FALSE) {
+    .Call(`_LocalFCI_compareSkeletons`, est, truth, verbose)
 }
 
-compareVStructures <- function(est, truth, targets, verbose = FALSE) {
-    .Call(`_LocalFCI_compareVStructures`, est, truth, targets, verbose)
+compareVStructures <- function(est, truth, verbose = FALSE) {
+    .Call(`_LocalFCI_compareVStructures`, est, truth, verbose)
 }
 
 parentRecoveryAccuracy <- function(est, truth, targets, verbose = FALSE) {
     .Call(`_LocalFCI_parentRecoveryAccuracy`, est, truth, targets, verbose)
 }
 
-interNeighborhoodEdgeMetrics <- function(est, reference, targets, verbose = TRUE) {
-    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, targets, verbose)
+interNeighborhoodEdgeMetrics <- function(est, reference, verbose = FALSE) {
+    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, verbose)
 }
 
 overallF1 <- function(est, ref, targets, verbose = FALSE) {
     .Call(`_LocalFCI_overallF1`, est, ref, targets, verbose)
 }
 
-allMetrics <- function(est, ref_graph, targets, verbose = FALSE, algo = "pc", which_nodes = "narrow") {
+allMetrics <- function(est, ref_graph, targets, verbose = FALSE, algo = "pc", which_nodes = "") {
     .Call(`_LocalFCI_allMetrics`, est, ref_graph, targets, verbose, algo, which_nodes)
 }
 
@@ -101,12 +105,24 @@ check_dag_object <- function(nodes, node_names, adj, v = FALSE) {
     .Call(`_LocalFCI_check_dag_object`, nodes, node_names, adj, v)
 }
 
+check_pdag_object <- function(nodes, node_names, adj, v = FALSE) {
+    .Call(`_LocalFCI_check_pdag_object`, nodes, node_names, adj, v)
+}
+
 check_dag_object2 <- function(nodes) {
     invisible(.Call(`_LocalFCI_check_dag_object2`, nodes))
 }
 
+check_pdag_object2 <- function(nodes) {
+    invisible(.Call(`_LocalFCI_check_pdag_object2`, nodes))
+}
+
 check_neighbors_retrieval <- function(nodes, node_names, adj, t, v = FALSE) {
     .Call(`_LocalFCI_check_neighbors_retrieval`, nodes, node_names, adj, t, v)
+}
+
+check_pdag_neighbors_retrieval <- function(nodes, node_names, adj, t, v = FALSE) {
+    .Call(`_LocalFCI_check_pdag_neighbors_retrieval`, nodes, node_names, adj, t, v)
 }
 
 check_amat_retrieval <- function(nodes, node_names, adj, i, j) {
@@ -159,6 +175,10 @@ checkIsAncestor <- function(nodes, node_names, adj, desc, anc, verbose = FALSE) 
 
 checkInNeighborhood <- function(nodes, node_names, adj, i, j, verbose = FALSE) {
     .Call(`_LocalFCI_checkInNeighborhood`, nodes, node_names, adj, i, j, verbose)
+}
+
+check_pdag_inNeighborhood <- function(nodes, node_names, adj, i, j, verbose = FALSE) {
+    .Call(`_LocalFCI_check_pdag_inNeighborhood`, nodes, node_names, adj, i, j, verbose)
 }
 
 check_set_amat <- function(nodes, node_names, adj) {

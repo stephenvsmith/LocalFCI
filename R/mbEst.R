@@ -1,3 +1,5 @@
+# Miscellaneous Functions -------------------------------------------------
+
 # A function which provides information about the MB estimation procedure
 mbEstMessage <- function(method,test,threshold){
   cat("Estimating Markov Blankets using\n",
@@ -23,6 +25,9 @@ validateTarget <- function(target,p){
     stop(paste0("Invalid target index (t=",target,")"))
   }
 }
+
+
+# Main Functions ----------------------------------------------------------
 
 #' Estimate Markov Blanket of Target Node
 #' 
@@ -359,11 +364,14 @@ getAllMBs <- function(targets,dataset,threshold=0.01,lmax=3,
   return(result)
 }
 
+
+# Convert MB Information --------------------------------------------------
+
 #' Generate Markov Blanket Inclusion Matrix from List
 #' 
 #' `getEstInitialDAG()` prepares the estimated neighborhoods for use in our local algorithms by storing them
 #' in an "inclusion matrix". This will be used in the Rcpp implementation as what determines neighborhoods.
-#'  It is a symmetric matrix where M[i,j] = M[j,i] = 1 if nodes i or j are identified to be in either one's neighborhood
+#' It is a symmetric matrix where M[i,j] = M[j,i] = 1 if nodes i or j are identified to be in either one's neighborhood
 #' 
 #' @param mbList is a named list containing the estimated Markov Blankets for the targets and their first-order neighbors
 #' @param p is the number of nodes in the graph

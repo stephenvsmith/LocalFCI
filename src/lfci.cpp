@@ -920,6 +920,9 @@ void LocalFCI::allRules(){
  * -> => -> (no change, but adj. matrix has to account differently, [3,2] to [0,1]) DONE 
  * o-o => - (no change in adj. matrix) DONE
  * -o => -> ([3,1] to [0,1]) DONE
+ * 
+ * Also, to avoid confusion, any ancestral edges with circles will be relabeled
+ * with a "4" instead of a 1
  */
 void LocalFCI::convertMixedGraph(){
   size_t G_ij; // (i,j) element of adj. mat
@@ -951,7 +954,15 @@ void LocalFCI::convertMixedGraph(){
           // Convert -o [3,1] to -> [0,1]
           C_tilde->setAmatVal(j,i,0);
         }
+      } else {
+        // For nodes that are in different neighborhoods
+        // Convert circle markings label from "1" to "4"
+        if (G_ij==1){
+          C_tilde->setAmatVal(i,j,4);
+          C_tilde->setAmatVal(j,i,4);
+        }
       }
+      
     }
   }
 }

@@ -1,13 +1,11 @@
 #include <algorithm>
 #include "DAG.h"
+#include "PDAG.h"
 #include "sharedFunctions.h"
 #include <string>
 using namespace Rcpp;
 
-/*
- * This function only compares the difference in skeletal structure between two graphs
- */
-
+// Ensure the adjacency matrices have the same dimensions and are square
 void validateInputs(NumericMatrix est,NumericMatrix truth){
   if (est.ncol() != est.nrow() || truth.ncol() != truth.nrow()){
     stop("Inputted matrices are not both square matrices");
@@ -18,6 +16,7 @@ void validateInputs(NumericMatrix est,NumericMatrix truth){
   }
 }
 
+// Ensure that the inputted target values are valid
 void validateTargets(NumericMatrix g,NumericVector targets){
   if ( is_true(any(targets > g.ncol()-1)) ){
     stop("Invalid target index: value(s) greater than size of graph");
@@ -26,6 +25,9 @@ void validateTargets(NumericMatrix g,NumericVector targets){
   }
 }
 
+// Returns the number of edges in the graph
+// Tested
+// [[Rcpp::export]]
 int getEdgeNumber(NumericMatrix G){
   int p = G.nrow();
   int total_edges=0;
@@ -44,6 +46,7 @@ int getEdgeNumber(NumericMatrix G){
  * both nodes must be in the same target neighborhood for at least
  * one target. If not, even if they are in the same neighborhood as each other,
  * we will not consider them in a shared neighborhood
+ * Tested
  */
 // [[Rcpp::export]]
 bool sharedNeighborhood(NumericMatrix reference,NumericVector targets,
@@ -56,7 +59,7 @@ bool sharedNeighborhood(NumericMatrix reference,NumericVector targets,
     node_names.push_back(node);
   }
   
-  DAG g_ref(p,node_names,reference);
+  PDAG g_ref(p,node_names,reference);
   for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
     // Check if i and j share a neighborhood with a particular target
     if (g_ref.inNeighborhood(*it,i) && g_ref.inNeighborhood(*it,j)){
@@ -75,40 +78,6 @@ bool sharedNeighborhood(NumericMatrix reference,NumericVector targets,
 }
 
 /*
-// [[Rcpp::export]]
-bool sharedNeighborhood(NumericMatrix reference,NumericVector targets,
-                        int i,int j,int k,bool verbose = false){
-  int p = reference.nrow();
-  StringVector node_names;
-  for (int i=0;i<p;++i){
-    String node("V");
-    node += i;
-    node_names.push_back(node);
-  }
-  
-  DAG g_ref(p,node_names,reference);
-  
-  for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
-    // Check if i and j share a neighborhood with a particular target
-    if (g_ref.inNeighborhood(*it,i) && 
-        g_ref.inNeighborhood(*it,j) &&
-        g_ref.inNeighborhood(*it,k)){
-      if (verbose){
-        Rcout << i << ", " << j << ", and " << k << " are in the neighborhood of target " << *it << std::endl;
-      }
-      return true;
-    }
-  }
-  
-  // Otherwise, return false
-  if (verbose){
-    Rcout << "Nodes " << i << " and " << j << " don't share the same target neighborhood\n";
-  }
-  return false;
-}
- */
-
-/*
  * Checks if node i is in any of the target neighborhoods
  */
 // [[Rcpp::export]]
@@ -122,7 +91,7 @@ bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
     node += j;
     node_names.push_back(node);
   }
-  DAG g_ref(p,node_names,reference);
+  PDAG g_ref(p,node_names,reference);
   for (NumericVector::iterator it=targets.begin();it<targets.end();++it){
     // Check if i is in target neighborhood
     if (g_ref.inNeighborhood(*it,i)){
@@ -136,27 +105,65 @@ bool inTargetNeighborhood(NumericMatrix reference,NumericVector targets,
   return false;
 }
 
+// Checks whether nodes i and j in graph G are adjacent but not ancestral
+// This is useful for estimated adjacency matrices where we have mixed notation
+bool isAdjNotAncestral(NumericMatrix G,size_t i,size_t j,bool verbose=false){
+  bool check1 = (G(i,j) == 0) && (G(j,i) == 0);
+  bool check2 = (G(i,j)>1) || (G(j,i)>1);
+  if (check1){
+    if (verbose){
+      Rcout << "Nodes " << i << " and " << j << " are ";
+      Rcout << "not adjacent.\n";
+    }
+    return false; // i and j are not adjacent
+  } else if (check2){
+    if (verbose){
+      Rcout << "Nodes " << i << " and " << j << " are ";
+      Rcout << "connected by an ancestral edge.\n";
+    }
+    return false; // this is an ancestral edge
+  } else {
+    if (verbose){
+      Rcout << "Nodes " << i << " and " << j << " are ";
+      Rcout << "adjacent.\n";
+    }
+    return true; // at least one entry is 1 and the other is either 0 or 1
+  }
+}
+
+/*
+ * Skeleton comparison goes through every combination of nodes in the graph
+ * and compares whether or not we have an accurate skeleton
+ * Only non-ancestral edges from the estimated graph are included
+ */
 // [[Rcpp::export]]
-List compareSkeletons(NumericMatrix est,NumericMatrix truth,NumericVector targets){
+List compareSkeletons(NumericMatrix est,NumericMatrix truth,bool verbose=false){
   validateInputs(est,truth);
   int fp=0;
   int fn=0;
   int correct=0;
-  
+  bool est_adjacent;
   int p = est.nrow();
   for (int i=0;i<p;++i){
     for (int j=i+1;j<p;++j){
-      // Only consider nodes that are in the same target neighborhood
-      if (sharedNeighborhood(truth,targets,i,j)){
-        if ((est(i,j)!=0 || est(j,i)!=0) && (truth(i,j)==0 && truth(j,i)==0)){
-          ++fp;  // Est: i,j adjacent but truth not adjacent
-        } else if ((est(i,j)==0 && est(j,i)==0) && (truth(i,j)!=0 || truth(j,i)!=0)){
-          ++fn; // Est: i,j not adjacent but adjacent in truth
-        } else if ((est(i,j)!=0 || est(j,i)!=0) && (truth(i,j)!=0 || truth(j,i)!=0)){
-          ++correct; // i,j adjacent in both graphs
+      est_adjacent = isAdjNotAncestral(est,i,j,verbose);
+      if (est_adjacent && (truth(i,j)==0 && truth(j,i)==0)){
+        if (verbose){
+          Rcout << "False positive edge for nodes " << i << " and " << j << std::endl;
         }
+        ++fp;  // Est: i,j adjacent and not ancestral, but truth not adjacent
+      } else if (!est_adjacent && (truth(i,j)!=0 || truth(j,i)!=0)){
+        if (verbose){
+          Rcout << "False negative edge for nodes " << i << " and " << j << std::endl;
+        }
+        ++fn; // Est: i,j not adjacent but adjacent in truth
+      } else if (est_adjacent && (truth(i,j)!=0 || truth(j,i)!=0)){
+        if (verbose){
+          Rcout << "True positive edge for nodes " << i << " and " << j << std::endl;
+        }
+        ++correct; // i,j adjacent in both graphs and i and j not ancestral in estimated
       }
-    }  
+    }
   }
   return List::create(
     _["skel_fp"]=fp,
@@ -230,9 +237,13 @@ bool checkOtherTriple(NumericMatrix g2,NumericVector v,bool verbose=false){
     return false;
   }
 }
-
+/*
+ * We go through every triple of nodes in the vertex set and compare the v-structures
+ * we obtain. V-Structure identification only counts for edges that are non-ancestral
+ * in the estimated graph
+ */
 // [[Rcpp::export]]
-List compareVStructures(NumericMatrix est,NumericMatrix truth,NumericVector targets,bool verbose=false){
+List compareVStructures(NumericMatrix est,NumericMatrix truth,bool verbose=false){
   validateInputs(est,truth);
   int num_missing=0;
   int num_added=0;
@@ -318,14 +329,14 @@ void oneTargetPRA(NumericMatrix est,NumericMatrix truth,int t,NumericVector &tar
      * We can have:
      * a) False positive: not adjacent in true graph or t -> i
      * b) Correct
-     * c) Potential: undirected edge for t - i in the true graph
+     * c) False positive: undirected edge for t - i in the true graph
      * 
      * We then deal with the case where the estimated graph does not have i as a parent of t
      * We can have:
      * a) False negative: i -> t in true graph
      * b) Correct: Not noted since this is a true negative
      * c) Potential: undirected edge i - t in estimated graph and i -> t in true graph
-     * d) Potential: undirected edge for both
+     * d) Correct: undirected edge for both; also not noted
      */
     if (est(i,t)==1 && est(t,i)==0){ // Est: i -> t
       if (verbose){
@@ -342,35 +353,32 @@ void oneTargetPRA(NumericMatrix est,NumericMatrix truth,int t,NumericVector &tar
       else if (truth(i,t)==1 && truth(t,i)==0) { // Truth: i -> t
         ++correct;
         if (verbose){
-          Rcout << " | Parent | ";
+          Rcout << "Parent | ";
           Rcout << "Correct: " << correct << std::endl;
         }
         
       } else if (truth(i,t)==1 && truth(t,i)==1){ // Truth: i - t
-        ++potential;
+        ++added;
         if (verbose){
-          Rcout << " | Undirected edge in True Graph | Potential: " << potential << std::endl;  
+          Rcout << "Not a parent | ";
+          Rcout << "Undirected edge in True Graph | Added: " << added << std::endl;  
         }
       }
     } else { 
       // Est: Either i - t or i and t are not adjacent 
       // or some ancestral marking (not regarded as in the same neighborhood)
       if (truth(i,t)==1 && truth(t,i)==0){ // Truth: i -> t
-        ++missing;
-        if (verbose){
-          Rcout << " | Est. Graph: Not a parent | True graph: Parent | ";
-          Rcout << "Missing: " << missing;
-        }
         if (est(i,t)==1 && est(t,i)==1){ // Est: i - t
           ++potential;
           if (verbose){
             Rcout << " | Undirected edge in Est. Graph | Potential: " << potential;
           }
-        }
-      } else if (truth(i,t)==1 && truth(t,i)==1 && est(i,t)==1 && est(t,i)==1){ // Both undirected
-        ++potential;
-        if (verbose){
-          Rcout << " | Both graphs have undirected edges | Potential: " << potential;  
+        } else {
+          ++missing;
+          if (verbose){
+            Rcout << " | Est. Graph: Not a parent | True graph: Parent | ";
+            Rcout << "Missing: " << missing;
+          }
         }
       }
       if (verbose) Rcout << std::endl;
@@ -401,13 +409,13 @@ List parentRecoveryAccuracy(NumericMatrix est,NumericMatrix truth,
   );
 }
 
-bool idAncestors(NumericMatrix reference,int i,int j,bool verbose=true){
+// Returns true if i is an ancestor of j
+bool idAncestors(NumericMatrix reference,int desc,int anc,bool verbose=true){
   int p = reference.nrow();
   StringVector node_names;
   makeNodeNames(p,node_names);
-  
   DAG g_ref(p,node_names,reference,verbose);
-  return g_ref.isAncestor(i,j);
+  return g_ref.isAncestor(desc,anc);
 }
 
 // Returns true if there is an ancestral path between anc and desc
@@ -471,124 +479,183 @@ bool checkAncestralPath(NumericMatrix reference,NumericVector targets,
   
 }
 
-// [[Rcpp::export]]
+// // [[Rcpp::export]]
+// List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
+//                                   NumericVector targets,bool verbose=true){
+//   int p = est.nrow();
+//   
+//   int true_ancestor = 0;
+//   int missing_ancestor = 0;
+//   int missing_orientation = 0;
+//   int reverse_orientation = 0;
+//   int added_connection = 0;
+//   int false_positive_arrow = 0;
+//   
+//   bool connected; // tracks whether two nodes are connected in estimated graph
+//   bool is_i_ancestor_j; // tracks whether i is an ancestor of j
+//   bool is_j_ancestor_i; // tracks whether j is an ancestor of i
+//   bool is_anc_path_unmediated_ij; // tracks whether the ancestral path is mediated between i and j
+//   bool is_anc_path_unmediated_ji; // tracks whether the ancestral path is mediated between j and i
+//   bool i_arrow_j;
+//   bool j_arrow_i;
+//   bool undirected;
+//   bool bidirected;
+//   
+//   for (int i=0;i<p-1;++i){
+//     for (int j=i+1;j<p;++j){
+//       // check the following:
+//       // i and j each belong to a target neighborhood 
+//       // both belong to different target neighborhoods
+//       if (!sharedNeighborhood(reference,targets,i,j,verbose) && 
+//           inTargetNeighborhood(reference,targets,i,verbose) && 
+//           inTargetNeighborhood(reference,targets,j,verbose)){
+//         if (verbose){
+//           Rcout << "Looking at nodes " << i << " and " << j << std::endl;
+//         }
+//         
+//         // Check if i is connected to j in estimated graph
+//         connected = est(i,j) != 0 || est(j,i) != 0;
+//         if (est(i,j)==3 && est(j,i)==3){
+//           warning("Adjacency matrix entries for (%i,%i) and (%i,%i) are both 3.",i,j,j,i);
+//         } 
+//         // Check if i is an ancestor of j in the ground truth graph
+//         is_i_ancestor_j = idAncestors(reference,j,i,verbose);
+//         // Check if there is another node in the same neighborhood of i or j that mediates 
+//         // The ancestral path between the two
+//         is_anc_path_unmediated_ij = checkAncestralPath(reference,targets,i,j,verbose);
+//         // Repeat same procedure as above, but switch i and j
+//         is_j_ancestor_i = idAncestors(reference,i,j,verbose);
+//         is_anc_path_unmediated_ji = checkAncestralPath(reference,targets,j,i,verbose);
+//         if (!connected){
+//           if (verbose){
+//             Rcout << "Nodes are unconnected in estimated graph\n";
+//           }
+//           if ((is_j_ancestor_i && is_anc_path_unmediated_ji) || 
+//               (is_i_ancestor_j && is_anc_path_unmediated_ij)){
+//             if (verbose){
+//               Rcout << "Missing ancestral relationship\n";
+//             }
+//             ++missing_ancestor;
+//           }
+//         } else { // i and j are connected in estimated graph
+//           if (verbose){
+//             Rcout << "Nodes are connected in estimated graph\n";
+//           }
+//           i_arrow_j = (est(i,j)==2 && est(j,i)!=2) || (est(i,j)==1 && est(j,i)==0);
+//           j_arrow_i = (est(j,i)==2 && est(i,j)!=2) || (est(i,j)==0 && est(j,i)==1);
+//           undirected = est(i,j)==1 && est(j,i)==1;
+//           bidirected = est(i,j)==2 && est(j,i)==2;
+//           if (is_i_ancestor_j && i_arrow_j && is_anc_path_unmediated_ij){
+//             if (verbose){
+//               Rcout << "True ancestral relationship (i->j)\n";
+//             }
+//             ++true_ancestor;
+//           } else if (is_j_ancestor_i && j_arrow_i && is_anc_path_unmediated_ji){
+//             if (verbose){
+//               Rcout << "True ancestral relationship (j->i)\n";
+//             }
+//             ++true_ancestor;
+//           } else if (is_i_ancestor_j && (undirected || bidirected) && is_anc_path_unmediated_ij){
+//             if (verbose){
+//               Rcout << "Missing orientation of ancestral relationship (i->j)\n";
+//             }
+//             ++missing_orientation;
+//           } else if (is_j_ancestor_i && (undirected || bidirected) && is_anc_path_unmediated_ji){
+//             if (verbose){
+//               Rcout << "Missing orientation of ancestral relationship (j->i)\n";
+//             }
+//             ++missing_orientation;
+//           } else if (is_i_ancestor_j && j_arrow_i && is_anc_path_unmediated_ij){
+//             if (verbose){
+//               Rcout << "Orientation Reversed: j->i instead of i->j\n";
+//             }
+//             ++reverse_orientation;
+//           } else if (is_j_ancestor_i && i_arrow_j && is_anc_path_unmediated_ji){
+//             if (verbose){
+//               Rcout << "Orientation Reversed: i->j instead of j->i\n";
+//             }
+//             ++reverse_orientation;
+//           } else if ((i_arrow_j || j_arrow_i) && !(is_i_ancestor_j || is_j_ancestor_i)){
+//             if (verbose){
+//               Rcout << "False positive ancestral relationship\n";
+//             }
+//             ++false_positive_arrow;
+//           } else {
+//             if (verbose){
+//               Rcout << "False positive connection\n"; 
+//             }
+//             ++added_connection;
+//           }
+//         }
+//       }
+//     }
+//   }
+//   return List::create(
+//     _["CorrectAncestors"]=true_ancestor,
+//     _["MissingAncestors"]=missing_ancestor,
+//     _["MissingOrientation"]=missing_orientation,
+//     _["ReverseOrientation"]=reverse_orientation,
+//     _["FPOrientedEdge"]=false_positive_arrow,
+//     _["AddedConnection"]=added_connection
+//   );
+// }
+ // [[Rcpp::export]]
 List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
-                                  NumericVector targets,bool verbose=true){
+                                  bool verbose=false){
   int p = est.nrow();
-  
-  int true_ancestor = 0;
-  int missing_ancestor = 0;
-  int missing_orientation = 0;
-  int reverse_orientation = 0;
-  int added_connection = 0;
-  int false_positive_arrow = 0;
-  
-  bool connected; // tracks whether two nodes are connected in estimated graph
-  bool is_i_ancestor_j; // tracks whether i is an ancestor of j
-  bool is_j_ancestor_i; // tracks whether j is an ancestor of i
-  bool is_anc_path_unmediated_ij; // tracks whether the ancestral path is mediated between i and j
-  bool is_anc_path_unmediated_ji; // tracks whether the ancestral path is mediated between j and i
-  bool i_arrow_j;
-  bool j_arrow_i;
-  bool undirected;
-  bool bidirected;
+  size_t true_anc = 0;
+  size_t incorrect_anc = 0;
+  size_t total_anc_edges = 0;
   
   for (int i=0;i<p-1;++i){
     for (int j=i+1;j<p;++j){
-      // check the following:
-      // i and j each belong to a target neighborhood 
-      // both belong to different target neighborhoods
-      if (!sharedNeighborhood(reference,targets,i,j,verbose) && 
-          inTargetNeighborhood(reference,targets,i,verbose) && 
-          inTargetNeighborhood(reference,targets,j,verbose)){
+      if (est(i,j)==3 && est(j,i)==3){
+        warning("Adjacency matrix entries for (%i,%i) and (%i,%i) are both 3.",i,j,j,i);
+      }
+      // Only consider edges that are ancestral
+      if (est(i,j)>1 && est(j,i)>1){
         if (verbose){
-          Rcout << "Looking at nodes " << i << " and " << j << std::endl;
+          Rcout << "Looking at nodes " << i << " and " << j << "...";
         }
-        
-        // Check if i is connected to j in estimated graph
-        connected = est(i,j) != 0 || est(j,i) != 0;
-        if (est(i,j)==3 && est(j,i)==3){
-          warning("Adjacency matrix entries for (%i,%i) and (%i,%i) are both 3.",i,j,j,i);
-        } 
-        // Check if i is an ancestor of j in the ground truth graph
-        is_i_ancestor_j = idAncestors(reference,j,i,verbose);
-        // Check if there is another node in the same neighborhood of i or j that mediates 
-        // The ancestral path between the two
-        is_anc_path_unmediated_ij = checkAncestralPath(reference,targets,i,j,verbose);
-        // Repeat same procedure as above, but switch i and j
-        is_j_ancestor_i = idAncestors(reference,i,j,verbose);
-        is_anc_path_unmediated_ji = checkAncestralPath(reference,targets,j,i,verbose);
-        if (!connected){
-          if (verbose){
-            Rcout << "Nodes are unconnected in estimated graph\n";
-          }
-          if ((is_j_ancestor_i && is_anc_path_unmediated_ji) || 
-              (is_i_ancestor_j && is_anc_path_unmediated_ij)){
+        ++total_anc_edges;
+        // i is estimated to be an ancestor of j
+        if (est(i,j)==2 && est(j,i)==3){
+          if (idAncestors(reference,j,i,false)){
             if (verbose){
-              Rcout << "Missing ancestral relationship\n";
+              Rcout << "true ancestor" << std::endl;
             }
-            ++missing_ancestor;
-          }
-        } else { // i and j are connected in estimated graph
-          if (verbose){
-            Rcout << "Nodes are connected in estimated graph\n";
-          }
-          i_arrow_j = (est(i,j)==2 && est(j,i)!=2) || (est(i,j)==1 && est(j,i)==0);
-          j_arrow_i = (est(j,i)==2 && est(i,j)!=2) || (est(i,j)==0 && est(j,i)==1);
-          undirected = est(i,j)==1 && est(j,i)==1;
-          bidirected = est(i,j)==2 && est(j,i)==2;
-          if (is_i_ancestor_j && i_arrow_j && is_anc_path_unmediated_ij){
-            if (verbose){
-              Rcout << "True ancestral relationship (i->j)\n";
-            }
-            ++true_ancestor;
-          } else if (is_j_ancestor_i && j_arrow_i && is_anc_path_unmediated_ji){
-            if (verbose){
-              Rcout << "True ancestral relationship (j->i)\n";
-            }
-            ++true_ancestor;
-          } else if (is_i_ancestor_j && (undirected || bidirected) && is_anc_path_unmediated_ij){
-            if (verbose){
-              Rcout << "Missing orientation of ancestral relationship (i->j)\n";
-            }
-            ++missing_orientation;
-          } else if (is_j_ancestor_i && (undirected || bidirected) && is_anc_path_unmediated_ji){
-            if (verbose){
-              Rcout << "Missing orientation of ancestral relationship (j->i)\n";
-            }
-            ++missing_orientation;
-          } else if (is_i_ancestor_j && j_arrow_i && is_anc_path_unmediated_ij){
-            if (verbose){
-              Rcout << "Orientation Reversed: j->i instead of i->j\n";
-            }
-            ++reverse_orientation;
-          } else if (is_j_ancestor_i && i_arrow_j && is_anc_path_unmediated_ji){
-            if (verbose){
-              Rcout << "Orientation Reversed: i->j instead of j->i\n";
-            }
-            ++reverse_orientation;
-          } else if ((i_arrow_j || j_arrow_i) && !(is_i_ancestor_j || is_j_ancestor_i)){
-            if (verbose){
-              Rcout << "False positive ancestral relationship\n";
-            }
-            ++false_positive_arrow;
+            ++true_anc;
           } else {
             if (verbose){
-              Rcout << "False positive connection\n"; 
+              Rcout << "incorrect ancestor" << std::endl;
             }
-            ++added_connection;
+            ++incorrect_anc;
+          }
+        } else if (est(i,j)==3 && est(j,i)==2){
+          // j is estimated to be an ancestor of i
+          if (idAncestors(reference,i,j,false)){
+            if (verbose){
+              Rcout << "true ancestor" << std::endl;
+            }
+            ++true_anc;
+          } else {
+            if (verbose){
+              Rcout << "incorrect ancestor" << std::endl;
+            }
+            ++incorrect_anc;
+          }
+        } else {
+          if (verbose){
+            Rcout << "nothing" << std::endl;
           }
         }
       }
     }
   }
   return List::create(
-    _["CorrectAncestors"]=true_ancestor,
-    _["MissingAncestors"]=missing_ancestor,
-    _["MissingOrientation"]=missing_orientation,
-    _["ReverseOrientation"]=reverse_orientation,
-    _["FPOrientedEdge"]=false_positive_arrow,
-    _["AddedConnection"]=added_connection
+    _["CorrectAncestors"]=true_anc,
+    _["IncorrectAncestors"]=incorrect_anc,
+    _["TotalAncestralEdges"]=total_anc_edges
   );
 }
 
@@ -606,18 +673,24 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
                  bool verbose=false){
   validateInputs(est,ref);
   validateTargets(ref,targets);
+  // Different edge comparison categories
   double tp = 0;
   double fp = 0;
   double fn = 0.;
-  int p = est.nrow();
+  double incorrect_orientation = 0;
   
+  int p = est.nrow();
+  // Placeholders for adjacency matrix values
+  // Estimated Graph
   int e_ij;
   int e_ji;
+  // True (Reference) Graph
   int t_ij;
   int t_ji;
-  
+  // Loop through the upper triangular of the adj. matrix
   for (int i=0;i<p;++i){
     for (int j=i+1;j<p;++j){
+      // Both i and j must be in the same target neighborhood to be considered
       if (sharedNeighborhood(ref,targets,i,j)){
         e_ij = est(i,j); e_ji = est(j,i); t_ij = ref(i,j); t_ji = ref(j,i);
         // Both entries match in each graph and there is an edge present -> TP
@@ -629,13 +702,26 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
           }
         } else if ((e_ij!=t_ij) || (e_ji!=t_ji)){
           // At least one of the entries differs from est. to true graph
-          // where an edge is present in true graph -> FN
+          
+          // There is an edge in the true graph
           if (t_ij!=0 || t_ji != 0){
-            fn += 1;
-            if (verbose){
-              Rcout << "Edge between " << i << " and " << j;
-              Rcout << " appears in true graph but not in the estimated graph.";
-              Rcout << " FN=" << fn << std::endl;
+            // There is also an edge in the estimated graph -> Incorrect orient.
+            if (e_ij==1 || e_ji==1){
+              incorrect_orientation += 1;
+              if (verbose){
+                Rcout << "Edge between " << i << " and " << j;
+                Rcout << " appears in true graph and in the estimated graph,";
+                Rcout << " but they have different orientations.";
+                Rcout << " Incorrect Orientation=" << incorrect_orientation << std::endl;
+              }
+            } else {
+              // There is no corresponding edge in the estimated graph -> FN
+              fn += 1;
+              if (verbose){
+                Rcout << "Edge between " << i << " and " << j;
+                Rcout << " appears in true graph but not in the estimated graph.";
+                Rcout << " FN=" << fn << std::endl;
+              }
             }
           } else {
             // An edge is present in the est. graph, but there is no edge
@@ -651,9 +737,9 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
       }
     }
   }
-  double f1 = (2.0 * tp) / (2.0*tp + fp + fn);
-
-    return f1;
+  double f1 = (2.0 * tp) / (2.0*tp + fp + fn + incorrect_orientation);
+  
+  return f1;
 }
 
 
@@ -661,15 +747,15 @@ double overallF1(NumericMatrix est,NumericMatrix ref,
 DataFrame allMetrics(NumericMatrix est,NumericMatrix ref_graph,
                      NumericVector targets,
                      bool verbose=false,
-                     std::string algo="pc",std::string which_nodes="narrow"){
+                     std::string algo="pc",std::string which_nodes=""){
   validateInputs(est,ref_graph);
   validateTargets(ref_graph,targets);
   
   // Find the metrics for comparing the graphs
-  List est_skeleton = compareSkeletons(est,ref_graph,targets);
-  List est_vstruct = compareVStructures(est,ref_graph,targets);
+  List est_skeleton = compareSkeletons(est,ref_graph);
+  List est_vstruct = compareVStructures(est,ref_graph);
   List est_pra = parentRecoveryAccuracy(est,ref_graph,targets);
-  List est_ancestors = interNeighborhoodEdgeMetrics(est,ref_graph,targets,verbose);
+  List est_ancestors = interNeighborhoodEdgeMetrics(est,ref_graph);
   return DataFrame::create(
     _[algo+"_"+which_nodes+"_skel_fp"]=est_skeleton["skel_fp"],
     _[algo+"_"+which_nodes+"_skel_fn"]=est_skeleton["skel_fn"],
@@ -682,13 +768,10 @@ DataFrame allMetrics(NumericMatrix est,NumericMatrix ref_graph,
     _[algo+"_pra_tp"] = est_pra["correct"],
     _[algo+"_pra_potential"] = est_pra["potential"],
     _[algo+"_ancestors_correct"]=est_ancestors["CorrectAncestors"],
-    _[algo+"_ancestors_missing"]=est_ancestors["MissingAncestors"],
-    _[algo+"_ancestors_fn_orient"]=est_ancestors["MissingOrientation"],
-    _[algo+"_ancestors_reverse"]=est_ancestors["ReverseOrientation"],
-    _[algo+"_ancestors_fp_oriented"]=est_ancestors["FPOrientedEdge"],
-    _[algo+"_ancestors_fp_connect"]=est_ancestors["AddedConnection"],
-    _[algo+"_overall_f1"]=overallF1(est,ref_graph,targets,verbose)                                             
-);
+    _[algo+"_ancestors_incorrect"]=est_ancestors["IncorrectAncestors"],
+    _[algo+"_ancestors_total"]=est_ancestors["TotalAncestralEdges"],
+    _[algo+"_overall_f1"]=overallF1(est,ref_graph,targets)                                             
+  );
 }
 
 // [[Rcpp::export]]

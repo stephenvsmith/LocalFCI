@@ -11,6 +11,7 @@ using std::endl;
 class MBList{
 public:
   // Sample version constructor with vector of nodes and matrix of nodes in MB
+  // Matrix contains information regarding the MBs for all targets and first-order nbhrs
   MBList(NumericVector node_vec,NumericMatrix mb_mat,bool verbose=false); // tested
   
   // Population version constructor with true DAG

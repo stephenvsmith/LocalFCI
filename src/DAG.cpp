@@ -3,13 +3,21 @@
 DAG::DAG(size_t nodes,StringVector node_names,
          NumericMatrix adj,bool verbose) :
   Graph::Graph (nodes,node_names,adj,verbose)
-  {}
+  {
+    // for (size_t i = 0; i < nodes; ++i){
+    //   for (size_t j = 0; j < nodes; ++j){
+    //     if (adj(i,j)==1 && adj(j,i)==1){
+    //       warning("Undirected edge between nodes %i and %i in the DAG",i,j);
+    //     }
+    //   }
+    // }
+  }
 
 // Makes a graph without any edges
 DAG::DAG(size_t nodes,bool verbose) : 
   Graph::Graph(nodes,verbose) {
     emptyGraph();
-  }
+}
 
 // Helpers for function determining acyclicity
 // Adds nodes to v which have no incoming edges in the DAG
@@ -220,7 +228,7 @@ bool DAG::isAncestor(const size_t &desc,const size_t &anc){
   NumericVector next_level_ancestors;
   current_ancestors = getParents(desc);
   size_t level=1;
-  
+
   while (current_ancestors.size()>0){
     if (isMember(current_ancestors,anc)){
       if (verbose){

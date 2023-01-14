@@ -28,10 +28,15 @@ test_that("Testing Separation Test Function",{
   expect_true(checkSeparationTest(asiaDAG,asiadf,3,seq(0,p-1),node_names,1,3,1,2)<0.05)
   
   # Check if either and smoke are separated by lung (removing tub)
+  # t = 3 => target is lung (neighborhood: {tub (0), smoke (1), lung (2), either (3)})
+  # Nodes 1 and 3 are either and smoke, and we are excluding tub from consideration
+  # We should obtain separation between either and smoke conditioned on lung
   expect_true(checkSeparationTest(asiaDAG,asiadf,3,seq(0,p-1),node_names,1,3,1,0)>0.05)
   
-  # TODO: This one seems off
-  # Check if either and smoke are separated by any neighbor or set of neighbors
+  # Check if either and lung are separated by any neighbor or set of neighbors
+  # t = 5 => either (neighborhood: {tub (0), lung (1), bronc (2), either (3), xray (4), dysp (5)})
+  # Nodes 1 and 3 are lung and either, and we are excluding none
+  # Should not obtain separation for any grouping
   expect_true(checkSeparationTest(asiaDAG,asiadf,5,seq(0,p-1),node_names,1,3,2,vector(mode = "double"))<0.01)
 })
 

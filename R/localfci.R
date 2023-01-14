@@ -56,19 +56,23 @@ localfci <- function(data=NULL,true_dag=NULL,targets,
   mb_num_tests <- 0
   mb_time_track <- NA
   if (is.null(true_dag)){
+    
     # Find Markov Blankets (mbEst.R)
     mb_start <- Sys.time()
     result <- getAllMBs(targets,data,mb_tol,lmax,method,test,verbose)
     mb_end <- Sys.time()
     mb_diff <- mb_end - mb_start
     units(mb_diff) <- "secs"
+    
     # Track the time needed to estimate MB's
     mb_time_track <- as.numeric(mb_diff)
     mbList <- result$mb_list
+    
     # Store all of the nodes estimated to be needed (targets and first-order neighbors)
     # Subtract 1 for conversion from C++ numbering scheme
     nodes_interest <- as.numeric(names(mbList))-1
     mb_num_tests <- result$num_tests
+    
     # Create adjacency matrix based on Markov Blankets (mbEst.R)
     true_dag <- getEstInitialDAG(mbList,p,verbose)
     # We are using a DAG with estimated Markov Blankets encoded
