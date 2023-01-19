@@ -322,9 +322,9 @@ est_amat[8,9] <- est_amat[9,8] <- 1
 est_amat[12,13] <- 1
 est_amat[13,14] <- est_amat[13,9] <- 1
 est_amat[15,13] <- 1
-est_g <- empty.graph(nodes = as.character(1:16))
-amat(est_g) <- est_amat
-graphviz.plot(est_g)
+# est_g <- empty.graph(nodes = as.character(1:16))
+# amat(est_g) <- est_amat
+# graphviz.plot(est_g)
 
 test_that("Testing ancestral relations (1)",{
   # ancestral edge with no ancestry added

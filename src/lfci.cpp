@@ -986,6 +986,22 @@ void LocalFCI::convertFinalGraph(){
   g = nullptr;
 }
 
+void LocalFCI::checkNotation(){
+  size_t G_ij; size_t G_ji;
+  
+  for (size_t i=0;i<C_tilde->size();++i){
+    for (size_t j=i+1;j<C_tilde->size();++j){
+      G_ij = C_tilde->getAmatVal(i,j);
+      G_ji = C_tilde->getAmatVal(j,i);
+      if ((G_ij==0 || G_ij==1) && G_ji>1){
+        warning("Ancestral marking mixed with neighborhood marking.");
+      } else if ((G_ji==0 || G_ji==1) && G_ij>1){
+        warning("Ancestral marking mixed with neighborhood marking.");
+      }
+    }
+  }
+}
+
 void LocalFCI::run(){
   if (verbose){
     Rcout << "Beginning the";

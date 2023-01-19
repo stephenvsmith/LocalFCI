@@ -12,7 +12,7 @@ test_that("Wrapper function works (Sample with true DAG)",{
   results <- localfci(true_dag = asiaDAG,data = asiadf,targets = c(1,6),node_names=node_names,verbose = FALSE)
   g <- empty.graph(node_names)
   amat(g) <- results$amat
-  graphviz.plot(g)
+  # graphviz.plot(g)
   for (result_part in setdiff(names(results),c("totalSkeletonTime","targetSkeletonTimes","mbEstTime","totalTime","MBNumTests"))){
     expect_snapshot_output(print(results[[result_part]]))
   }
@@ -22,7 +22,7 @@ test_that("Wrapper function works (Sample with true DAG)",{
   results <- localpc(true_dag = asiaDAG,data = asiadf,targets = c(1,6),node_names=node_names,verbose = FALSE)
   g <- empty.graph(node_names)
   amat(g) <- results$amat
-  graphviz.plot(g)
+  # graphviz.plot(g)
   for (result_part in setdiff(names(results),c("targetSkeletonTimes","totalTime","mbEstTime","MBNumTests"))){
     expect_snapshot_output(print(results[[result_part]]))
   }

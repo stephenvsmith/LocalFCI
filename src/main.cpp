@@ -27,6 +27,9 @@ List sampleLocalFCI(NumericMatrix true_dag,arma::mat df,
   double total_time = duration.count() / 1e6;
   total_time /= 60; // Get time in minutes
   
+  // Ensure we have proper notation for every edge
+  lfci.checkNotation();
+  
   return List::create(
     _["G"]=lfci.getAmat(),
     _["S"]=lfci.getSepSetList(),
@@ -62,6 +65,9 @@ List popLocalFCI(NumericMatrix true_dag,
   auto duration = duration_cast<microseconds>(end-start);
   double total_time = duration.count() / 1e6;
   total_time /= 60; // Get time in minutes
+  
+  // Ensure we have proper notation for every edge
+  lfci.checkNotation();
   
   return List::create(
     _["G"]=lfci.getAmat(),

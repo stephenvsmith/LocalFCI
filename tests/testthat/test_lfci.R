@@ -52,7 +52,7 @@ test_that("Testing the total skeleton function (one target)",{
 test_that("Testing the total skeleton function (two targets)",{
   # Targets are lung and bronc
   testthat::expect_snapshot_output(result_amat <- checkSkeletonTotal(asiaDAG,asiadf,c(3,4),seq(0,p-1),node_names))
-
+  
   total_skel <- bnlearn::empty.graph(node_names[c(1,2,3,4,5,7)+1])
   # amat(total_skel) <- result_amat
   # graphviz.plot(total_skel)
@@ -167,7 +167,7 @@ test_that("Testing Adjacency Matrix Conversion",{
                         0,1,0,0,0,0,0,0,0,0,1,
                         rep(0,11),
                         rep(0,11)),nrow = 11,byrow = TRUE)
-
+  
   result_amat <- checkAdjMatConversion(final_mat,asiadf,c(3,4),seq(0,10),node_names,
                                        test_mat,c(1,3,4,6,8,10))
   expect_equal(result_amat,final_mat)
@@ -182,7 +182,7 @@ test_that("Testing Adjacency Matrix Conversion",{
     1,1,0,0
   ),byrow = TRUE,nrow = 4)
   asia_result <- checkAdjMatConversion(asiaDAG,asiadf,c(4,5),seq(0,p-1),node_names,asia_test,4:7)
-
+  
 })
 
 test_that("Local FCI (Putting it all together, sample)",{
@@ -197,7 +197,7 @@ test_that("Local FCI (Putting it all together, population)",{
   pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(0,5),seq(0,p-1),node_names)
   expect_snapshot_output(amat(pop_g))
-  graphviz.plot(pop_g)
+  # graphviz.plot(pop_g)
   
   # pop_g <- empty.graph(node_names)
   amat(pop_g) <- checkLocalFCISummaryPop(asiaDAG,c(2,7),seq(0,p-1),node_names)
@@ -221,5 +221,20 @@ test_that("Testing object conversion",{
   asiadag_df <- data.frame(asiaDAG)
   expect_equal(class(asiadag_df),"data.frame")
   expect_error(localfci(true_dag = asiadag_df,targets = 1),NA)
+})
+
+test_that("Testing warnings for checkNotation",{
+  m <- asiaDAG
+  m[5,3] <- 3
+  m[8,6] <- 2
+  expect_warning(checkNotationWarnings(asiaDAG,asiadf,5,seq(1,p-1),
+                                       node_names,m),
+                 "Ancestral marking mixed with neighborhood marking.")
+  expect_warning(checkNotationWarnings(asiaDAG,asiadf,5,seq(1,p-1),
+                                       node_names,asiaDAG),NA)
+  m[6,8] <- 3
+  m[3,5] <- 4
+  expect_warning(checkNotationWarnings(asiaDAG,asiadf,5,seq(1,p-1),
+                                       node_names,m),NA)
 })
 

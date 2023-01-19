@@ -800,6 +800,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// checkNotationWarnings
+NumericMatrix checkNotationWarnings(NumericMatrix td, arma::mat df, NumericVector t, NumericVector nodes_interest, StringVector names, NumericMatrix m);
+RcppExport SEXP _LocalFCI_checkNotationWarnings(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP nodes_interestSEXP, SEXP namesSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type td(tdSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type nodes_interest(nodes_interestSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type names(namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(checkNotationWarnings(td, df, t, nodes_interest, names, m));
+    return rcpp_result_gen;
+END_RCPP
+}
 // checkSeparationTest
 double checkSeparationTest(NumericMatrix td, arma::mat df, NumericVector t, NumericVector nodes_interest, StringVector names, int i, int j, int l, NumericVector nodes_to_skip);
 RcppExport SEXP _LocalFCI_checkSeparationTest(SEXP tdSEXP, SEXP dfSEXP, SEXP tSEXP, SEXP nodes_interestSEXP, SEXP namesSEXP, SEXP iSEXP, SEXP jSEXP, SEXP lSEXP, SEXP nodes_to_skipSEXP) {
@@ -1487,6 +1503,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_checkVStruct", (DL_FUNC) &_LocalFCI_checkVStruct, 5},
     {"_LocalFCI_checkVStructPop", (DL_FUNC) &_LocalFCI_checkVStructPop, 4},
     {"_LocalFCI_checkAdjMatConversion", (DL_FUNC) &_LocalFCI_checkAdjMatConversion, 7},
+    {"_LocalFCI_checkNotationWarnings", (DL_FUNC) &_LocalFCI_checkNotationWarnings, 6},
     {"_LocalFCI_checkSeparationTest", (DL_FUNC) &_LocalFCI_checkSeparationTest, 9},
     {"_LocalFCI_checkLocalFCISummary", (DL_FUNC) &_LocalFCI_checkLocalFCISummary, 5},
     {"_LocalFCI_checkLocalFCISummaryPop", (DL_FUNC) &_LocalFCI_checkLocalFCISummaryPop, 4},

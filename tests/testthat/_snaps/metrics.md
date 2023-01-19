@@ -257,7 +257,6 @@
 
 # Testing ancestral relations (3)
 
-    Looking at nodes 4 and 6...nothing
     $CorrectAncestors
     [1] 0
     
@@ -270,7 +269,6 @@
 
 ---
 
-    Looking at nodes 4 and 6...true ancestor
     $CorrectAncestors
     [1] 1
     
@@ -283,7 +281,6 @@
 
 # Testing ancestral relations (4)
 
-    Looking at nodes 4 and 5...true ancestor
     $CorrectAncestors
     [1] 1
     
@@ -296,8 +293,6 @@
 
 ---
 
-    Looking at nodes 0 and 3...incorrect ancestor
-    Looking at nodes 4 and 5...nothing
     $CorrectAncestors
     [1] 0
     

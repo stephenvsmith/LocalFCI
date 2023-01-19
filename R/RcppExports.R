@@ -225,6 +225,10 @@ checkAdjMatConversion <- function(td, df, t, nodes_interest, names, m, neighbors
     .Call(`_LocalFCI_checkAdjMatConversion`, td, df, t, nodes_interest, names, m, neighbors)
 }
 
+checkNotationWarnings <- function(td, df, t, nodes_interest, names, m) {
+    .Call(`_LocalFCI_checkNotationWarnings`, td, df, t, nodes_interest, names, m)
+}
+
 checkSeparationTest <- function(td, df, t, nodes_interest, names, i, j, l, nodes_to_skip) {
     .Call(`_LocalFCI_checkSeparationTest`, td, df, t, nodes_interest, names, i, j, l, nodes_to_skip)
 }

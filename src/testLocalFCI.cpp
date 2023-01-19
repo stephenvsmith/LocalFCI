@@ -63,7 +63,7 @@ NumericMatrix checkVStructPop(NumericMatrix td,NumericVector t,
 }
 
 /*
- * This needs to be checked more rigorously with an appropriate test graph
+ * TODO: This needs to be checked more rigorously with an appropriate test graph
  */
 // [[Rcpp::export]]
 NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector t,
@@ -74,6 +74,19 @@ NumericMatrix checkAdjMatConversion(NumericMatrix td,arma::mat df,NumericVector 
   lfci.setNeighbors(neighbors);
   lfci.convertMixedGraph();
   lfci.convertFinalGraph();
+  
+  Rcout << "Final\n";
+  lfci.print_elements();
+  return lfci.getAmat();
+}
+
+// [[Rcpp::export]]
+NumericMatrix checkNotationWarnings(NumericMatrix td,arma::mat df,NumericVector t,
+                                    NumericVector nodes_interest,StringVector names,
+                                    NumericMatrix m){
+  LocalFCI lfci(td,df,t,nodes_interest,names,3,0.01,true);
+  lfci.setAmat(m);
+  lfci.checkNotation();
   
   Rcout << "Final\n";
   lfci.print_elements();
