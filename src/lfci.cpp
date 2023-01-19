@@ -108,7 +108,7 @@ void LocalFCI::getSkeletonTotal(){
   }
   auto total_skeleton_end = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(total_skeleton_end-total_skeleton_start);
-  total_skeleton_time = duration.count() / 1000000.;
+  total_skeleton_time = duration.count() / 1e6; // time in seconds
 }
 
 void LocalFCI::getSkeletonTarget(const size_t &t){
@@ -199,7 +199,7 @@ void LocalFCI::getSkeletonTarget(const size_t &t){
   // Save the amount of time taken for the algorithm
   auto target_skeleton_end = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(target_skeleton_end-target_skeleton_start);
-  double total_time = duration.count() / 1000000.;
+  double total_time = duration.count() / 1e6; // time in seconds
   
   target_skeleton_times.push_back(total_time);
 }
