@@ -3,15 +3,7 @@
 DAG::DAG(size_t nodes,StringVector node_names,
          NumericMatrix adj,bool verbose) :
   Graph::Graph (nodes,node_names,adj,verbose)
-  {
-    // for (size_t i = 0; i < nodes; ++i){
-    //   for (size_t j = 0; j < nodes; ++j){
-    //     if (adj(i,j)==1 && adj(j,i)==1){
-    //       warning("Undirected edge between nodes %i and %i in the DAG",i,j);
-    //     }
-    //   }
-    // }
-  }
+  {}
 
 // Makes a graph without any edges
 DAG::DAG(size_t nodes,bool verbose) : 

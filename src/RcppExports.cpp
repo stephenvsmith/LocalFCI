@@ -173,15 +173,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // interNeighborhoodEdgeMetrics
-List interNeighborhoodEdgeMetrics(NumericMatrix est, NumericMatrix reference, bool verbose);
-RcppExport SEXP _LocalFCI_interNeighborhoodEdgeMetrics(SEXP estSEXP, SEXP referenceSEXP, SEXP verboseSEXP) {
+List interNeighborhoodEdgeMetrics(NumericMatrix est, NumericMatrix reference, NumericVector nbhd, bool verbose);
+RcppExport SEXP _LocalFCI_interNeighborhoodEdgeMetrics(SEXP estSEXP, SEXP referenceSEXP, SEXP nbhdSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type reference(referenceSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type nbhd(nbhdSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(interNeighborhoodEdgeMetrics(est, reference, verbose));
+    rcpp_result_gen = Rcpp::wrap(interNeighborhoodEdgeMetrics(est, reference, nbhd, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -200,18 +201,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // allMetrics
-DataFrame allMetrics(NumericMatrix est, NumericMatrix ref_graph, NumericVector targets, bool verbose, std::string algo, std::string which_nodes);
-RcppExport SEXP _LocalFCI_allMetrics(SEXP estSEXP, SEXP ref_graphSEXP, SEXP targetsSEXP, SEXP verboseSEXP, SEXP algoSEXP, SEXP which_nodesSEXP) {
+DataFrame allMetrics(NumericMatrix est, NumericMatrix ref_graph, NumericVector targets, NumericMatrix true_dag, NumericVector nbhd, bool verbose, std::string algo, std::string which_nodes);
+RcppExport SEXP _LocalFCI_allMetrics(SEXP estSEXP, SEXP ref_graphSEXP, SEXP targetsSEXP, SEXP true_dagSEXP, SEXP nbhdSEXP, SEXP verboseSEXP, SEXP algoSEXP, SEXP which_nodesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type ref_graph(ref_graphSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type targets(targetsSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type nbhd(nbhdSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< std::string >::type algo(algoSEXP);
     Rcpp::traits::input_parameter< std::string >::type which_nodes(which_nodesSEXP);
-    rcpp_result_gen = Rcpp::wrap(allMetrics(est, ref_graph, targets, verbose, algo, which_nodes));
+    rcpp_result_gen = Rcpp::wrap(allMetrics(est, ref_graph, targets, true_dag, nbhd, verbose, algo, which_nodes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -415,6 +418,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type t(tSEXP);
     Rcpp::traits::input_parameter< bool >::type v(vSEXP);
     rcpp_result_gen = Rcpp::wrap(check_neighbors_retrieval(nodes, node_names, adj, t, v));
+    return rcpp_result_gen;
+END_RCPP
+}
+// check_neighbors_retrieval_multi
+NumericVector check_neighbors_retrieval_multi(int nodes, StringVector node_names, NumericMatrix adj, NumericVector t, bool v);
+RcppExport SEXP _LocalFCI_check_neighbors_retrieval_multi(SEXP nodesSEXP, SEXP node_namesSEXP, SEXP adjSEXP, SEXP tSEXP, SEXP vSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type nodes(nodesSEXP);
+    Rcpp::traits::input_parameter< StringVector >::type node_names(node_namesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type adj(adjSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type t(tSEXP);
+    Rcpp::traits::input_parameter< bool >::type v(vSEXP);
+    rcpp_result_gen = Rcpp::wrap(check_neighbors_retrieval_multi(nodes, node_names, adj, t, v));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1458,9 +1476,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_compareSkeletons", (DL_FUNC) &_LocalFCI_compareSkeletons, 3},
     {"_LocalFCI_compareVStructures", (DL_FUNC) &_LocalFCI_compareVStructures, 3},
     {"_LocalFCI_parentRecoveryAccuracy", (DL_FUNC) &_LocalFCI_parentRecoveryAccuracy, 4},
-    {"_LocalFCI_interNeighborhoodEdgeMetrics", (DL_FUNC) &_LocalFCI_interNeighborhoodEdgeMetrics, 3},
+    {"_LocalFCI_interNeighborhoodEdgeMetrics", (DL_FUNC) &_LocalFCI_interNeighborhoodEdgeMetrics, 4},
     {"_LocalFCI_overallF1", (DL_FUNC) &_LocalFCI_overallF1, 4},
-    {"_LocalFCI_allMetrics", (DL_FUNC) &_LocalFCI_allMetrics, 6},
+    {"_LocalFCI_allMetrics", (DL_FUNC) &_LocalFCI_allMetrics, 8},
     {"_LocalFCI_getNeighborhoodMetrics", (DL_FUNC) &_LocalFCI_getNeighborhoodMetrics, 1},
     {"_LocalFCI_getPartialCorrelation", (DL_FUNC) &_LocalFCI_getPartialCorrelation, 4},
     {"_LocalFCI_fisherZ", (DL_FUNC) &_LocalFCI_fisherZ, 3},
@@ -1477,6 +1495,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_check_dag_object2", (DL_FUNC) &_LocalFCI_check_dag_object2, 1},
     {"_LocalFCI_check_pdag_object2", (DL_FUNC) &_LocalFCI_check_pdag_object2, 1},
     {"_LocalFCI_check_neighbors_retrieval", (DL_FUNC) &_LocalFCI_check_neighbors_retrieval, 5},
+    {"_LocalFCI_check_neighbors_retrieval_multi", (DL_FUNC) &_LocalFCI_check_neighbors_retrieval_multi, 5},
     {"_LocalFCI_check_pdag_neighbors_retrieval", (DL_FUNC) &_LocalFCI_check_pdag_neighbors_retrieval, 5},
     {"_LocalFCI_check_amat_retrieval", (DL_FUNC) &_LocalFCI_check_amat_retrieval, 5},
     {"_LocalFCI_check_amat_retrieval_function", (DL_FUNC) &_LocalFCI_check_amat_retrieval_function, 5},

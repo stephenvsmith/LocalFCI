@@ -45,16 +45,16 @@ parentRecoveryAccuracy <- function(est, truth, targets, verbose = FALSE) {
     .Call(`_LocalFCI_parentRecoveryAccuracy`, est, truth, targets, verbose)
 }
 
-interNeighborhoodEdgeMetrics <- function(est, reference, verbose = FALSE) {
-    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, verbose)
+interNeighborhoodEdgeMetrics <- function(est, reference, nbhd, verbose = FALSE) {
+    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, nbhd, verbose)
 }
 
 overallF1 <- function(est, ref, targets, verbose = FALSE) {
     .Call(`_LocalFCI_overallF1`, est, ref, targets, verbose)
 }
 
-allMetrics <- function(est, ref_graph, targets, verbose = FALSE, algo = "pc", which_nodes = "") {
-    .Call(`_LocalFCI_allMetrics`, est, ref_graph, targets, verbose, algo, which_nodes)
+allMetrics <- function(est, ref_graph, targets, true_dag, nbhd, verbose = FALSE, algo = "pc", which_nodes = "") {
+    .Call(`_LocalFCI_allMetrics`, est, ref_graph, targets, true_dag, nbhd, verbose, algo, which_nodes)
 }
 
 getNeighborhoodMetrics <- function(G) {
@@ -119,6 +119,10 @@ check_pdag_object2 <- function(nodes) {
 
 check_neighbors_retrieval <- function(nodes, node_names, adj, t, v = FALSE) {
     .Call(`_LocalFCI_check_neighbors_retrieval`, nodes, node_names, adj, t, v)
+}
+
+check_neighbors_retrieval_multi <- function(nodes, node_names, adj, t, v = FALSE) {
+    .Call(`_LocalFCI_check_neighbors_retrieval_multi`, nodes, node_names, adj, t, v)
 }
 
 check_pdag_neighbors_retrieval <- function(nodes, node_names, adj, t, v = FALSE) {

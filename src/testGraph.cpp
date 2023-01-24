@@ -73,6 +73,14 @@ NumericVector check_neighbors_retrieval(int nodes,StringVector node_names,
 }
 
 // [[Rcpp::export]]
+NumericVector check_neighbors_retrieval_multi(int nodes,StringVector node_names,
+                                              NumericMatrix adj,
+                                              NumericVector t,bool v = false){
+  DAG g(nodes,node_names,adj);
+  return g.getNeighborsMultiTargets(t,v);
+}
+
+// [[Rcpp::export]]
 NumericVector check_pdag_neighbors_retrieval(int nodes,StringVector node_names,
                                              NumericMatrix adj,int t,bool v = false){
   PDAG g(nodes,node_names,adj);

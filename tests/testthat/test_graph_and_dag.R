@@ -75,6 +75,7 @@ test_that("Testing Graph and DAG classes using asia data",{
   target <- which(nodes=="asia")-1
   result <- which(nodes=="tub")-1
   expect_equal(check_neighbors_retrieval(p,nodes,asiaDAG,target),result)
+  expect_equal(check_neighbors_retrieval_multi(p,nodes,asiaDAG,c(5,7),FALSE),c(1,3,4,6))
   expect_output(check_neighbors_retrieval(p,nodes,asiaDAG,5,TRUE))
   expect_warning(expect_warning(check_neighbors_retrieval(3,nodes,asiaDAG,target)))
   
