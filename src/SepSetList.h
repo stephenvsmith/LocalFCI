@@ -1,7 +1,7 @@
 #ifndef SepSetList_H
 #define SepSetList_H
 
-#include "sharedFunctions.h"
+#include "SharedFunctions.h"
 
 class SepSetList {
 public:

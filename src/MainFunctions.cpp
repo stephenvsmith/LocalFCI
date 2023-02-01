@@ -1,8 +1,8 @@
 #include <chrono>
 #include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
-#include "lfci.h"
-#include "lpc.h"
+#include "LocalFCI.h"
+#include "LocalPC.h"
 
 using namespace std::chrono;
 using namespace Rcpp;

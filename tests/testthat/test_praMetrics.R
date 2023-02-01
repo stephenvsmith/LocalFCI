@@ -32,6 +32,7 @@ est_amat <- matrix(c(
 test_that("Testing Parent Recovery Accuracy Metrics",{
   expect_snapshot_output(parentRecoveryAccuracy(est_amat,true_amat,c(2,4),TRUE))
   
-  expect_snapshot_output(allMetrics(est_amat,true_amat,c(2,4),algo = "lfci",verbose = TRUE))
+  expect_snapshot_output(allMetrics(est_amat,true_amat,c(2,4),true_amat,
+                                    seq(0,ncol(est_amat)),algo = "lfci",verbose = TRUE))
 })
 

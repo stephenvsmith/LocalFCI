@@ -1,4 +1,4 @@
-#include "lfci.h"
+#include "LocalFCI.h"
 using namespace Rcpp;
 
 

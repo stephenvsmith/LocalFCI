@@ -3,19 +3,19 @@
 // Constructor for graph with adj. mat. given by user
 Graph::Graph(size_t nodes,StringVector node_names,
              NumericMatrix adj,bool verbose) : 
-  amat(adj),verbose(verbose),p(nodes),names(node_names) {
+  amat(adj),verbose(verbose),m_p(nodes),m_names(node_names) {
   validateAdjMatrix(adj);
   if (nodes < adj.ncol()){
     warning("Number of nodes < rows and columns of the adjacency matrix.");
     warning("Changing the value to match the adj. matrix.");
-    p = adj.ncol();
+    m_p = adj.ncol();
   }
 };
 
 // Initializes a complete graph without names
 Graph::Graph(size_t nodes,bool verbose) : 
-  verbose(verbose),p(nodes) {
-  names = StringVector(nodes);
+  verbose(verbose),m_p(nodes) {
+  m_names = StringVector(nodes);
   amat = NumericMatrix(nodes);
   std::fill(amat.begin(), amat.end(), 1);
   amat.fill_diag(0);
@@ -29,8 +29,8 @@ void Graph::emptyGraph(){
 NumericVector Graph::getAdjacent(const size_t &i){
   validateIndex(i);
   NumericVector adj_nodes;
-  for (size_t j=0;j<p;++j){
-    if (amat(i,j)!=0 || amat(j,i)!=0){
+  for (size_t j = 0; j < m_p; ++j){
+    if (amat(i,j) != 0 || amat(j,i) != 0){
       adj_nodes.push_back(j);
     }
   }
@@ -42,7 +42,7 @@ NumericVector Graph::getNonAdjacent(const size_t &i){
   validateIndex(i);
   NumericVector non_adj;
   
-  for (size_t j=0;j<p;++j){
+  for (size_t j=0;j<m_p;++j){
     if (amat(i,j)==0 && amat(j,i)==0 && j!=i){
       non_adj.push_back(j);
     }
@@ -63,7 +63,7 @@ void Graph::printAmat(){
 // Obtain values "d" that haven't been visited and d*->a
 NumericVector Graph::get_d_vals(size_t a,const std::vector<bool> &visited){
   NumericVector d_vals;
-  for (size_t i=0;i<p;++i){
+  for (size_t i=0;i<m_p;++i){
     // We need d *-> a
     if (amat(a,i)!=0 && amat(i,a)==2 && !visited[i]){
       d_vals.push_back(i);
@@ -75,7 +75,7 @@ NumericVector Graph::get_d_vals(size_t a,const std::vector<bool> &visited){
 
 NumericVector Graph:: get_r_vals(size_t d,const std::vector<bool> &visited){
   NumericVector r_vals;
-  for (size_t i=0;i<p;++i){
+  for (size_t i=0;i<m_p;++i){
     // We need r *-> d
     if (amat(d,i)!=0 && amat(i,d)==2 && !visited[i]){
       r_vals.push_back(i);  
@@ -139,7 +139,7 @@ List updatePathList(NumericVector mpath,NumericVector &set,List &old_paths,
 // Return a vector (-1) if no discriminating path is found
 NumericVector Graph::minDiscPath(size_t a,size_t b,size_t c){
   std::vector<bool> visited;
-  visited.assign(p,false);
+  visited.assign(m_p,false);
   visited[a] = true;
   visited[b] = true;
   visited[c] = true;
@@ -233,7 +233,7 @@ NumericVector Graph::idThetaVals(size_t alpha,size_t beta,
                                  const std::vector<bool> &visited){
   NumericVector theta_vals(0);
   bool potentially_directed; bool uncovered;
-  for (size_t theta=0;theta<p;++theta){
+  for (size_t theta = 0; theta < m_p; ++theta){
     potentially_directed = areEdgesPotentiallyDirected(beta,theta);
     uncovered = amat(theta,alpha) == 0 && 
       amat(alpha,theta)== 0;
@@ -313,7 +313,7 @@ NumericVector Graph::minUncovPdPath(size_t alpha,size_t beta,size_t gamma){
   if (verbose) Rcout << "Checking for paths of 4 or more\n";
   // we haven't visited any of the other nodes besides alpha,beta,gamma
   std::vector<bool> visited;
-  visited.assign(p,false); 
+  visited.assign(m_p,false); 
   visited[alpha]=true; 
   visited[beta]=true;
   visited[gamma]=true;
@@ -341,7 +341,7 @@ NumericVector Graph::minUncovPdPath(size_t alpha,size_t beta,size_t gamma){
         // and add them to potential members of the path
         NumericVector r_vals(0); // track possible nodes to add to the path 
         d_1 = mpath(m-2);
-        for (size_t i=0;i<p;++i){
+        for (size_t i=0;i<m_p;++i){
           // Check p.d. requirements
           potentially_directed = areEdgesPotentiallyDirected(d,i);
           // Check uncovered requirement

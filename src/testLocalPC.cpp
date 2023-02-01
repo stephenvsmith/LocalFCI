@@ -1,4 +1,4 @@
-#include "lpc.h"
+#include "LocalPC.h"
 
 // [[Rcpp::export]]
 int checkInitializeLocalPC(NumericMatrix td,arma::mat df,

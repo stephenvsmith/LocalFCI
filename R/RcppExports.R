@@ -45,8 +45,8 @@ parentRecoveryAccuracy <- function(est, truth, targets, verbose = FALSE) {
     .Call(`_LocalFCI_parentRecoveryAccuracy`, est, truth, targets, verbose)
 }
 
-interNeighborhoodEdgeMetrics <- function(est, reference, nbhd, verbose = FALSE) {
-    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, nbhd, verbose)
+interNeighborhoodEdgeMetrics <- function(est, reference, true_dag, nbhd, verbose = FALSE) {
+    .Call(`_LocalFCI_interNeighborhoodEdgeMetrics`, est, reference, true_dag, nbhd, verbose)
 }
 
 overallF1 <- function(est, ref, targets, verbose = FALSE) {
@@ -59,6 +59,14 @@ allMetrics <- function(est, ref_graph, targets, true_dag, nbhd, verbose = FALSE,
 
 getNeighborhoodMetrics <- function(G) {
     .Call(`_LocalFCI_getNeighborhoodMetrics`, G)
+}
+
+combn_cpp <- function(x, l) {
+    .Call(`_LocalFCI_combn_cpp`, x, l)
+}
+
+isMember <- function(x, i) {
+    .Call(`_LocalFCI_isMember`, x, i)
 }
 
 getPartialCorrelation <- function(C, i, j, k) {
@@ -75,14 +83,6 @@ condIndTest <- function(C, i, j, k, n, signif_level) {
 
 condIndTestPop <- function(G, i, j, k) {
     .Call(`_LocalFCI_condIndTestPop`, G, i, j, k)
-}
-
-combn_cpp <- function(x, l) {
-    .Call(`_LocalFCI_combn_cpp`, x, l)
-}
-
-isMember <- function(x, i) {
-    .Call(`_LocalFCI_isMember`, x, i)
 }
 
 testArmaCor <- function(M) {

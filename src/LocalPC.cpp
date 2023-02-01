@@ -1,4 +1,4 @@
-#include "lpc.h"
+#include "LocalPC.h"
 
 // Change adj. mat. so that we have a complete graph within the target nbhd.
 void fillTargetNeighborhood(Graph* C_tilde,

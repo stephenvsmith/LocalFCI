@@ -265,7 +265,7 @@ test_that("additional v-structure comparison function tests",{
 
 test_that("Ancestral Relations",{
   # Basic, nothing informative
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(asiaDAG,asiaDAG,asiaDAG,seq(0,ncol(asiaDAG)-1)))
 })
 
 test_that("Ancestral checks for localFCI on asia",{
@@ -278,7 +278,7 @@ test_that("Ancestral checks for localFCI on asia",{
   # graphviz.plot(g_true)
   # graphviz.plot(g_est)
   # asia and dysp are targets: correct edge between tub and either, but it is not oriented
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(res$amat,asiaDAG))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(res$amat,asiaDAG,asiaDAG,seq(0,ncol(asiaDAG)-1)))
 })
 
 test_that("Ancestral checks for localFCI on asia (2)",{
@@ -289,7 +289,7 @@ test_that("Ancestral checks for localFCI on asia (2)",{
   # graphviz.plot(g_true)
   # graphviz.plot(g_est)
   # smoke and xray are the targets: lung and either are connected, but not oriented
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(res$amat,asiaDAG))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(res$amat,asiaDAG,asiaDAG,seq(0,ncol(asiaDAG)-1)))
 })
 
 true_amat <- matrix(0,ncol = 16,nrow = 16)
@@ -333,17 +333,18 @@ test_that("Testing ancestral relations (1)",{
   est_amat[2,14] <- 2; est_amat[14,2] <- 3
   # Correct ancestral edge
   est_amat[13,9] <- 2; est_amat[9,13] <- 3
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,verbose = TRUE))
+  num_nodes <- ncol(est_amat)
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,true_amat,seq(0,num_nodes-1),verbose = TRUE))
 })
 
 test_that("Testing ancestral relations (2)",{
   # This should be overlooked because of the open mark
   est_amat[12,1] <- 2
   est_amat[1,12] <- 4
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,verbose = TRUE))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,true_amat,seq(0,ncol(est_amat)-1),verbose = TRUE))
   # Get one true positive
   est_amat[1,12] <- 3
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,verbose = TRUE))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,true_amat,seq(0,ncol(est_amat)-1),verbose = TRUE))
 })
 
 true_amat <- matrix(c(
@@ -380,17 +381,17 @@ est_amat2 <- matrix(c(
 ),byrow = TRUE,ncol = 8)
 
 test_that("Testing ancestral relations (3)",{
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,true_amat,seq(0,ncol(true_amat)-1)))
   est_amat[5,7] <- 3
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat,true_amat,true_amat,seq(0,ncol(true_amat)-1)))
 })
 
 test_that("Testing ancestral relations (4)",{
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat2,true_amat))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat2,true_amat,true_amat,seq(0,ncol(true_amat)-1)))
   est_amat2[5,6] <- 2
   est_amat2[4,1] <- 2
   est_amat2[1,4] <- 3
-  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat2,true_amat))
+  expect_snapshot_output(interNeighborhoodEdgeMetrics(est_amat2,true_amat,true_amat,seq(0,ncol(true_amat)-1)))
 })
 
 
@@ -488,12 +489,41 @@ test_that("checking metric functions",{
   asiaDAG_sub[3,] <- asiaDAG_sub[,3] <- rep(0,8)
   
   # skeleton perfect, missing tub -> either <- lung and either -> dysp <- bronc, have all parents except for tub and either, which are both potential
-  expect_snapshot_output(allMetrics(est$amat,asiaDAG_sub,t-1,algo="lfci"))
+  expect_snapshot_output(allMetrics(est$amat,asiaDAG_sub,t-1,asiaDAG,est$Nodes,algo="lfci"))
   # skeleton perfect (smoke edges don't count), missing both v-structures and added 1, missing all parents, either got two fp parents
-  expect_snapshot_output(allMetrics(pc_asia,asiaDAG_sub,t-1,algo="pc"))
+  expect_snapshot_output(allMetrics(pc_asia,asiaDAG_sub,t-1,asiaDAG,est$Nodes,algo="pc"))
   
 })
 
+test_that("Check allMetrics",{
+  node_names_interest <- c("asia","tub","bronc","xray","dysp")
+  nodes_int <- sapply(node_names_interest,function(x) which(x==nodes))
+  names(nodes_int) <- NULL
+  # targets are asia and bronc
+  targets <- c(0,2)
+  est_mat <- matrix(c(
+    0,1,0,0,0,
+    0,0,0,2,2,
+    0,0,0,0,0,
+    0,3,1,0,1,
+    0,3,1,1,0
+  ),nrow = 5,byrow = TRUE)
+  asia_g <- empty.graph(nodes)
+  amat(asia_g) <- asiaDAG
+  asia_cpdag <- cpdag(asia_g)
+  asia_cpdag_mat <- amat(asia_cpdag)
+  asia_cpdag_submat <- asia_cpdag_mat[nodes_int,nodes_int]
+  expect_snapshot_output(allMetrics(est_mat,asia_cpdag_submat,targets,asiaDAG,nodes_int-1))
+  
+  # Switch one ancestral edge
+  est_mat[5,2] <- 2
+  est_mat[2,5] <- 3
+  expect_snapshot_output(allMetrics(est_mat,asia_cpdag_submat,targets,asiaDAG,nodes_int-1))
+  
+  # Ancestral edge without orientation
+  est_mat[4,2] <- est_mat[2,4] <- 2
+  expect_snapshot_output(allMetrics(est_mat,asia_cpdag_submat,targets,asiaDAG,nodes_int-1))
+})
 
 # Check Markov Blanket Recovery Metrics -----------------------------------
 
@@ -687,7 +717,7 @@ test_that("Testing warnings and stops",{
   
   # We have an undirected edge denoted by 3's for both entries
   test_amat <- asiaDAG; test_amat[2,8] <- test_amat[8,2] <- 3
-  expect_warning(interNeighborhoodEdgeMetrics(test_amat,asiaDAG))
+  expect_warning(interNeighborhoodEdgeMetrics(test_amat,asiaDAG,asiaDAG,seq(0,ncol(asiaDAG)-1)))
 })
 
 

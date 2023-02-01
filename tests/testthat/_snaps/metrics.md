@@ -349,6 +349,33 @@
       pc_ancestors_incorrect pc_ancestors_total pc_overall_f1
     1                      0                  0             0
 
+# Check allMetrics
+
+      pc__skel_fp pc__skel_fn pc__skel_tp pc__v_fn pc__v_fp pc__v_tp pc_pra_fn
+    1           2           0           2        0        0        0         0
+      pc_pra_fp pc_pra_tp pc_pra_potential pc_ancestors_correct
+    1         2         0                0                    2
+      pc_ancestors_incorrect pc_ancestors_total pc_overall_f1
+    1                      0                  2             0
+
+---
+
+      pc__skel_fp pc__skel_fn pc__skel_tp pc__v_fn pc__v_fp pc__v_tp pc_pra_fn
+    1           2           0           2        0        0        0         0
+      pc_pra_fp pc_pra_tp pc_pra_potential pc_ancestors_correct
+    1         2         0                0                    1
+      pc_ancestors_incorrect pc_ancestors_total pc_overall_f1
+    1                      1                  2             0
+
+---
+
+      pc__skel_fp pc__skel_fn pc__skel_tp pc__v_fn pc__v_fp pc__v_tp pc_pra_fn
+    1           2           0           2        0        0        0         0
+      pc_pra_fp pc_pra_tp pc_pra_potential pc_ancestors_correct
+    1         2         0                0                    0
+      pc_ancestors_incorrect pc_ancestors_total pc_overall_f1
+    1                      1                  2             0
+
 # Detailed MB Recovery Stats
 
     [[1]]

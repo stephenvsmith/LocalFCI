@@ -220,7 +220,6 @@ bool DAG::isAncestor(const size_t &desc,const size_t &anc){
   NumericVector next_level_ancestors;
   current_ancestors = getParents(desc);
   size_t level=1;
-
   while (current_ancestors.size()>0){
     if (isMember(current_ancestors,anc)){
       if (verbose){
@@ -237,6 +236,7 @@ bool DAG::isAncestor(const size_t &desc,const size_t &anc){
     next_level_ancestors = NumericVector::create();
     ++level;
   }
+  
   return false;
 }
 

@@ -173,16 +173,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // interNeighborhoodEdgeMetrics
-List interNeighborhoodEdgeMetrics(NumericMatrix est, NumericMatrix reference, NumericVector nbhd, bool verbose);
-RcppExport SEXP _LocalFCI_interNeighborhoodEdgeMetrics(SEXP estSEXP, SEXP referenceSEXP, SEXP nbhdSEXP, SEXP verboseSEXP) {
+List interNeighborhoodEdgeMetrics(NumericMatrix est, NumericMatrix reference, NumericMatrix true_dag, NumericVector nbhd, bool verbose);
+RcppExport SEXP _LocalFCI_interNeighborhoodEdgeMetrics(SEXP estSEXP, SEXP referenceSEXP, SEXP true_dagSEXP, SEXP nbhdSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type est(estSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type reference(referenceSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type true_dag(true_dagSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type nbhd(nbhdSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(interNeighborhoodEdgeMetrics(est, reference, nbhd, verbose));
+    rcpp_result_gen = Rcpp::wrap(interNeighborhoodEdgeMetrics(est, reference, true_dag, nbhd, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -226,6 +227,30 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type G(GSEXP);
     rcpp_result_gen = Rcpp::wrap(getNeighborhoodMetrics(G));
+    return rcpp_result_gen;
+END_RCPP
+}
+// combn_cpp
+NumericMatrix combn_cpp(NumericVector x, size_t l);
+RcppExport SEXP _LocalFCI_combn_cpp(SEXP xSEXP, SEXP lSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< size_t >::type l(lSEXP);
+    rcpp_result_gen = Rcpp::wrap(combn_cpp(x, l));
+    return rcpp_result_gen;
+END_RCPP
+}
+// isMember
+bool isMember(NumericVector x, const size_t& i);
+RcppExport SEXP _LocalFCI_isMember(SEXP xSEXP, SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const size_t& >::type i(iSEXP);
+    rcpp_result_gen = Rcpp::wrap(isMember(x, i));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -283,30 +308,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const size_t& >::type j(jSEXP);
     Rcpp::traits::input_parameter< const arma::uvec& >::type k(kSEXP);
     rcpp_result_gen = Rcpp::wrap(condIndTestPop(G, i, j, k));
-    return rcpp_result_gen;
-END_RCPP
-}
-// combn_cpp
-NumericMatrix combn_cpp(NumericVector x, size_t l);
-RcppExport SEXP _LocalFCI_combn_cpp(SEXP xSEXP, SEXP lSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< size_t >::type l(lSEXP);
-    rcpp_result_gen = Rcpp::wrap(combn_cpp(x, l));
-    return rcpp_result_gen;
-END_RCPP
-}
-// isMember
-bool isMember(NumericVector x, const size_t& i);
-RcppExport SEXP _LocalFCI_isMember(SEXP xSEXP, SEXP iSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const size_t& >::type i(iSEXP);
-    rcpp_result_gen = Rcpp::wrap(isMember(x, i));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1476,16 +1477,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_LocalFCI_compareSkeletons", (DL_FUNC) &_LocalFCI_compareSkeletons, 3},
     {"_LocalFCI_compareVStructures", (DL_FUNC) &_LocalFCI_compareVStructures, 3},
     {"_LocalFCI_parentRecoveryAccuracy", (DL_FUNC) &_LocalFCI_parentRecoveryAccuracy, 4},
-    {"_LocalFCI_interNeighborhoodEdgeMetrics", (DL_FUNC) &_LocalFCI_interNeighborhoodEdgeMetrics, 4},
+    {"_LocalFCI_interNeighborhoodEdgeMetrics", (DL_FUNC) &_LocalFCI_interNeighborhoodEdgeMetrics, 5},
     {"_LocalFCI_overallF1", (DL_FUNC) &_LocalFCI_overallF1, 4},
     {"_LocalFCI_allMetrics", (DL_FUNC) &_LocalFCI_allMetrics, 8},
     {"_LocalFCI_getNeighborhoodMetrics", (DL_FUNC) &_LocalFCI_getNeighborhoodMetrics, 1},
+    {"_LocalFCI_combn_cpp", (DL_FUNC) &_LocalFCI_combn_cpp, 2},
+    {"_LocalFCI_isMember", (DL_FUNC) &_LocalFCI_isMember, 2},
     {"_LocalFCI_getPartialCorrelation", (DL_FUNC) &_LocalFCI_getPartialCorrelation, 4},
     {"_LocalFCI_fisherZ", (DL_FUNC) &_LocalFCI_fisherZ, 3},
     {"_LocalFCI_condIndTest", (DL_FUNC) &_LocalFCI_condIndTest, 6},
     {"_LocalFCI_condIndTestPop", (DL_FUNC) &_LocalFCI_condIndTestPop, 4},
-    {"_LocalFCI_combn_cpp", (DL_FUNC) &_LocalFCI_combn_cpp, 2},
-    {"_LocalFCI_isMember", (DL_FUNC) &_LocalFCI_isMember, 2},
     {"_LocalFCI_testArmaCor", (DL_FUNC) &_LocalFCI_testArmaCor, 1},
     {"_LocalFCI_check_amat_works", (DL_FUNC) &_LocalFCI_check_amat_works, 3},
     {"_LocalFCI_check_amat_works_onepar", (DL_FUNC) &_LocalFCI_check_amat_works_onepar, 1},

@@ -1,4 +1,4 @@
-#include "lfci.h"
+#include "LocalFCI.h"
 
 // Sample Version
 LocalFCI::LocalFCI(NumericMatrix true_dag,arma::mat df,

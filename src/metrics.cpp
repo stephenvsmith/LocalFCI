@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "DAG.h"
 #include "PDAG.h"
-#include "sharedFunctions.h"
+#include "SharedFunctions.h"
 #include <string>
 using namespace Rcpp;
 
@@ -414,7 +414,7 @@ bool idAncestors(NumericMatrix reference,int desc,int anc,bool verbose=true){
   int p = reference.nrow();
   StringVector node_names;
   makeNodeNames(p,node_names);
-  DAG g_ref(p,node_names,reference,verbose);
+  DAG g_ref(p,node_names,reference);
   return g_ref.isAncestor(desc,anc);
 }
 
@@ -601,12 +601,12 @@ bool checkAncestralPath(NumericMatrix reference,NumericVector targets,
 // }
  // [[Rcpp::export]]
 List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
+                                  NumericMatrix true_dag,
                                   NumericVector nbhd,bool verbose=false){
   int p = est.nrow();
   size_t true_anc = 0;
   size_t incorrect_anc = 0;
   size_t total_anc_edges = 0;
-  
   for (int i=0;i<p-1;++i){
     for (int j=i+1;j<p;++j){
       if (est(i,j)==3 && est(j,i)==3){
@@ -620,7 +620,7 @@ List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
         ++total_anc_edges;
         // i is estimated to be an ancestor of j
         if (est(i,j)==2 && est(j,i)==3){
-          if (idAncestors(reference,nbhd(j),nbhd(i),false)){
+          if (idAncestors(true_dag,nbhd(j),nbhd(i))){
             if (verbose){
               Rcout << "true ancestor" << std::endl;
             }
@@ -633,7 +633,7 @@ List interNeighborhoodEdgeMetrics(NumericMatrix est,NumericMatrix reference,
           }
         } else if (est(i,j)==3 && est(j,i)==2){
           // j is estimated to be an ancestor of i
-          if (idAncestors(reference,nbhd(i),nbhd(j),false)){
+          if (idAncestors(true_dag,nbhd(i),nbhd(j))){
             if (verbose){
               Rcout << "true ancestor" << std::endl;
             }
@@ -750,12 +750,11 @@ DataFrame allMetrics(NumericMatrix est,NumericMatrix ref_graph,
                      std::string algo="pc",std::string which_nodes=""){
   validateInputs(est,ref_graph);
   validateTargets(ref_graph,targets);
-  
   // Find the metrics for comparing the graphs
   List est_skeleton = compareSkeletons(est,ref_graph);
   List est_vstruct = compareVStructures(est,ref_graph);
   List est_pra = parentRecoveryAccuracy(est,ref_graph,targets);
-  List est_ancestors = interNeighborhoodEdgeMetrics(est,true_dag,nbhd);
+  List est_ancestors = interNeighborhoodEdgeMetrics(est,ref_graph,true_dag,nbhd);
   return DataFrame::create(
     _[algo+"_"+which_nodes+"_skel_fp"]=est_skeleton["skel_fp"],
     _[algo+"_"+which_nodes+"_skel_fn"]=est_skeleton["skel_fn"],

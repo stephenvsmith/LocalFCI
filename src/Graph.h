@@ -1,7 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include "sharedFunctions.h"
+#include "SharedFunctions.h"
 
 // Base class
 class Graph {
@@ -12,7 +12,7 @@ public:
         NumericMatrix adj,bool verbose=false); // tested
   
   void validateIndex(const size_t &ind) const { // tested
-    if (ind >= p){
+    if (ind >= m_p){
       stop("Invalid index: too large");
     }
   }
@@ -24,8 +24,8 @@ public:
   }
   
   // Accessors
-  int size() { return p; } // not tested
-  StringVector getNodeNames(){ return names; } // tested
+  int size() { return m_p; } // not tested
+  StringVector getNodeNames(){ return m_names; } // tested
   NumericMatrix getAmat(){ return amat; } // tested
   int getAmatVal(const size_t &i,const size_t &j){ // tested
     validateIndex(i); validateIndex(j);
@@ -52,12 +52,12 @@ public:
   NumericVector getNonAdjacent(const size_t &i); // tested
   
   // Setters
-  void setSize(const size_t &s){ p = s; }
-  void setNames(StringVector n){ names = n; }
+  void setSize(const size_t &s){ m_p = s; }
+  void setNames(StringVector n){ m_names = n; }
   void setAmat(NumericMatrix m){ // tested
     validateAdjMatrix(m); 
     amat = m; 
-    p = m.ncol(); 
+    m_p = m.ncol(); 
   }
   double & operator ()(const size_t &i, const size_t &j) { // tested
     return amat(i,j);
@@ -102,8 +102,8 @@ protected:
   bool verbose;
   
 private:
-  size_t p;
-  StringVector names;
+  size_t m_p;
+  StringVector m_names;
 };
 
 #endif

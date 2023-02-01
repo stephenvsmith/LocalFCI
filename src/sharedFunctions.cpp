@@ -1,4 +1,4 @@
-#include "sharedFunctions.h"
+#include "SharedFunctions.h"
 using namespace Rcpp;
 
 /*
