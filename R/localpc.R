@@ -90,6 +90,7 @@ localpc <- function(data=NULL,true_dag=NULL,targets,
     "totalTime"=results$totalTime,
     "referenceDAG"=true_dag,
     "mbList"=mbList,
+    "rules_used"=results$rulesUsed,
     "data_means"=data_means,
     "data_cov"=data_cov)
   )

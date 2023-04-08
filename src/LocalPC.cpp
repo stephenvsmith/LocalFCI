@@ -218,6 +218,131 @@ void LocalPC::getSkeletonTarget(const size_t &t){
   target_skeleton_times.push_back(total_time);
 }
 
+/* 
+ * Search for i -> j - k, where i and k are not adjacent
+ */
+void LocalPC::rule1(bool &no_changes){
+  for (size_t i=0;i<N;++i){
+    for (size_t j=0;j<N;++j){
+      // Look for i -> j
+      if (C_tilde->isDirected(i,j)){
+        for (size_t k=0;k<N;++k){
+          // Look for j - k with i not adj. to k
+          if (C_tilde->isUndirected(j,k) && !(C_tilde->areAdjacent(i,k))){
+            // Set j -> k
+            C_tilde->setAmatVal(k,j,0);
+            ++rules_used(1);
+            no_changes=false;
+            if (verbose){
+              Rcout << "Meek's Rule 1: " << names(j) << " -> " << names(k) << std::endl;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/*
+ * Search for i -> j -> k with i - k. Orient i -> k
+ */
+void LocalPC::rule2(bool &no_changes){
+  for (size_t i=0;i<N;++i){
+    for (size_t j=0;j<N;++j){
+      if (C_tilde->isDirected(i,j)){
+        for (size_t k=0;k<N;++k){
+          if (C_tilde->isDirected(j,k) && C_tilde->isUndirected(i,k)){
+            C_tilde->setAmatVal(k,i,0);
+            ++rules_used(2);
+            no_changes=false;
+            if (verbose){
+              Rcout << "Meek's Rule 2: " << names(i) << " -> " << names(k) << std::endl;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/*
+ * Search for two chains i-k->j and i-l->j with i-j and k and l non-adjacent
+ * Orient i->j
+ */
+void LocalPC::rule3(bool &no_changes){
+  for (size_t i=0;i<N;++i){
+    for (size_t j=0;j<N;++j){
+      if (C_tilde->isUndirected(i,j)){
+        for (size_t k=0;k<N;++k){
+          if (C_tilde->isUndirected(i,k) && C_tilde->isDirected(k,j)){
+            for (size_t l=k+1;l<N;++l){
+              if (C_tilde->isUndirected(i,l) && C_tilde->isDirected(l,j) && !(C_tilde->areAdjacent(k,l))){
+                C_tilde->setAmatVal(j,i,0);
+                ++rules_used(3);
+                no_changes=false;
+                if (verbose){
+                  Rcout << "Meek's Rule 3: " << names(i) << " -> " << names(j) << std::endl;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }    
+}
+
+/*
+ * Search for two chains i-k->l and k->l->j with i-j, i-l, and k and j non-adjacent (error in kalisch paper)
+ * Orient i->j
+ */
+void LocalPC::rule4(bool &no_changes){
+  for (size_t i=0;i<N;++i){
+    for (size_t j=0;j<N;++j){
+      if (C_tilde->isUndirected(i,j)){
+        for (size_t k=0;k<N;++k){
+          if (C_tilde->isUndirected(i,k)){
+            for (size_t l=0;l<N;++l){
+              if (C_tilde->isDirected(k,l) && C_tilde->isDirected(l,j) && C_tilde->areAdjacent(i,l) && !(C_tilde->areAdjacent(k,j))){
+                C_tilde->setAmatVal(j,i,0);
+                ++rules_used(4);
+                no_changes=false;
+                if (verbose){
+                  Rcout << "Meek's Rule 4: " << names(i) << " -> " << names(j) << std::endl;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }    
+}
+
+void LocalPC::meeksRules(){
+  if (verbose){
+    Rcout << "Repeated application of Meek's Rules:\n";
+  }
+  bool no_changes=false;
+  int round = 0;
+  while (!no_changes){
+    if (verbose){
+      Rcout << "Round " << ++round << ":\n";
+    }
+    no_changes = true;
+    rule1(no_changes);
+    rule2(no_changes);
+    rule3(no_changes);
+    rule4(no_changes);
+    if (no_changes && verbose){
+      Rcout << "No rules applied.\n";
+    }
+  }
+  if (verbose){
+    Rcout << "Completed application of Meek\'s Rules.\n";
+  }
+}
+
 /*
  * Take the values from the adj. mat. using efficient numbering 
  * and transfer them to the final adj. mat. with correct dimensions
@@ -254,7 +379,9 @@ void LocalPC::run(){
   std::for_each(targets.begin(),targets.end(),
                 [this](size_t t){ getSkeletonTarget(t); });
   // Find v-structures
-  getVStructures();
+  rules_used(0) = getVStructures();
+  meeksRules();
+  
   // Convert the adj. mat. to the proper dimensions
   convertFinalGraph();
   // Add up all the times for the target skeletons

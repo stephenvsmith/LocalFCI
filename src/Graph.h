@@ -82,6 +82,18 @@ public:
     return amat(i,j)!=0 || amat(j,i)!=0;
   }
   
+  // check if there is a directed edge from i to j (i -> j)
+  bool isDirected(size_t i,size_t j){
+    validateIndex(i); validateIndex(j);
+    return amat(i,j)==1 && amat(j,i)==0;
+  }
+  
+  // check if there is an undirected edge from i to j (i - j)
+  bool isUndirected(size_t i,size_t j){
+    validateIndex(i); validateIndex(j);
+    return amat(i,j)==1 && amat(j,i)==1;
+  }
+  
   // Functions to identify graph features
   // 1. Minimum Discriminating Path
   // 2. Minimum Uncovered Partially Directed Path

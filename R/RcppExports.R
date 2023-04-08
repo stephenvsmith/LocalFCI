@@ -269,8 +269,32 @@ checkGetVStructuresPop <- function(td, t, nodes_interest, names) {
     .Call(`_LocalFCI_checkGetVStructuresPop`, td, t, nodes_interest, names)
 }
 
+checkRule1 <- function(td, test_mat, t, nodes_interest, names) {
+    .Call(`_LocalFCI_checkRule1`, td, test_mat, t, nodes_interest, names)
+}
+
+checkRule2 <- function(td, test_mat, t, nodes_interest, names) {
+    .Call(`_LocalFCI_checkRule2`, td, test_mat, t, nodes_interest, names)
+}
+
+checkRule3 <- function(td, test_mat, t, nodes_interest, names) {
+    .Call(`_LocalFCI_checkRule3`, td, test_mat, t, nodes_interest, names)
+}
+
+checkRule4 <- function(td, test_mat, t, nodes_interest, names) {
+    .Call(`_LocalFCI_checkRule4`, td, test_mat, t, nodes_interest, names)
+}
+
+checkLPCRules <- function(td, test_mat, t, nodes_interest, names) {
+    .Call(`_LocalFCI_checkLPCRules`, td, test_mat, t, nodes_interest, names)
+}
+
 checkLocalPC <- function(td, df, t, nodes_interest, names) {
     .Call(`_LocalFCI_checkLocalPC`, td, df, t, nodes_interest, names)
+}
+
+checkLocalPCRun <- function(td, df, t, nodes_interest, names) {
+    .Call(`_LocalFCI_checkLocalPCRun`, td, df, t, nodes_interest, names)
 }
 
 checkLocalPCPop <- function(td, t, nodes_interest, names) {

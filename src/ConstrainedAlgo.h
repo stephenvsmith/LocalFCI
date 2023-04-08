@@ -40,7 +40,7 @@ public:
   // Every algorithm must define their own target neighborhood skeleton algorithm
   virtual void getSkeletonTarget(const size_t &t) = 0;
   
-  virtual void getVStructures(); // tested (Local PC)
+  virtual int getVStructures(); // tested (Local PC)
   
   // Accessors 
   // Implicitly, but not explicitly, tested in most cases. 
@@ -49,6 +49,7 @@ public:
   List getSepSetList() { return S -> getS(); }
   size_t getNumTests() { return num_tests; }
   NumericVector getAdjacent(size_t i) { return C_tilde -> getAdjacent(i); }
+  bool isAdjacent(size_t i,size_t j) { return C_tilde -> areAdjacent(i,j); }
   NumericVector getNeighborhood() { return neighborhood; }
   double getMostRecentPVal() { return p_vals[p_vals.size()-1];}
   double getTotalTime() { return total_time; }

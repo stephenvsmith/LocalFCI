@@ -206,9 +206,9 @@ void LocalFCI::getSkeletonTarget(const size_t &t){
 
 // We are trying to identify structures i -> k <- j
 // Where i and j are not adjacent, and k is not in the separating set of i and j
-void LocalFCI::getVStructures() {
+int LocalFCI::getVStructures() {
   size_t k_eff;
-  
+  int times_used=0;
   bool no_neighbors;
   bool j_invalid;
   NumericVector placeholder;
@@ -285,9 +285,9 @@ void LocalFCI::getVStructures() {
                 }
                 C_tilde->setAmatVal(i,k_eff,2); // An arrow is denoted by "2"
                 C_tilde->setAmatVal(j,k_eff,2); // i and j are separated ("0")
-                ++rules_used(0);
+                ++times_used;
                 if (verbose){
-                  Rcout << "Rule 0 has been used " << rules_used(0) << " times.\n";
+                  Rcout << "Rule 0 has been used " << times_used << " times.\n";
                 }
               }
             }
@@ -296,6 +296,7 @@ void LocalFCI::getVStructures() {
       }
     }
   }
+  return times_used;
 }
 
 /*
@@ -1023,7 +1024,7 @@ void LocalFCI::run(){
                 [this](size_t t){ getSkeletonTarget(t); });
   
   // Rule 0: Obtain V Structures
-  getVStructures();
+  rules_used(0) = getVStructures();
   
   // Remaining FCI Rules
   allRules();

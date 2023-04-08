@@ -24,7 +24,7 @@ public:
   
   void getSkeletonTotal(); // tested
   void getSkeletonTarget(const size_t &t); // tested
-  void getVStructures(); // tested
+  int getVStructures(); // tested
   
   // Accessors
   std::vector<double> getTargetSkeletonTimes() { 

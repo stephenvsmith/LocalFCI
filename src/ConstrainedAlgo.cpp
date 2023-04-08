@@ -247,8 +247,8 @@ void ConstrainedAlgo::checkSeparation(int l,size_t i,size_t j,
 
 // We are trying to identify structures i -> k <- j
 // Where i and j are not adjacent, and k is not in the separating set of i and j
-void ConstrainedAlgo::getVStructures() {
-  
+int ConstrainedAlgo::getVStructures() {
+  int times_used = 0;
   bool no_neighbors;
   bool j_invalid;
   NumericVector placeholder;
@@ -320,6 +320,7 @@ void ConstrainedAlgo::getVStructures() {
                 C_tilde->setAmatVal(j,k_eff,1);
                 C_tilde->setAmatVal(k_eff,i,0);
                 C_tilde->setAmatVal(k_eff,j,0);
+                ++times_used;
               }
             }
           }
@@ -327,5 +328,6 @@ void ConstrainedAlgo::getVStructures() {
       }
     }
   }
+  return times_used;
 }
 

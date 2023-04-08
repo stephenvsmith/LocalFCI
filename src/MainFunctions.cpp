@@ -105,6 +105,7 @@ List sampleLocalPC(NumericMatrix true_dag,arma::mat df,
     _["S"]=lpc.getSepSetList(),
     _["NumTests"]=lpc.getNumTests(),
     _["allNodes"]=lpc.getNeighborhood(),
+    _["rulesUsed"]=lpc.getRulesUsed(),
     _["targetSkeletonTimes"]=lpc.getTargetSkeletonTimes(),
     _["algorithmTotalTime"]=lpc.getTotalTime(),
     _["totalTime"]=total_time
@@ -139,6 +140,7 @@ List popLocalPC(NumericMatrix true_dag,
     _["S"]=lpc.getSepSetList(),
     _["NumTests"]=lpc.getNumTests(),
     _["allNodes"]=lpc.getNeighborhood(),
+    _["rulesUsed"]=lpc.getRulesUsed(),
     _["targetSkeletonTimes"]=lpc.getTargetSkeletonTimes(),
     _["totalTime"]=total_time
   );

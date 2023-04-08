@@ -25,6 +25,11 @@ public:
   void getSkeletonTarget(const size_t &t); // tested
   
   using ConstrainedAlgo::getVStructures; // tested
+  void rule1(bool &no_changes); // tested
+  void rule2(bool &no_changes); // tested
+  void rule3(bool &no_changes); // tested
+  void rule4(bool &no_changes); // tested
+  void meeksRules();
   
   void convertFinalGraph(); // tested
   
@@ -32,10 +37,13 @@ public:
   
   // Accessors
   std::vector<double> getTargetSkeletonTimes() { return target_skeleton_times; };
+  NumericVector getRulesUsed() {return rules_used; };
+
   
 private:
   std::map<int,int> node_numbering;
   std::vector<double> target_skeleton_times;
+  NumericVector rules_used = NumericVector(5);
 };
 
 #endif

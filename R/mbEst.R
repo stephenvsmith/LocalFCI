@@ -15,7 +15,7 @@ validateThreshold <- function(threshold){
 }
 # Validates the input MB estimation algorithm name
 validateMethod <- function(method){
-  if (!(method %in% c("MMPC","SES","gOMP","pc.sel"))){
+  if (!(method %in% c("MMPC","SES","gOMP","pc.sel","MMMB"))){
     stop("Invalid MB estimation algorithm")
   }
 }
@@ -77,6 +77,15 @@ getMB <- function(target,dataset,threshold=0.01,lmax=3,
                       threshold=threshold)
     mb_vars <- mb$vars
     n_tests <- sum(mb$n.tests)
+    runtime <- mb$runtime[3]
+  } else if (method=="MMMB"){
+    mb <- MXM::mmmb(target = dataset[,target],
+                    dataset = dataset[,-target],
+                    max_k = lmax,
+                    threshold = threshold,
+                    test = test)
+    mb_vars <- mb$mb
+    n_tests <- NA
     runtime <- mb$runtime[3]
   }
   
