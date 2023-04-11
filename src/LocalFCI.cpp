@@ -928,7 +928,7 @@ void LocalFCI::allRules(){
 void LocalFCI::convertMixedGraph(){
   size_t G_ij; // (i,j) element of adj. mat
   size_t G_ji; // (j,i) element of adj. mat
-  bool sep_nbhd; // are the nodes in separate neighborhoods?
+  bool sep_nbhd; // checks if the considered nodes are in separate neighborhoods
   for (size_t i=0;i<N;++i){
     for (size_t j=0;j<N;++j){
       sep_nbhd = false;

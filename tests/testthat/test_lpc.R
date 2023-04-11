@@ -133,6 +133,27 @@ test_that("Testing rule 1",{
   graphviz.plot(g_end)
 })
 
+test_that("Testing rule 1 (2)",{
+  my_amat <- matrix(c(
+    0,1,1,0,0,0,0,0,
+    0,0,0,0,0,1,0,0,
+    0,0,0,0,1,0,1,1,
+    0,0,0,0,0,1,0,0,
+    0,0,1,0,0,0,0,1,
+    0,0,0,0,0,0,0,0,
+    0,0,1,0,0,0,0,1,
+    0,0,0,0,1,0,1,0
+  ),byrow = TRUE,nrow = 8)
+  g_start <- empty.graph(as.character(1:8))
+  amat(g_start) <- my_amat
+  graphviz.plot(g_start)
+  
+  expect_snapshot_output(amat_end <- checkRule1(asiaDAG,my_amat,0:7,0:7,as.character(1:8)))
+  g_end <- empty.graph(as.character(1:8))
+  amat(g_end) <- amat_end
+  graphviz.plot(g_end)
+})
+
 test_that("Testing rule 2",{
   my_amat <- matrix(c(
     0,1,1,0,0,0,0,0,

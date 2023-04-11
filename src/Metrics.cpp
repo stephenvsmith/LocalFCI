@@ -414,7 +414,7 @@ bool idAncestors(NumericMatrix reference,int desc,int anc,bool verbose=true){
   int p = reference.nrow();
   StringVector node_names;
   makeNodeNames(p,node_names);
-  DAG g_ref(p,node_names,reference);
+  DAG g_ref(p,node_names,reference,false);
   return g_ref.isAncestor(desc,anc);
 }
 
